@@ -1,218 +1,591 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  <title>Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
+<!doctype html>
+
+
+
   
 
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="IBigerBiger">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="IBigerBiger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IBigerBiger">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/"/>
+
+
+
+
+
+  <title> IBigerBiger </title>
 </head>
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-droidplugin源码分析" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/02/11/droidplugin源码分析/" class="article-date">
-  <time datetime="2017-02-11T06:50:53.000Z" itemprop="datePublished">2017-02-11</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/02/11/droidplugin源码分析/">droidplugin源码分析</a>
-    </h1>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
   
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left 
+   page-home 
+ ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">天下事有难易乎？为之，则难者亦易矣；不为，则易者亦难矣。</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/11/droidplugin源码分析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/11/droidplugin源码分析/" itemprop="url">
+                  droidplugin源码分析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-11T14:50:53+08:00">
+                2017-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
     
-    <div class="article-entry" itemprop="articleBody">
+
+
+    <div class="post-body" itemprop="articleBody">
+
       
-        <p>####DroidPlugin源码分析</p>
-<p></p><p><br>从入口开始<br>DroidPlugin需要使用PluginApplication或者继承于PluginApplication的Application为App的Application</p>
+      
+
+      
+        
+          <p><p><br>从入口开始<br>DroidPlugin需要使用PluginApplication或者继承于PluginApplication的Application为App的Application</p>
 <p>PluginApplication.java</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class PluginApplication extends Application &#123;</div><div class="line"></div><div class="line">    private static final String TAG = PluginApplication.class.getSimpleName();</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate() &#123;</div><div class="line">        super.onCreate();</div><div class="line">        PluginHelper.getInstance().applicationOnCreate(getBaseContext());</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void attachBaseContext(Context base) &#123;</div><div class="line">        PluginHelper.getInstance().applicationAttachBaseContext(base);</div><div class="line">        super.attachBaseContext(base);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>在attachBaseContext这里调用了applicationAttachBaseContext调用进去发现主要是为整个App捕获全局异常,并给出相应的提示等</p>
 <p>在onCreate里调用了applicationOnCreate方法，这个方法调用了initPlugin方法，这里面则是DroidPlugin初始化的地方</p>
-<p>PluginHelper.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">private void initPlugin(Context baseContext) &#123;</div><div class="line">    </div><div class="line">        ...</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            PluginPatchManager.getInstance().init(baseContext);</div><div class="line">            PluginProcessManager.installHook(baseContext);</div><div class="line">        &#125; catch (Throwable e) &#123;</div><div class="line">            Log.e(TAG, &quot;installHook has error&quot;, e);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            if (PluginProcessManager.isPluginProcess(baseContext)) &#123;</div><div class="line">                PluginProcessManager.setHookEnable(true);</div><div class="line">            &#125; else &#123;</div><div class="line">                PluginProcessManager.setHookEnable(false);</div><div class="line">            &#125;</div><div class="line">        &#125; catch (Throwable e) &#123;</div><div class="line">            Log.e(TAG, &quot;setHookEnable has error&quot;, e);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            PluginManager.getInstance().addServiceConnection(PluginHelper.this);</div><div class="line">            PluginManager.getInstance().init(baseContext);</div><div class="line">        &#125; catch (Throwable e) &#123;</div><div class="line">            Log.e(TAG, &quot;installHook has error&quot;, e);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>首先是初始化PluginPatchManager，这个类如注释一样主要处理插件的异常情况</p>
-<p>PluginProcessManager.installHook会调用HookFactory的installHook的方法</p>
-<p>HookFactory.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line">    public final void installHook(Context context, ClassLoader classLoader) throws Throwable &#123;</div><div class="line">        installHook(new IClipboardBinderHook(context), classLoader);</div><div class="line">        //for ISearchManager</div><div class="line">        installHook(new ISearchManagerBinderHook(context), classLoader);</div><div class="line">        //for INotificationManager</div><div class="line">        installHook(new INotificationManagerBinderHook(context), classLoader);</div><div class="line">        installHook(new IMountServiceBinderHook(context), classLoader);</div><div class="line">        installHook(new IAudioServiceBinderHook(context), classLoader);</div><div class="line">        installHook(new IContentServiceBinderHook(context), classLoader);</div><div class="line">        installHook(new IWindowManagerBinderHook(context), classLoader);</div><div class="line">        if (VERSION.SDK_INT &gt; VERSION_CODES.LOLLIPOP_MR1) &#123;</div><div class="line">            installHook(new IGraphicsStatsBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line">//        if (VERSION.SDK_INT &gt;= VERSION_CODES.KITKAT) &#123;</div><div class="line">//            installHook(new WebViewFactoryProviderHook(context), classLoader);</div><div class="line">//        &#125;</div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.KITKAT) &#123;</div><div class="line">            installHook(new IMediaRouterServiceBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.LOLLIPOP) &#123;</div><div class="line">            installHook(new ISessionManagerBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.JELLY_BEAN_MR2) &#123;</div><div class="line">            installHook(new IWifiManagerBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.JELLY_BEAN_MR2) &#123;</div><div class="line">            installHook(new IInputMethodManagerBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new ILocationManagerBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new ITelephonyRegistryBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new ISubBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new IPhoneSubInfoBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new ITelephonyBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new ISmsBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) &#123;</div><div class="line">            installHook(new IMmsBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (VERSION.SDK_INT &gt;= VERSION_CODES.M) &#123;</div><div class="line">            installHook(new IAppOpsServiceBinderHook(context), classLoader);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        installHook(new IPackageManagerHook(context), classLoader);</div><div class="line">        installHook(new IActivityManagerHook(context), classLoader);</div><div class="line">        installHook(new PluginCallbackHook(context), classLoader);</div><div class="line">        installHook(new InstrumentationHook(context), classLoader);</div><div class="line">        installHook(new LibCoreHook(context), classLoader);</div><div class="line"></div><div class="line">        installHook(new SQLiteDatabaseHook(context), classLoader);</div><div class="line"></div><div class="line">        installHook(new IDisplayManagerBinderHook(context), classLoader);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>这里面则是hook了系统的各种代码</p>
-<p>在DroidPlugin的hook文件夹下中的binder和proxy路径下</p>
-<p>如图所示</p>
-<p><img src="http://p1.bqimg.com/567571/9ca830513a8629f4.png" alt="hook文件夹"></p>
-<p>接下来看看一下是怎么hook系统的代码的，以installHook(new IClipboardBinderHook(context), classLoader);为例子</p>
-<p>installHook方法调用了installHook方法</p>
-<p>HookFactory.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public void installHook(Hook hook, ClassLoader cl) &#123;</div><div class="line">       try &#123;</div><div class="line">           hook.onInstall(cl);</div><div class="line">           synchronized (mHookList) &#123;</div><div class="line">               mHookList.add(hook);</div><div class="line">           &#125;</div><div class="line">       &#125; catch (Throwable throwable) &#123;</div><div class="line">           Log.e(TAG, &quot;installHook %s error&quot;, throwable, hook);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>可以看到这里其实是调用了Hook方法中的onInstall方法,具体实现在BinderHook中的onInstall方法中，当然部分Hook方法会自己实现这里的onInstall方法</p>
-<p>BinderHook.java </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">protected void onInstall(ClassLoader classLoader) throws Throwable &#123;</div><div class="line">       new ServiceManagerCacheBinderHook(mHostContext, getServiceName()).onInstall(classLoader);</div><div class="line">       mOldObj = getOldObj();</div><div class="line">       Class&lt;?&gt; clazz = mOldObj.getClass();</div><div class="line">       List&lt;Class&lt;?&gt;&gt; interfaces = Utils.getAllInterfaces(clazz);</div><div class="line">       Class[] ifs = interfaces != null &amp;&amp; interfaces.size() &gt; 0 ? interfaces.toArray(new Class[interfaces.size()]) : new Class[0];</div><div class="line">       Object proxiedObj = MyProxy.newProxyInstance(clazz.getClassLoader(), ifs, this);</div><div class="line">       MyServiceManager.addProxiedObj(getServiceName(), proxiedObj);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>这里首先调用了ServiceManagerCacheBinderHook的onInstall方法，我们看下这个方法</p>
-<p>ServiceManagerCacheBinderHook.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">    protected void onInstall(ClassLoader classLoader) throws Throwable &#123;</div><div class="line">        Object sCacheObj = FieldUtils.readStaticField(ServiceManagerCompat.Class(), &quot;sCache&quot;);</div><div class="line">        if (sCacheObj instanceof Map) &#123;</div><div class="line">            Map sCache = (Map) sCacheObj;</div><div class="line">            Object Obj = sCache.get(mServiceName);</div><div class="line">            if (Obj != null &amp;&amp; false) &#123;</div><div class="line">                //FIXME 已经有了怎么处理？这里我们只是把原来的给remove掉，再添加自己的。程序下次取用的时候就变成我们hook过的了。</div><div class="line">                //但是这样有缺陷。</div><div class="line">                throw new RuntimeException(&quot;Can not install binder hook for &quot; + mServiceName);</div><div class="line">            &#125; else &#123;</div><div class="line">                sCache.remove(mServiceName);</div><div class="line">                IBinder mServiceIBinder = ServiceManagerCompat.getService(mServiceName);</div><div class="line">                if (mServiceIBinder == null) &#123;</div><div class="line">                    if (Obj != null &amp;&amp; Obj instanceof IBinder &amp;&amp; !Proxy.isProxyClass(Obj.getClass())) &#123;</div><div class="line">                        mServiceIBinder = ((IBinder) Obj);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                if (mServiceIBinder != null) &#123;</div><div class="line">                    MyServiceManager.addOriginService(mServiceName, mServiceIBinder);</div><div class="line">                    Class clazz = mServiceIBinder.getClass();</div><div class="line">                    List&lt;Class&lt;?&gt;&gt; interfaces = Utils.getAllInterfaces(clazz);</div><div class="line">                    Class[] ifs = interfaces != null &amp;&amp; interfaces.size() &gt; 0 ? interfaces.toArray(new Class[interfaces.size()]) : new Class[0];</div><div class="line">                    IBinder mProxyServiceIBinder = (IBinder) MyProxy.newProxyInstance(clazz.getClassLoader(), ifs, this);</div><div class="line">                    sCache.put(mServiceName, mProxyServiceIBinder);</div><div class="line">                    MyServiceManager.addProxiedServiceCache(mServiceName, mProxyServiceIBinder);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>我们看else后面的内容，首先调用ServiceManagerCompat的getService方法，传入的mServiceName为IClipboardBinderHook中定义的clipboard，从而获得了剪贴板相关的Binder对象，然后通过MyProxy.newProxyInstance方法代理剪贴板相关的Binder对象，这个代理方法为ServiceManagerCacheBinderHook本身，ServiceManagerCacheBinderHook继承自InvocationHandler。</p>
-<p>所以当剪贴板相关系统方法调用时，ServiceManagerCacheBinderHook的invoke方法可以监听到</p>
-<p>接下来看一下ServiceManagerCacheBinderHook的invoke方法</p>
-<p>ServiceManagerCacheBinderHook.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"> @Override</div><div class="line">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</div><div class="line">  </div><div class="line">    ...</div><div class="line"></div><div class="line">    IBinder originService = MyServiceManager.getOriginService(mServiceName);</div><div class="line">    if (!isEnable()) &#123;</div><div class="line">        return method.invoke(originService, args);</div><div class="line">    &#125;</div><div class="line">    HookedMethodHandler hookedMethodHandler = mHookHandles.getHookedMethodHandler(method);</div><div class="line">    if (hookedMethodHandler != null) &#123;</div><div class="line">        return hookedMethodHandler.doHookInner(originService, method, args);</div><div class="line">    &#125; else &#123;</div><div class="line">        return method.invoke(originService, args);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这里首先通过mHookHandles的getHookedMethodHandler的方法检测我们是否hook了该方法</p>
-<p>看这里的mHookHandles，在Hook类中，mHookHandles是通过createHookHandle()方法获得的，IClipboardBinderHook实现了这个接口如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line"> protected BaseHookHandle createHookHandle() &#123;</div><div class="line">     return new IClipboardHookHandle(mHostContext);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<p>我们继续回过来看getHookedMethodHandler方法</p>
-<p>BaseHookHandle.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public HookedMethodHandler getHookedMethodHandler(Method method) &#123;</div><div class="line">    if (method != null) &#123;</div><div class="line">        return sHookedMethodHandlers.get(method.getName());</div><div class="line">    &#125; else &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>而IClipboardHookHandle是继承自BaseHookHandle的，所以是调用IClipboardHookHandle的getHookedMethodHandler方法</p>
-<p>我们可以在IClipboardHookHandle的init方法中看到sHookedMethodHandlers的初始化</p>
-<p>IClipboardHookHandle.java</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">  protected void init() &#123;</div><div class="line">      sHookedMethodHandlers.put(&quot;setPrimaryClip&quot;, new setPrimaryClip(mHostContext));</div><div class="line">      sHookedMethodHandlers.put(&quot;getPrimaryClip&quot;, new getPrimaryClip(mHostContext));</div><div class="line">      sHookedMethodHandlers.put(&quot;getPrimaryClipDescription&quot;, new getPrimaryClipDescription(mHostContext));</div><div class="line">      sHookedMethodHandlers.put(&quot;hasPrimaryClip&quot;, new hasPrimaryClip(mHostContext));</div><div class="line">      sHookedMethodHandlers.put(&quot;addPrimaryClipChangedListener&quot;, new addPrimaryClipChangedListener(mHostContext));</div><div class="line">      sHookedMethodHandlers.put(&quot;removePrimaryClipChangedListener&quot;, new removePrimaryClipChangedListener(mHostContext));</div><div class="line">      sHookedMethodHandlers.put(&quot;hasClipboardText&quot;, new hasClipboardText(mHostContext));</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
-<p>所以当我们hook的方法匹配系统调用方法时候，则使用我们匹配的方法来进行操作，当不匹配时候则还是使用源方法不操作，</p>
-<p>BinderHook中余下的方法其实和我们在前面说明的方法是一致的，所以玖不介绍，不太理解为什么要调用两次相同的方法</p>
-<p>其他的installHook方法与IClipboardBinderHook是类似的就不做说明了</p>
-<p>继续看initPlugin中的方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">try &#123;</div><div class="line">    if (PluginProcessManager.isPluginProcess(baseContext)) &#123;</div><div class="line">        PluginProcessManager.setHookEnable(true);</div><div class="line">    &#125; else &#123;</div><div class="line">        PluginProcessManager.setHookEnable(false);</div><div class="line">    &#125;</div><div class="line">&#125; catch (Throwable e) &#123;</div><div class="line">    Log.e(TAG, &quot;setHookEnable has error&quot;, e);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这里查看当前的ProcessName是否存在，如果存在则设置当前hook系统，不存在则是不hook系统，当然我们可以通过代码自己去设置是否hook</p>
-
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/02/11/droidplugin源码分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/02/11/droidplugin源码分析/" data-id="ciz0w1oyc0000v8wb1gvtvo67" class="article-share-link">Share</a>
+
+    <div>
       
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
       
     </footer>
-  </div>
+  </article>
+
+
+    
+  </section>
+
   
-</article>
+
+          
+          </div>
+          
 
 
-  
+          
 
-</section>
+        </div>
         
-          <aside id="sidebar">
+          
   
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li></ul>
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
     </div>
   </div>
 
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
         
-          <li>
-            <a href="/2017/02/11/droidplugin源码分析/">droidplugin源码分析</a>
-          </li>
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
         
-      </ul>
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
     </div>
-  </div>
+  </aside>
 
-  
-</aside>
+
         
       </div>
-      <footer id="footer">
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
   
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2017 John Doe<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
     </div>
   </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
+
   
-    <a href="/" class="mobile-nav-link">Home</a>
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
   
-    <a href="/archives" class="mobile-nav-link">Archives</a>
+
+
+
+
   
-</nav>
-    
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+  
 
 
-<script src="/js/script.js"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
 
-  </div>
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
 </body>
 </html>
