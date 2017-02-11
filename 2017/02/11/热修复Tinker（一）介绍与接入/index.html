@@ -87,18 +87,16 @@
 
 
 
-<meta name="description" content="####写在前面的话
+<meta name="description" content="写在前面的话
 
-
-2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能">
+2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好">
 <meta property="og:type" content="article">
 <meta property="og:title" content="热修复Tinker（一）介绍与接入">
 <meta property="og:url" content="http://yoursite.com/2017/02/11/热修复Tinker（一）介绍与接入/index.html">
 <meta property="og:site_name" content="IBigerBiger">
-<meta property="og:description" content="####写在前面的话
+<meta property="og:description" content="写在前面的话
 
-
-2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能">
+2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-fe19a15db5c46ca0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-97d1d70b9a0011df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-2fd67ac896e6a4b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
@@ -108,13 +106,12 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7e1749028c423d84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ee0e3b56b5484873.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-11T07:44:47.000Z">
+<meta property="og:updated_time" content="2017-02-11T07:51:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（一）介绍与接入">
-<meta name="twitter:description" content="####写在前面的话
+<meta name="twitter:description" content="写在前面的话
 
-
-2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能">
+2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好">
 <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-fe19a15db5c46ca0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
@@ -341,13 +338,11 @@
       
 
       
-        <p>####写在前面的话</p>
-<p>
+        <h4 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h4><p>
 
 </p><p>2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于现在市场上的主流相关库的使用与相关源码的解析是很有必要的!</p>
 <a id="more"></a>
-<p>#####关于热修复</p>
-<p>
+<h5 id="关于热修复"><a href="#关于热修复" class="headerlink" title="关于热修复"></a>关于热修复</h5><p>
 
 </p><p>热修复如其名一样，动态及时的去修复线上的bug，不需要用户重新下载APP，重新安装，也避免了应用重新发包各大应用市场的麻烦。</p>
 <p>目前热修复主要方案如下</p>
@@ -357,8 +352,7 @@
 </ul>
 <p>这一篇主要是介绍以Classloader方案的Tinker</p>
 <p>首先我们要了解下整个Tinker的整个运行的流程</p>
-<p>#####Tinker运行流程</p>
-<p>
+<h5 id="Tinker运行流程"><a href="#Tinker运行流程" class="headerlink" title="Tinker运行流程"></a>Tinker运行流程</h5><p>
 
 </p><p>Tinker的github地址如下<a href="https://github.com/Tencent/tinker/tree/dev" target="_blank" rel="external">https://github.com/Tencent/tinker/tree/dev</a></p>
 <p>下载后会发现包含tinker-sample-android，这个就是官方提供的演示DEMO，导入后我们需要修改一些东西，找到build.gradle文件中tinkerId = getTinkerIdValue() 并将其替换成tinkerId = “tinkerId”(这里的值可以随意设置).再替换ignoreWarning = false 为ignoreWarning = true</p>
@@ -389,8 +383,7 @@
 <p><img src="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图9 加载补丁的LOG"></p>
 <p>到这里Tinker的使用流程就已经结束了，我们可看到了热修复的结果</p>
 <p>至于接入呢，有了提供的demo，我相信这都不是事</p>
-<p>####写在后面的话</p>
-<p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
 
 </p><p>Tinker热修复成功了，那么接下来就是要去了解整个Tinker的运行原理，所以后面就是对Tinker相关的源码进行解析！peace~~~</p>
 
@@ -478,8 +471,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -521,6 +523,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#写在前面的话"><span class="nav-number">1.</span> <span class="nav-text">写在前面的话</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于热修复"><span class="nav-number">1.1.</span> <span class="nav-text">关于热修复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tinker运行流程"><span class="nav-number">1.2.</span> <span class="nav-text">Tinker运行流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">2.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
