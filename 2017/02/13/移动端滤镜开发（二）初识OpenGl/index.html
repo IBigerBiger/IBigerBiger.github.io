@@ -1,0 +1,845 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="滤镜开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章对Android端的ColorMatrix进行了讲解，虽然说可以满足我们做滤镜的简单需求，但是对于视频和相机这些更多方面的滤镜需求就不能够满足需求了，所以为了滤镜可以在更多场景使用，选择用OpenGL来实现滤镜效果，由于OpenGL是通过GPU来计算的，所以处理起来速度会更快，也会避免由于图像计算较复杂带来的OOM问题。
+但是对于广大的开发者来说，OpenGl是一个相对来说比较陌生的东西">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端滤镜开发（二）初识OpenGl">
+<meta property="og:url" content="http://yoursite.com/2017/02/13/移动端滤镜开发（二）初识OpenGl/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="上一篇文章对Android端的ColorMatrix进行了讲解，虽然说可以满足我们做滤镜的简单需求，但是对于视频和相机这些更多方面的滤镜需求就不能够满足需求了，所以为了滤镜可以在更多场景使用，选择用OpenGL来实现滤镜效果，由于OpenGL是通过GPU来计算的，所以处理起来速度会更快，也会避免由于图像计算较复杂带来的OOM问题。
+但是对于广大的开发者来说，OpenGl是一个相对来说比较陌生的东西">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-cbaf8c321ee41687.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-f6dd70ec79ee6dc3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-0c51b547759f81c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d057b2513dce45a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-35b55dbac44150e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7123486a6b52fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-02-13T12:06:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端滤镜开发（二）初识OpenGl">
+<meta name="twitter:description" content="上一篇文章对Android端的ColorMatrix进行了讲解，虽然说可以满足我们做滤镜的简单需求，但是对于视频和相机这些更多方面的滤镜需求就不能够满足需求了，所以为了滤镜可以在更多场景使用，选择用OpenGL来实现滤镜效果，由于OpenGL是通过GPU来计算的，所以处理起来速度会更快，也会避免由于图像计算较复杂带来的OOM问题。
+但是对于广大的开发者来说，OpenGl是一个相对来说比较陌生的东西">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-cbaf8c321ee41687.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/13/移动端滤镜开发（二）初识OpenGl/"/>
+
+
+
+
+
+  <title> 移动端滤镜开发（二）初识OpenGl | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/13/移动端滤镜开发（二）初识OpenGl/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移动端滤镜开发（二）初识OpenGl
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-13T19:50:53+08:00">
+                2017-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/13/移动端滤镜开发（二）初识OpenGl/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/13/移动端滤镜开发（二）初识OpenGl/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章对Android端的ColorMatrix进行了讲解，虽然说可以满足我们做滤镜的简单需求，但是对于视频和相机这些更多方面的滤镜需求就不能够满足需求了，所以为了滤镜可以在更多场景使用，选择用OpenGL来实现滤镜效果，由于OpenGL是通过GPU来计算的，所以处理起来速度会更快，也会避免由于图像计算较复杂带来的OOM问题。</p>
+<p>但是对于广大的开发者来说，OpenGl是一个相对来说比较陌生的东西，可能大家都听但是不是特别了解，所以这篇文章就对OpenGL进行简单的介绍，并实现图片用OpenGL显示出来。</p>
+<a id="more"></a>
+<h4 id="一-OpenGl基础知识"><a href="#一-OpenGl基础知识" class="headerlink" title="一.OpenGl基础知识"></a>一.OpenGl基础知识</h4><p>
+
+<ul>
+<li>OpenGL 绘制的都是图形，包括形状和填充，基本形状是三角形。</li>
+<li>每个形状都有顶点，Vertix，顶点的序列就是一个图形。</li>
+<li>Shader，着色器，用来描述如何绘制（渲染），GLSL 是 OpenGL 的编程语言，全称就叫 OpenGL Shader Language。OpenGL 渲染需要两种 shader，vertex 和 fragment。</li>
+<li>Vertex shader（顶点着色器），控制顶点的绘制，指定坐标、变换等。</li>
+<li>Fragment shader（片段着色器），控制形状内区域渲染，纹理填充内容。</li>
+</ul>
+</p><p>OpenGl的坐标系与Android的坐标系不同，是三维坐标系，原点在中间，x 轴向右，y 轴向上，z 轴朝向我们，x y z 取值范围都是 [-1, 1]</p>
+<p>如图所示</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-cbaf8c321ee41687.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 OpenGl坐标系"></p>
+<p>OpenGL 纹理坐标系为二维坐标系，原点在左下角，s（x）轴向右，t（y）轴向上，x y 取值范围都是 [0, 1]：</p>
+<p>如图所示</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-f6dd70ec79ee6dc3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 纹理坐标系"></p>
+<p>其实通过介绍这些基础知识，大家应该可以对OpenGl基本的实现有点思路了。</p>
+<p><strong>注意</strong>：OpenGL ES 2.0需要Android2.2 (API Level 8) 及以上版本，所以请确保你的Android项目的运行目标的API等级不低于8或更高。</p>
+<h4 id="二-OpenGl简单构造"><a href="#二-OpenGl简单构造" class="headerlink" title="二.OpenGl简单构造"></a>二.OpenGl简单构造</h4><p>
+
+</p><p>与我们创建界面时候添加的View一样，实现OpenGl则需要<strong>GLSurfaceView</strong>，这是让我们渲染的”画布”。</p>
+<p><strong>1.构造一个GLSurfaceView对象</strong></p>
+<p>事实上GLSurfaceView并没有提供很多功能，实际上绘制对象的任务都在GLSurfaceView.Renderer中进行。所以GLSurfaceView中代码也非常少，甚至可以直接使用GLSurfaceView。但最好别这样做，因为你需要扩展这个类来响应触摸事件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class MyGLSurfaceView extends GLSurfaceView&#123;</div><div class="line"></div><div class="line">    public MyGLSurfaceView(Context context) &#123;</div><div class="line">        this(context,null);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public MyGLSurfaceView(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>2.构造一个Renderer类</strong></p>
+<p>   Renderer类负责控制在GLSurfaceView中绘制任务，并提供三个回调方法供Android系统调用，用来计算在GLSurfaceView中绘制什么以及如何绘制。</p>
+<ul>
+<li>onSurfaceCreated()：仅调用一次，用于设置view的OpenGL ES环境。</li>
+<li>onDrawFrame()：每次重绘view时调用。</li>
+<li><p>onSurfaceChanged()：当view的几何形状发生变化时调用，比如设备从竖屏变为横屏。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class MyRender implements GLSurfaceView.Renderer&#123;</div><div class="line"></div><div class="line">     @Override</div><div class="line">     public void onSurfaceCreated(GL10 gl, EGLConfig config) &#123;</div><div class="line">        // 设置背景色</div><div class="line">        GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     @Override</div><div class="line">     public void onSurfaceChanged(GL10 gl, int width, int height) &#123;</div><div class="line"></div><div class="line">        GLES20.glViewport(0, 0, width, height);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     @Override</div><div class="line">     public void onDrawFrame(GL10 gl) &#123;</div><div class="line">        // 重绘背景色</div><div class="line">        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这里只是创建了一个带颜色的显示，并没有做任何事情</p>
+<p><strong>3.GLSurfaceView与Renderer关联</strong></p>
+<p>设置渲染对象，用于控制在GLSurfaceView中的绘制工作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setRenderer(new MyRenderer());</div></pre></td></tr></table></figure></p>
+<p>指定使用的OpenGl版本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setEGLContextClientVersion(2);</div></pre></td></tr></table></figure></p>
+<p>指定刷新方式(刷新方式有两种， RENDERMODE_WHEN_DIRTY 和 RENDERMODE_CONTINUOUSLY ，前者是懒惰渲染，需要手动调用 glSurfaceView.requestRender() 才会进行更新，而后者则是不停渲染。)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);</div></pre></td></tr></table></figure></p>
+<p><strong>4.Activity中显示</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class OpenGLActivity extends Activity &#123;</div><div class="line"></div><div class="line">    private GLSurfaceView mGLSurfaceView;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line"></div><div class="line">        mGLSurfaceView = new MyGLSurfaceView(this);</div><div class="line">        setContentView(mGLSurfaceView);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里就是创建一个GLSurfaceView对象，并将其设置为当前Activity的ContentView</p>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-0c51b547759f81c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 仅带颜色的GLSurfaceView"></p>
+<h4 id="三-OpenGl实现Hello-World"><a href="#三-OpenGl实现Hello-World" class="headerlink" title="三.OpenGl实现Hello World"></a>三.OpenGl实现Hello World</h4><p>
+
+</p><p>OpenGl的Hello World当然不是我们认知的Hello World，而是实现一个最基础的图形显示</p>
+<p>通过上面的简单构造我们可以知道，渲染这部分其实是在Renderer里面去实现的，所以其实我们需要改动的地方就是Renderer这部分</p>
+<p>接下来我们一步一步来实现显示一个三角形图像</p>
+<h5 id="1-变量"><a href="#1-变量" class="headerlink" title="1.变量"></a>1.变量</h5><p>
+
+</p><p>前面最开始提到的两个着色器并没有在上个部分有体现，而当我们实现真正的图像和图形，时候则需要用顶点着色器对图像定位，片段着色器对图像进行渲染</p>
+<p>所以首先我们声明两个着色器程序</p>
+<p>着色器程序则是用着色器语言来写的，至于着色器语言的知识，这里我就不介绍了，大家可以自行搜索，简单的了解下就可以继续后面的流程了</p>
+<p><strong>顶点着色器程序</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">private static final String VERTEX_SHADER = &quot;attribute vec4 vPosition;\n&quot;</div><div class="line">               + &quot;void main() &#123;\n&quot;</div><div class="line">               + &quot;  gl_Position = vPosition;\n&quot;</div><div class="line">               + &quot;&#125;&quot;;</div></pre></td></tr></table></figure></p>
+<p>这里做的事情是将传过来的坐标作为顶点的位置</p>
+<p><strong>片段着色器程序</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">private static final String FRAGMENT_SHADER = &quot;precision mediump float;\n&quot;</div><div class="line">               + &quot;void main() &#123;\n&quot;</div><div class="line">               + &quot;  gl_FragColor = vec4(0,0,1,1);\n&quot;</div><div class="line">               + &quot;&#125;&quot;;</div></pre></td></tr></table></figure></p>
+<p>这里做的事情是将纹理的颜色设置为蓝色</p>
+<p><strong>顶点坐标数组</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">private static final float[] VERTEX = &#123;</div><div class="line">        0.0f, 1.0f, 0.0f, // top</div><div class="line">        -1.0f, -1.0f, 0.0f, // bottom left</div><div class="line">        1.0ff, -1.0f, 0.0f,  // bottom right</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p><strong>FloatBuffer存储顶点坐标数组/片段坐标数组</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private final FloatBuffer mVertexBuffer;</div></pre></td></tr></table></figure>
+<p>这里我们只需要把顶点坐标传给着色器，所以只声明了顶点所用的FloatBuffer，由于不能直接把上面的顶点坐标数组直接传给着色器，所以需要FloatBuffer来进行传递</p>
+<p>接下来初始化FloatBuffer，将数组传递给FloatBuffer</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mVertexBuffer = ByteBuffer.allocateDirect(VERTEX.length * 4)</div><div class="line">                    .order(ByteOrder.nativeOrder())</div><div class="line">                    .asFloatBuffer()</div><div class="line">                    .put(VERTEX);</div><div class="line">mVertexBuffer.position(0);</div></pre></td></tr></table></figure>
+<p><strong>定义需要传递的变量</strong></p>
+<p>前面的顶点着色器需要将外部的顶点坐标传入，所以我们要先定义一个变量，并将这个变量与着色器语言中需要传入的变量关联起来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private int mPositionHandle;</div></pre></td></tr></table></figure>
+<p><strong>定义GLSL程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private int mProgram;</div></pre></td></tr></table></figure>
+<h5 id="2-构建GLSL程序"><a href="#2-构建GLSL程序" class="headerlink" title="2.构建GLSL程序"></a>2.构建GLSL程序</h5><p>
+
+</p><p>构建步骤如下</p>
+<ul>
+<li>创建 GLSL 程序： </li>
+<li>加载 shader 代码</li>
+<li>attatch shader 代码</li>
+<li>链接 shader 代码</li>
+<li>获取 shader 代码中的变量索引</li>
+</ul>
+<p>和普通的 view 利用 canvas 来绘制不一样，OpenGL 需要加载 GLSL 程序，让 GPU 进行绘制。所以我们需要定义 shader 代码，并在 onSurfaceChanged回调中加载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onSurfaceChanged(GL10 unused, int width, int height) &#123;</div><div class="line">    mProgram = GLES20.glCreateProgram();</div><div class="line">    int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, VERTEX_SHADER);</div><div class="line">    int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER);</div><div class="line">    GLES20.glAttachShader(mProgram, vertexShader);</div><div class="line">    GLES20.glAttachShader(mProgram, fragmentShader);</div><div class="line">    GLES20.glLinkProgram(mProgram);</div><div class="line">    </div><div class="line">    mPositionHandle = GLES20.glGetAttribLocation(mProgram, &quot;vPosition&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//加载Shader代码</div><div class="line">static int loadShader(int type, String shaderCode) &#123;</div><div class="line">    int shader = GLES20.glCreateShader(type);</div><div class="line">    GLES20.glShaderSource(shader, shaderCode);</div><div class="line">    GLES20.glCompileShader(shader);</div><div class="line">    return shader;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>就不对代码进行分析了，按照上面的步骤基本是对应的</p>
+<h5 id="3-绘制"><a href="#3-绘制" class="headerlink" title="3.绘制"></a>3.绘制</h5><p>
+
+</p><p>绘制则是在onDrawFrame回调中加载</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 unused) &#123;</div><div class="line"></div><div class="line">//清除指定的buffer到预设值。可清除以下四类buffer:</div><div class="line">//1）GL_COLOR_BUFFER_BIT</div><div class="line">//2）GL_DEPTH_BUFFER_BIT</div><div class="line">//3）GL_ACCUM_BUFFER_BIT</div><div class="line">//4）GL_STENCIL_BUFFER_BIT</div><div class="line">GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);</div><div class="line"></div><div class="line">//安装一个program object，并把它作为当前rendering state的一部分。</div><div class="line">GLES20.glUseProgram(mProgram);</div><div class="line"></div><div class="line">//Enable由索引index指定的通用顶点属性数组。</div><div class="line">GLES20.glEnableVertexAttribArray(mPositionHandle);</div><div class="line"></div><div class="line">//定义一个通用顶点属性数组。当渲染时，它指定了通用顶点属性数组从索引index处开始的位置和数据格式</div><div class="line">GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false,</div><div class="line">        12, mVertexBuffer);</div><div class="line"></div><div class="line">//三个成员变量mode,first,count</div><div class="line">//1) mode:指明render原语，如：GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_QUAD_STRIP, GL_QUADS, 和 GL_POLYGON。</div><div class="line">//2) first: 指明Enable数组中起始索引。</div><div class="line">//3) count: 指明被render的原语个数。</div><div class="line">//可以预先使用单独的数据定义vertex、normal和color，然后通过一个简单的glDrawArrays构造一系列原语。当调用 glDrawArrays时，它使用每个enable的数组中的count个连续的元素，来构造一系列几何原语，从第first个元素开始</div><div class="line">GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);</div><div class="line"></div><div class="line">//Disable由索引index指定的通用顶点属性数组。</div><div class="line">GLES20.glDisableVertexAttribArray(mPositionHandle);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注释已经写的很详细了，就不详细分析了</p>
+<p>接下来运行如图</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-d057b2513dce45a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 蓝色的三角形"></p>
+<h4 id="四-OpenGl实现图像显示"><a href="#四-OpenGl实现图像显示" class="headerlink" title="四.OpenGl实现图像显示"></a>四.OpenGl实现图像显示</h4><p>
+
+</p><p>经过上面的讲解大家应该对OpenGl简单使用有一定的了解了吧，OK，接下来回到我们这个系统最初的目的，首先我们来实现用OpenGl展示图片</p>
+<p>其实将上面的代码进行简单的修改就可以实现需要的效果</p>
+<p>接下来一步一步实现</p>
+<h5 id="1-绘制矩形"><a href="#1-绘制矩形" class="headerlink" title="1.绘制矩形"></a>1.绘制矩形</h5><p></p><p><br>这一步其实很简单，前面的三角形是绘制了三个点，那么这里绘制矩形的话，我们绘制两个三角形，六个点，自然就实现了</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">private static final float[] VERTEX = &#123;</div><div class="line">        -1.0f, -1.0f, 0.0f, // bottom left</div><div class="line">        1.0f, -1.0f, 0.0f,  // bottom right</div><div class="line">        1.0f, 1.0f, 0.0f, // top right</div><div class="line">        -1.0f, -1.0f, 0.0f,</div><div class="line">        1.0f, 1.0f, 0.0f,</div><div class="line">        -1f, 1.0f, 0.0f,</div><div class="line">&#125;;</div><div class="line"></div><div class="line">GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);</div></pre></td></tr></table></figure>
+<p>当然除了这样以为，我们注意一下glDrawArrays这个第一个参数，我们是使用的GLES20.GL_TRIANGLES，当然除了这个参数，还有另外两个与TRIANGLES的参数，我们来看下区分</p>
+<ul>
+<li>GL_TRIANGLES：每三个顶之间绘制三角形，之间不连接</li>
+<li>GL_TRIANGLE_FAN：以V0V1V2,V0V2V3,V0V3V4，……的形式绘制三角形</li>
+<li>GL_TRIANGLE_STRIP：顺序在每三个顶点之间均绘制三角形。这个方法可以保证从相同的方向上所有三角形均被绘制。以V0V1V2,V1V2V3,V2V3V4……的形式绘制三角形</li>
+</ul>
+<p>所以其实我们并不需要6个点那么多，四个点就足够了</p>
+<p>如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">private static final float[] VERTEX = &#123;</div><div class="line">                    -1.0f, -1.0f, 0.0f,</div><div class="line">                    1.0f, -1.0f, 0.0f,</div><div class="line">                    -1.0f, 1.0f, 0.0f,</div><div class="line">                     1.0f, 1.0f, 0.0f,</div><div class="line">&#125;;</div><div class="line"></div><div class="line">GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);</div></pre></td></tr></table></figure>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-35b55dbac44150e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 矩形"></p>
+<h5 id="2-着色器程序修改"><a href="#2-着色器程序修改" class="headerlink" title="2.着色器程序修改"></a>2.着色器程序修改</h5><p>
+
+</p><p>因为我们要显示图片，自然之前的着色器程序是不能满足需求的，那么我们简单分析一下，怎么才能把图片渲染上去呢？首先图片纹理要传进去，其次还得知道什么地方绘制</p>
+<p>所以对上面的着色器程序进行修改</p>
+<p>如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">private static final String VERTEX_SHADER = &quot;attribute vec4 vPosition;&quot; +</div><div class="line">        &quot;attribute vec2 a_texCoord;&quot; +</div><div class="line">        &quot;varying vec2 v_texCoord;&quot; +</div><div class="line">        &quot;void main() &#123;&quot; +</div><div class="line">        &quot;  gl_Position = vPosition;&quot; +</div><div class="line">        &quot;  v_texCoord = a_texCoord;&quot; +</div><div class="line">        &quot;&#125;&quot;;</div><div class="line">private static final String FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">        &quot;varying vec2 v_texCoord;&quot; +</div><div class="line">        &quot;uniform sampler2D s_texture;&quot; +</div><div class="line">        &quot;void main() &#123;&quot; +</div><div class="line">        &quot;  gl_FragColor = texture2D( s_texture, v_texCoord );&quot; +</div><div class="line">        &quot;&#125;&quot;;</div></pre></td></tr></table></figure>
+<p>我们可以看到增加的东西是varying vec2 v_texCoord与uniform sampler2D s_texture，第一是代表纹理坐标点，第二个代表图片纹理，通过GLSL的内建函数texture2D来获取对应位置纹理的颜色RGBA值</p>
+<p>这里出现了更多的关键字， uniform ， attribute ， varying ，包括上面的内建函数，这里并不做讲解，有兴趣的同学去搜索一下就可以了解了解</p>
+<h5 id="3-绘制图片纹理"><a href="#3-绘制图片纹理" class="headerlink" title="3.绘制图片纹理"></a>3.绘制图片纹理</h5><p>
+
+</p><p>我们已经对着色器程序修改，接下来自然就是去将需要的坐标和纹理传给着色器程序</p>
+<p>纹理坐标系文章最开始有提到，所以我们先创建纹理坐标数组，并初始化</p>
+<p><strong>(1)建纹理坐标数组，并初始化</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">private static final float[] UV_TEX_VERTEX = &#123;   // in clockwise order:</div><div class="line">        0.0f, 1.0f,</div><div class="line">        1.0f, 1.0f,</div><div class="line">        0.0f, 0.0f,</div><div class="line">        1.0f, 0.0f,</div><div class="line">&#125;;</div><div class="line">FloatBuffer mUvTexVertexBuffer;</div><div class="line"></div><div class="line">mUvTexVertexBuffer = ByteBuffer.allocateDirect(UV_TEX_VERTEX.length * 4)</div><div class="line">            .order(ByteOrder.nativeOrder())</div><div class="line">            .asFloatBuffer()</div><div class="line">            .put(UV_TEX_VERTEX);</div><div class="line">mUvTexVertexBuffer.position(0);</div></pre></td></tr></table></figure>
+<p>接下来生成图片纹理</p>
+<p><strong>(2)生成图片纹理</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onSurfaceChanged(GL10 gl, int width, int height) &#123;</div><div class="line">    ...</div><div class="line">    int[] mTexNames = new int[1];</div><div class="line">    GLES20.glGenTextures(1, mTexNames, 0);</div><div class="line"></div><div class="line">    Bitmap bitmap = BitmapFactory.decodeResource(mResources, R.drawable.p_300px);</div><div class="line">    //选择当前活跃的纹理源</div><div class="line">    GLES20.glActiveTexture(GLES20.GL_TEXTURE0);</div><div class="line">    //将生成的纹理的名称绑定到指定的纹理上</div><div class="line">    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames[0]);</div><div class="line">    //设置纹理被缩小（距离视点很远时被缩小）时候的滤波方式</div><div class="line">    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,</div><div class="line">        GLES20.GL_LINEAR);</div><div class="line">    //设置纹理被放大（距离视点很近时被方法）时候的滤波方式</div><div class="line">    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,</div><div class="line">        GLES20.GL_LINEAR);</div><div class="line">    //设置在横向、纵向上都是位于纹理边缘或者靠近纹理边缘的纹理单元将用于纹理计算，但不使用纹理边框上的纹理单元。</div><div class="line">    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,</div><div class="line">        GLES20.GL_REPEAT);</div><div class="line">    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,</div><div class="line">        GLES20.GL_REPEAT);</div><div class="line">    // 加载位图生成纹理</div><div class="line">    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);</div><div class="line">    bitmap.recycle();</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>大家要注意 GLES20.glActiveTexture(GLES20.GL_TEXTURE0)这个方法，这是生成纹理，在OpenGl里面有很多个这种GL_TEXTURE表示不同纹理</p>
+<p><strong>(3)获取 shader 代码中的新的变量索引</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">private int mTexCoordHandle;</div><div class="line">private int mTexSamplerHandle;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onSurfaceChanged(GL10 gl, int width, int height) &#123;</div><div class="line">    ...</div><div class="line">    mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, &quot;a_texCoord&quot;);</div><div class="line">    mTexSamplerHandle = GLES20.glGetUniformLocation(mProgram, &quot;s_texture&quot;);</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>(4)绘制</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 gl) &#123;</div><div class="line">    ...</div><div class="line">    </div><div class="line">    GLES20.glEnableVertexAttribArray(mTexCoordHandle);</div><div class="line">    GLES20.glVertexAttribPointer(mTexCoordHandle, 2, GLES20.GL_FLOAT, false, 0,</div><div class="line">            mUvTexVertexBuffer);</div><div class="line"></div><div class="line">    GLES20.glUniform1i(mTexSamplerHandle, 0);</div><div class="line">    GLES20.glDisableVertexAttribArray(mTexCoordHandle);</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意这里的glUniform1i方法，这里的第二个参数和前面提到的glActiveTexture方法的后缀要一致</p>
+<p>到这里基本就结束了，运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-7123486a6b52fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 图像显示"></p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
+
+</p><p>通过这么一大串的内容，我相信大家应该都对OpenGl在安卓上面的实现有一定了解了吧，关于GLSL语言呢，大家可以自行去了解一下，这会对后面的文章有一定帮助，下一篇则是介绍如何用OpenGl实现摄像机预览与音频播放，peace~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/滤镜开发/" rel="tag"># 滤镜开发</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/13/移动端滤镜开发（一）ColorMatrix实现滤镜效果/" rel="next" title="移动端滤镜开发（一）ColorMatrix实现滤镜效果">
+                <i class="fa fa-chevron-left"></i> 移动端滤镜开发（一）ColorMatrix实现滤镜效果
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/" rel="prev" title="移动端滤镜开发（三）OpenGL实现预览播放效果">
+                移动端滤镜开发（三）OpenGL实现预览播放效果 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-OpenGl基础知识"><span class="nav-number">1.</span> <span class="nav-text">一.OpenGl基础知识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-OpenGl简单构造"><span class="nav-number">2.</span> <span class="nav-text">二.OpenGl简单构造</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-OpenGl实现Hello-World"><span class="nav-number">3.</span> <span class="nav-text">三.OpenGl实现Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-变量"><span class="nav-number">3.1.</span> <span class="nav-text">1.变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-构建GLSL程序"><span class="nav-number">3.2.</span> <span class="nav-text">2.构建GLSL程序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-绘制"><span class="nav-number">3.3.</span> <span class="nav-text">3.绘制</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四-OpenGl实现图像显示"><span class="nav-number">4.</span> <span class="nav-text">四.OpenGl实现图像显示</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-绘制矩形"><span class="nav-number">4.1.</span> <span class="nav-text">1.绘制矩形</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-着色器程序修改"><span class="nav-number">4.2.</span> <span class="nav-text">2.着色器程序修改</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-绘制图片纹理"><span class="nav-number">4.3.</span> <span class="nav-text">3.绘制图片纹理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">5.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

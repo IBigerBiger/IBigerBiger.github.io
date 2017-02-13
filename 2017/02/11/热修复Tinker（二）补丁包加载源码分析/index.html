@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="热修复," />
 
 
 
@@ -87,25 +87,19 @@
 
 
 
-<meta name="description" content="写在前面的话
-
-前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
-首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系">
+<meta name="description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
+首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下">
 <meta property="og:type" content="article">
 <meta property="og:title" content="热修复Tinker（二）补丁包加载源码分析">
 <meta property="og:url" content="http://yoursite.com/2017/02/11/热修复Tinker（二）补丁包加载源码分析/index.html">
 <meta property="og:site_name" content="IBigerBiger的成长之路">
-<meta property="og:description" content="写在前面的话
-
-前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
-首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系">
-<meta property="og:updated_time" content="2017-02-11T07:51:46.000Z">
+<meta property="og:description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
+首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下">
+<meta property="og:updated_time" content="2017-02-13T12:05:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（二）补丁包加载源码分析">
-<meta name="twitter:description" content="写在前面的话
-
-前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
-首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系">
+<meta name="twitter:description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
+首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下">
 
 
 
@@ -208,6 +202,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives" rel="section">
             
@@ -218,12 +222,12 @@
         </li>
       
         
-        <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
             
-            标签
+            关于
           </a>
         </li>
       
@@ -341,9 +345,7 @@
       
 
       
-        <h4 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h4><p>
-
-</p><p>前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。</p>
+        <p>前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。</p>
 <p>首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下发的差异包与本应用的dex文件合并成成全量的dex文件，并进行opt优化，当再次启动APP时候则加载优化过的全量dex文件，将dex文件插入到DexPathList 中 dexElements的前面。</p>
 <p>所以Tinker其实是两个流程，一个是加载补丁包，另外一个是加载dex文件，两个的加载流程相对较长，这里分开说明，这一篇呢，主要介绍加载补丁包的流程。</p>
 <a id="more"></a>
@@ -415,6 +417,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/热修复/" rel="tag"># 热修复</a>
+          
+        </div>
+      
 
       
         
@@ -433,6 +441,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/13/移动端滤镜开发（一）ColorMatrix实现滤镜效果/" rel="prev" title="移动端滤镜开发（一）ColorMatrix实现滤镜效果">
+                移动端滤镜开发（一）ColorMatrix实现滤镜效果 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -518,14 +530,28 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
           
 
           
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
 
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
           
 
         </nav>
@@ -557,7 +583,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#写在前面的话"><span class="nav-number">1.</span> <span class="nav-text">写在前面的话</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#补丁包加载流程"><span class="nav-number">1.1.</span> <span class="nav-text">补丁包加载流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">2.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#补丁包加载流程"><span class="nav-number">1.</span> <span class="nav-text">补丁包加载流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number"></span> <span class="nav-text">写在后面的话</span></a></div>
             
 
           </div>

@@ -1,0 +1,821 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="滤镜开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章简单介绍了OpenGl的使用，并实现了OpenGl显示图片的效果，但是滤镜的效果不仅仅只用在图片上面，一般来说现在视频和拍照取景也是会有滤镜的需求的，所以这一篇，就是介绍用OpenGL实现预览效果
+ 摄像预览其实就是Android的Camera开发，对于Android的Camera开发，一般有两种方式，一种是借助Intent和MediaStroe调用系统Camera App程序来实现拍照">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端滤镜开发（三）OpenGL实现预览播放效果">
+<meta property="og:url" content="http://yoursite.com/2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="上一篇文章简单介绍了OpenGl的使用，并实现了OpenGl显示图片的效果，但是滤镜的效果不仅仅只用在图片上面，一般来说现在视频和拍照取景也是会有滤镜的需求的，所以这一篇，就是介绍用OpenGL实现预览效果
+ 摄像预览其实就是Android的Camera开发，对于Android的Camera开发，一般有两种方式，一种是借助Intent和MediaStroe调用系统Camera App程序来实现拍照">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-bd899658cb199535.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-41af3a6f103f5342.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d8e694f1413b0ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-201872dc416b183d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ce6af336a8998f4f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-298e0431b33b1f2a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-463822330cd82d28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-3f80f46a572c059c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-91f7472c34195830.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-02-13T12:06:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端滤镜开发（三）OpenGL实现预览播放效果">
+<meta name="twitter:description" content="上一篇文章简单介绍了OpenGl的使用，并实现了OpenGl显示图片的效果，但是滤镜的效果不仅仅只用在图片上面，一般来说现在视频和拍照取景也是会有滤镜的需求的，所以这一篇，就是介绍用OpenGL实现预览效果
+ 摄像预览其实就是Android的Camera开发，对于Android的Camera开发，一般有两种方式，一种是借助Intent和MediaStroe调用系统Camera App程序来实现拍照">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-bd899658cb199535.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/"/>
+
+
+
+
+
+  <title> 移动端滤镜开发（三）OpenGL实现预览播放效果 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移动端滤镜开发（三）OpenGL实现预览播放效果
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-13T20:03:53+08:00">
+                2017-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章简单介绍了OpenGl的使用，并实现了OpenGl显示图片的效果，但是滤镜的效果不仅仅只用在图片上面，一般来说现在视频和拍照取景也是会有滤镜的需求的，所以这一篇，就是介绍用OpenGL实现预览效果</p>
+<p> 摄像预览其实就是Android的Camera开发，对于Android的Camera开发，一般有两种方式，一种是借助Intent和MediaStroe调用系统Camera App程序来实现拍照和摄像功能，另外一种是根据Camera API自写Camera程序，自然第一种不能作为我们的滤镜开发，所以我们采用第二种方式。</p>
+<p> 视频播放则是使用了主要用到MediaPlayer。</p>
+<p> 两者的实现方式基本一致</p>
+ <a id="more"></a>
+<h4 id="Camera预览开发"><a href="#Camera预览开发" class="headerlink" title="Camera预览开发"></a>Camera预览开发</h4><p></p><p><br>工欲善其事必先利其器,首先我们了解一下Camera API</p>
+<h5 id="一-Camera-API"><a href="#一-Camera-API" class="headerlink" title="一.Camera API"></a>一.Camera API</h5><p>
+
+</p><p>Camera的初始化需要使用静态方法通过API calledCamera.open提供并初始化相机对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Camera mCamera =  Camera.open();</div></pre></td></tr></table></figure>
+<p>简单看下Camera类提供的方法</p>
+<ul>
+<li><strong>getCameraInfo(int cameraId, Camera.CameraInfo cameraInfo)</strong> 它返回一个特定摄像机信息</li>
+<li><strong>getNumberOfCameras()</strong>  它返回限定的可用的设备上的照相机的整数</li>
+<li><strong>lock()</strong>它被用来锁定相机，所以没有其他应用程序可以访问它</li>
+<li><strong>release()</strong> 它被用来释放在镜头锁定，所以其他应用程序可以访问它</li>
+<li><strong>open(int cameraId)</strong> 它是用来打开特定相机时，支持多个摄像机</li>
+<li><strong>enableShutterSound(boolean enabled)</strong> 它被用来使能/禁止图像俘获的默认快门声音</li>
+</ul>
+<ul>
+<li><strong>startPreview()</strong> 开始预览</li>
+<li><strong>startFaceDetection()</strong> 此功能启动人脸检测相机</li>
+<li><strong>stopFaceDetection()</strong> 它是用来阻止其通过上述功能启用的脸部检测</li>
+<li><strong>startSmoothZoom(int value)</strong> 这需要一个整数值，并调整摄像机的焦距非常顺畅的值</li>
+<li><strong>stopSmoothZoom()</strong> 它是用来阻止摄像机的变焦</li>
+<li><strong>stopPreview()</strong> 它是用来阻止相机的预览给用户</li>
+<li><strong>takePicture(Camera.ShutterCallback shutter, Camera.PictureCallback<br>raw, Camera.PictureCallback jpeg)</strong> 它被用来使能/禁止图像拍摄的默认快门声音</li>
+</ul>
+<p>实现预览效果呢其实有好几种方法，主要都是与SurfaceView，GLSurfaceView,SurfaceTexture,TextureView这几个有关，那这里就简单介绍下这几个区别</p>
+<p><strong>SurfaceView, GLSurfaceView, SurfaceTexture, TextureView的区别</strong></p>
+<p>由于这里的东西其实牵扯很多，就不做太详细的介绍，有兴趣的可以自行百度，我就做简单的区分介绍</p>
+<p>关键字：<strong>View</strong><br>              SurfaceView<br>              GLSurfaceView<br>              TextureView<br>    这三个的后缀都是View，所以这三个都是用来显示的</p>
+<p><strong>SurfaceView</strong>是Android1.0(API level1)时期就存在的，虽然是继承于View，但是他包含一个Surface模块（简单地说Surface对应了一块屏幕缓冲区，每个window对应一个Surface，任何View都是画在Surface上的，传统的view共享一块屏幕缓冲区，所有的绘制必须在UI线程中进行），所以SurfaceView与普通View的区别就在于他的渲染在单独的线程的，这对于一些游戏、视频等性能相关的应用非常有益，因为它不会影响主线程对事件的响应。同时由于这个特性它的显示也不受View的属性控制，所以不能进行平移，缩放等变换，也不能放在其它ViewGroup中，一些View中的特性也无法使用。</p>
+<p><strong>GLSurfaceView</strong>从Android 1.5(API level 3)开始加入,它的加入是为了解决SurfaceView渲染线程要单独写导致的统一性不好的状态，在SurfaceView的基础上，它加入了EGL的管理，并自带了渲染线程。另外它定义了用户需要实现的Render接口，提供了用Strategy pattern更改具体Render行为的灵活性。作为GLSurfaceView的Client，只需要将实现了渲染函数的Renderer的实现类设置给GLSurfaceView即可。概括一句话就是 使用了模板的 SurfaceView。</p>
+<p><strong>TextureView</strong>在4.0(API level 14)中引入。TextureView重载了draw()方法，其中主要把SurfaceTexture中收到的图像数据作为纹理更新到对应的HardwareLayer中。所以TextureView必须在硬件加速的窗口中。因为TextureView不包含Surface，所以其实就是一个普通的View，可以和其它普通View一样进行移动，旋转，缩放，动画等变化。</p>
+<p>关键字：<strong>Texture</strong><br>          SurfaceTexture</p>
+<p><strong>SurfaceTexture</strong>从Android 3.0(API level 11)加入。和SurfaceView不同的是，它对图像流的处理并不直接显示，而是转为GL外部纹理，因此可用于图像流数据的二次处理（如Camera滤镜，桌面特效等）。</p>
+<p>接下来就来实现预览效果，分别从简单到复杂</p>
+<h5 id="二-SurfaceView实现预览效果"><a href="#二-SurfaceView实现预览效果" class="headerlink" title="二.SurfaceView实现预览效果"></a>二.SurfaceView实现预览效果</h5><p></p><p><br>首先我们来创建一个相机预览加载View,该类继承SurfaceView.Callback接口类，并且需要实现里面的接口方法以便监听SurfaceView控件的创建以及销毁事件的回调，在回调方法中关联相机预览显示。</p>
+<p>如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">  public class CameraView extends SurfaceView implements SurfaceHolder.Callback&#123;</div><div class="line"></div><div class="line">    private SurfaceHolder holder;</div><div class="line">    private Camera mCamera;</div><div class="line"></div><div class="line">    public CameraView(Context context) &#123;</div><div class="line">        this(context,null);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public CameraView(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">        holder = getHolder();</div><div class="line">        holder.addCallback(this);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void surfaceCreated(SurfaceHolder holder) &#123;</div><div class="line">        try &#123;</div><div class="line">            mCamera = getCameraInstance();</div><div class="line">            mCamera.setPreviewDisplay(holder);</div><div class="line">            mCamera.startPreview();</div><div class="line">        &#125;catch (IOException e)&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static Camera getCameraInstance()&#123;</div><div class="line">        Camera c = null;</div><div class="line">        try &#123;</div><div class="line">            c = Camera.open(); // attempt to get a Camera instance</div><div class="line">        &#125;</div><div class="line">        catch (Exception e)&#123;</div><div class="line">            // Camera is not available (in use or does not exist)</div><div class="line">        &#125;</div><div class="line">        return c; // returns null if camera is unavailable</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void surfaceDestroyed(SurfaceHolder holder) &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void  releaseCamera()&#123;</div><div class="line">        mCamera.release();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接下来就是将这个View放到布局文件中，当onPause时候调用View的releaseCamera方法即可</p>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-bd899658cb199535.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 Camera预览图"></p>
+<p>虽然是显示出来了，但是显示的界面确实不正常的，这是为什么呢？</p>
+<p>手机Camera的图像数据都是来自于摄像头硬件的图像传感器（Image Sensor），这个Sensor被固定到手机之后是有一个默认的取景方向的，这个方向如下图所示，坐标原点位于手机横放时的左上角：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-41af3a6f103f5342.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 Camera的图像数据方向"></p>
+<p>所以呢我们需要使用camera的setDisplayOrientation方法来调整方向，在初始化的时候mCamera.setDisplayOrientation(90);即可</p>
+<p>运行如下：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-d8e694f1413b0ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 Camera预览图"></p>
+<h5 id="三-TextureView实现预览效果"><a href="#三-TextureView实现预览效果" class="headerlink" title="三.TextureView实现预览效果"></a>三.TextureView实现预览效果</h5><p>
+
+</p><p>同样我们创建一个相机预览加载View，该类继承TextureView与TextureView.SurfaceTextureListener接口类，在onSurfaceTextureAvailable方法内，初始化Camera类，并设置Camera的setPreviewTexture方法为onSurfaceTextureAvailable方法参数中的SurfaceTexture即可</p>
+<p>代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">public class CameraTextureView extends TextureView implements TextureView.SurfaceTextureListener&#123;</div><div class="line"></div><div class="line">    Context mContext;</div><div class="line">    private Camera mCamera;</div><div class="line"></div><div class="line"></div><div class="line">    public CameraTextureView(Context context)&#123;</div><div class="line">        super(context);</div><div class="line">        mContext = context;</div><div class="line">        this.setSurfaceTextureListener(this);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) &#123;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            mCamera = Camera.open();</div><div class="line">            mCamera.setDisplayOrientation(90);</div><div class="line">            mCamera.setPreviewTexture(surface);</div><div class="line">            mCamera.startPreview();</div><div class="line"></div><div class="line">        &#125; catch (IOException t) &#123;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) &#123;</div><div class="line">        mCamera.stopPreview();</div><div class="line">        mCamera.release();</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSurfaceTextureUpdated(SurfaceTexture surface) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接下来就是将这个View放到布局文件中</p>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-201872dc416b183d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 Camera预览图"></p>
+<h5 id="四-GLSurfaceView实现预览效果"><a href="#四-GLSurfaceView实现预览效果" class="headerlink" title="四.GLSurfaceView实现预览效果"></a>四.GLSurfaceView实现预览效果</h5><p>
+
+</p><p>GLSurfaceView和前面两个预览View不同的是，他需要拿到数据自己进行渲染预览，大致流程如下：</p>
+<p>GLSurfaceView-&gt;setRender-&gt;onSurfaceCreated回调方法中构造一个SurfaceTexture对象，然后设置到Camera预览中-&gt;SurfaceTexture中的回调方法onFrameAvailable来得知一帧的数据准备好了-&gt;requestRender通知Render来绘制数据-&gt;在Render的回调方法onDrawFrame中调用SurfaceTexture的updateTexImage方法获取一帧数据，然后开始使用GL来进行绘制预览。</p>
+<p>OK接下来就是用代码来实现这个流程了</p>
+<p>其实这里就是将之前的OpenGl绘制图片与上面的Camera相关的应用结合到一起就可以实现相关的功能</p>
+<p>在OpenGl绘制图片基础上我们进行相关修改</p>
+<p><strong>1.添加Camera相关</strong></p>
+<p>Camera相关其实和前面一样我们这里要给Camera对象一个SurfaceTexture，这个SurfaceTexture我们需要自己创建，在onSurfaceCreated中出创建这个对象，并设置当Camera有新数据的回调函数,如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onSurfaceCreated(GL10 gl, EGLConfig config) &#123;</div><div class="line">    ...</div><div class="line">    surfaceTexture = new SurfaceTexture(0);</div><div class="line">    surfaceTexture.setOnFrameAvailableListener(onFrameAvailableListener);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private SurfaceTexture.OnFrameAvailableListener onFrameAvailableListener = new SurfaceTexture.OnFrameAvailableListener() &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onFrameAvailable(SurfaceTexture surfaceTexture) &#123;</div><div class="line">        requestRender();</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>这个回调函数作用是当有新的Camera数据时候去让OpenGl的onDrawFrame调用，进行重新绘制</p>
+<p>接下来就是在onSurfaceChanged去打开Camera，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onSurfaceChanged(GL10 gl, int width, int height) &#123;</div><div class="line"></div><div class="line">  openCamera();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">private Camera mCamera;</div><div class="line"></div><div class="line">private void openCamera()&#123;</div><div class="line">    try &#123;</div><div class="line">        mCamera = getCameraInstance();</div><div class="line">        mCamera.setPreviewTexture(surfaceTexture);</div><div class="line">        mCamera.startPreview();</div><div class="line">    &#125;catch (IOException e)&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static Camera getCameraInstance()&#123;</div><div class="line">    Camera c = null;</div><div class="line">    try &#123;</div><div class="line">        c = Camera.open(); // attempt to get a Camera instance</div><div class="line">    &#125;</div><div class="line">    catch (Exception e)&#123;</div><div class="line">        // Camera is not available (in use or does not exist)</div><div class="line">    &#125;</div><div class="line">    return c; // returns null if camera is unavailable</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里关于Camera相关的设置就已经完毕了，接下来就是获取数据去显示了</p>
+<p><strong>2.片段着色器程序修改</strong></p>
+<p>当Camera有新的数据则会通过OnFrameAvailableListener通知到我们，然后我们会通过requestRender()来触发OpenGl的重绘</p>
+<p>我们通过surfaceTexture.updateTexImage()来获取新的Camera预览数据</p>
+<p>这个方法的官网解释如下：</p>
+<p><strong>Update the texture image to the most recent frame from the image stream. This may only be called while the OpenGL ES context that owns the texture is current on the calling thread. It will implicitly bind its texture to the GL_TEXTURE_EXTERNAL_OES texture target</strong></p>
+<p>大意是，从图像流中更新纹理图像到最近的帧中。这个函数仅仅当拥有这个纹理的Opengl ES上下文当前正处在绘制线程时被调用。它将隐式的绑定到这个扩展的GL_TEXTURE_EXTERNAL_OES 目标纹理</p>
+<p>所以我们需要更改我们的片段着色器程序如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#extension GL_OES_EGL_image_external : require</div><div class="line"></div><div class="line">precision mediump float;</div><div class="line">varying vec2 v_texCoord;</div><div class="line">uniform samplerExternalOES s_texture;</div><div class="line"></div><div class="line">void main() </div><div class="line">  gl_FragColor = texture2D( s_texture, v_texCoord )</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>并且在onDrawFrame()方法内部调用surfaceTexture.updateTexImage(),即可以达到预览效果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 gl) &#123;</div><div class="line">  ...</div><div class="line">  if (surfaceTexture == null)</div><div class="line">      return;</div><div class="line">  surfaceTexture.updateTexImage();</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-ce6af336a8998f4f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 camera预览图"></p>
+<p>可以看到这里视频是不对的，通过设置setDisplayOrientation也没有效果，我们只能通过去修改顶点着色器位置与片段着色器位置来进行修正了</p>
+<p>修改如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">private static final float[] VERTEX = &#123;</div><div class="line">    -1.0f, 1.0f, 0.0f,</div><div class="line">    -1.0f, -1.0f, 0.0f,</div><div class="line">    1.0f, -1.0f, 0.0f,</div><div class="line">    1.0f, 1.0f, 0.0f,</div><div class="line">&#125;;	</div><div class="line"></div><div class="line">private static final float[] UV_TEX_VERTEX = &#123;  </div><div class="line">    0.0f, 1.0f,</div><div class="line">    1.0f, 1.0f,</div><div class="line">    1.0f, 0.0f,</div><div class="line">    0.0f, 0.0f,</div><div class="line">&#125;;</div><div class="line"></div><div class="line">GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 4);</div></pre></td></tr></table></figure>
+<p>接下来运行，如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-298e0431b33b1f2a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 正确的camera预览图"></p>
+<p>到这里GLSurfaceView实现预览效果就完成啦</p>
+<h4 id="视频播放开发"><a href="#视频播放开发" class="headerlink" title="视频播放开发"></a>视频播放开发</h4><p></p><p><br>前面实现了相机预览效果，这里则是来实现视频播放效果，其实SurfaceView这些设计之初就是为了解决视频播放，游戏等问题，所以我们可以来看一下之前相机预览的方法是否适用于这里。如果可以适用的话，那么就简单很多了。</p>
+<p>我们看上面的三种方式，主要是用了Camera的方法mCamera.setPreviewTexture(surface)与mCamera.setPreviewDisplay(holder)，所以只要视频播放也有相同的方法就可以了。</p>
+<p>视频播放主要用到MediaPlayer，值得高兴的是MediaPlayer中确实是有上述的两种方法，那么这样我们就可以用上一篇文章相同的方式来实现播放效果了</p>
+<h5 id="一-SurfaceView实现视频播放效果"><a href="#一-SurfaceView实现视频播放效果" class="headerlink" title="一.SurfaceView实现视频播放效果"></a>一.SurfaceView实现视频播放效果</h5><p>
+
+</p><p>这里其实和之前的流程一样，只是将之前的相机预览相关改成视频播放，这里就直接将代码贴上来了，不做过多的介绍</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">public class CameraSurfaceView extends SurfaceView implements SurfaceHolder.Callback&#123;</div><div class="line"></div><div class="line">    private SurfaceHolder holder;</div><div class="line"></div><div class="line">    private MediaPlayer mediaPlayer;</div><div class="line"></div><div class="line">    public final String videoPath = Environment.getExternalStorageDirectory().getPath()+&quot;/one.mp4&quot;;</div><div class="line"></div><div class="line">    public CameraSurfaceView(Context context) &#123;</div><div class="line">        this(context, null);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public CameraSurfaceView(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">        holder = getHolder();</div><div class="line">        holder.addCallback(this);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void surfaceCreated(SurfaceHolder holder) &#123;</div><div class="line">        if (mediaPlayer == null) &#123;</div><div class="line">            mediaPlayer = new MediaPlayer();</div><div class="line">            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() &#123;</div><div class="line">                @Override</div><div class="line">                public void onPrepared(MediaPlayer mp) &#123;</div><div class="line">                    mp.start();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            mediaPlayer.setDisplay(holder);</div><div class="line">            try &#123;</div><div class="line">                mediaPlayer.setDataSource(videoPath);</div><div class="line">                mediaPlayer.prepareAsync();</div><div class="line">            &#125; catch (IOException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125; else &#123;</div><div class="line">            mediaPlayer.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void surfaceDestroyed(SurfaceHolder holder) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-463822330cd82d28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 SurfaceView 实现视频播放"></p>
+<h5 id="二-TextureView实现视频播放效果"><a href="#二-TextureView实现视频播放效果" class="headerlink" title="二.TextureView实现视频播放效果"></a>二.TextureView实现视频播放效果</h5><p>
+
+</p><p>同上，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">public class CameraTextureView extends TextureView implements TextureView.SurfaceTextureListener&#123;</div><div class="line"></div><div class="line">    Context mContext;</div><div class="line"></div><div class="line">    private MediaPlayer mediaPlayer;</div><div class="line"></div><div class="line">    public final String videoPath = Environment.getExternalStorageDirectory().getPath()+&quot;/one.mp4&quot;;</div><div class="line"></div><div class="line"></div><div class="line">    public CameraTextureView(Context context)&#123;</div><div class="line">        super(context);</div><div class="line">        mContext = context;</div><div class="line">        this.setSurfaceTextureListener(this);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) &#123;</div><div class="line"></div><div class="line">        if (mediaPlayer == null) &#123;</div><div class="line">            mediaPlayer = new MediaPlayer();</div><div class="line">            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() &#123;</div><div class="line">                @Override</div><div class="line">                public void onPrepared(MediaPlayer mp) &#123;</div><div class="line">                    mp.start();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            Surface surfaces = new Surface(surface);</div><div class="line">            mediaPlayer.setSurface(surfaces);</div><div class="line">            surfaces.release();</div><div class="line">            try &#123;</div><div class="line">                mediaPlayer.setDataSource(videoPath);</div><div class="line">                mediaPlayer.prepareAsync();</div><div class="line">            &#125; catch (IOException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125; else &#123;</div><div class="line">            mediaPlayer.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) &#123;</div><div class="line"></div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSurfaceTextureUpdated(SurfaceTexture surface) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-3f80f46a572c059c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 TextureView实现视频播放"></p>
+<h5 id="三-GLSurfaceView实现视频播放效果"><a href="#三-GLSurfaceView实现视频播放效果" class="headerlink" title="三.GLSurfaceView实现视频播放效果"></a>三.GLSurfaceView实现视频播放效果</h5><p>
+
+</p><p>这里和之前基本一样只需要将OpenCamera部分的代码改成打开MediaPlayer就好了，这里我就贴上这一部分的代码，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">private MediaPlayer mediaPlayer;</div><div class="line"></div><div class="line">public final String videoPath = Environment.getExternalStorageDirectory().getPath()+&quot;/one.mp4&quot;;</div><div class="line"></div><div class="line"></div><div class="line">private void openMediaPlayer()&#123;</div><div class="line">    if (mediaPlayer == null) &#123;</div><div class="line">        mediaPlayer = new MediaPlayer();</div><div class="line">        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() &#123;</div><div class="line">            @Override</div><div class="line">            public void onPrepared(MediaPlayer mp) &#123;</div><div class="line">                mp.start();</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        Surface surface = new Surface(surfaceTexture);</div><div class="line">        mediaPlayer.setSurface(surface);</div><div class="line">        surface.release();</div><div class="line">        try &#123;</div><div class="line">            mediaPlayer.setDataSource(videoPath);</div><div class="line">            mediaPlayer.prepareAsync();</div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125; else &#123;</div><div class="line">        mediaPlayer.start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-91f7472c34195830.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 GLSurfaceView实现视频播放"></p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
+
+</p><p>这里基本把所有的实现预览相关的方式都讲解过了，但是基于要对Camera预览的与视频播放数据要进行处理，所以我们采用最后一种GLSurfaceView方式来作为滤镜开发的主要方式，到这里基本就完成了所以的准备工作，包括图片，相机预览，视频播放这三者都通过OpenGL方式实现了，接下来就可以开始我们的滤镜开发了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果？这不是在逗我们嘛，好吧好吧，下一篇见，peace~~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/滤镜开发/" rel="tag"># 滤镜开发</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/13/移动端滤镜开发（二）初识OpenGl/" rel="next" title="移动端滤镜开发（二）初识OpenGl">
+                <i class="fa fa-chevron-left"></i> 移动端滤镜开发（二）初识OpenGl
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Camera预览开发"><span class="nav-number">1.</span> <span class="nav-text">Camera预览开发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#一-Camera-API"><span class="nav-number">1.1.</span> <span class="nav-text">一.Camera API</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二-SurfaceView实现预览效果"><span class="nav-number">1.2.</span> <span class="nav-text">二.SurfaceView实现预览效果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三-TextureView实现预览效果"><span class="nav-number">1.3.</span> <span class="nav-text">三.TextureView实现预览效果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#四-GLSurfaceView实现预览效果"><span class="nav-number">1.4.</span> <span class="nav-text">四.GLSurfaceView实现预览效果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#视频播放开发"><span class="nav-number">2.</span> <span class="nav-text">视频播放开发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#一-SurfaceView实现视频播放效果"><span class="nav-number">2.1.</span> <span class="nav-text">一.SurfaceView实现视频播放效果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二-TextureView实现视频播放效果"><span class="nav-number">2.2.</span> <span class="nav-text">二.TextureView实现视频播放效果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三-GLSurfaceView实现视频播放效果"><span class="nav-number">2.3.</span> <span class="nav-text">三.GLSurfaceView实现视频播放效果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

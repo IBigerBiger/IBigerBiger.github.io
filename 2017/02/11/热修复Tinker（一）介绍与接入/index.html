@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="热修复," />
 
 
 
@@ -87,16 +87,12 @@
 
 
 
-<meta name="description" content="写在前面的话
-
-2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好">
+<meta name="description" content="2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于">
 <meta property="og:type" content="article">
 <meta property="og:title" content="热修复Tinker（一）介绍与接入">
 <meta property="og:url" content="http://yoursite.com/2017/02/11/热修复Tinker（一）介绍与接入/index.html">
 <meta property="og:site_name" content="IBigerBiger的成长之路">
-<meta property="og:description" content="写在前面的话
-
-2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好">
+<meta property="og:description" content="2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-fe19a15db5c46ca0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-97d1d70b9a0011df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-2fd67ac896e6a4b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
@@ -106,12 +102,10 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7e1749028c423d84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ee0e3b56b5484873.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-11T07:51:28.000Z">
+<meta property="og:updated_time" content="2017-02-13T12:05:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（一）介绍与接入">
-<meta name="twitter:description" content="写在前面的话
-
-2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好">
+<meta name="twitter:description" content="2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于">
 <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-fe19a15db5c46ca0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
@@ -215,6 +209,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives" rel="section">
             
@@ -225,12 +229,12 @@
         </li>
       
         
-        <li class="menu-item menu-item-tags">
-          <a href="/tags" rel="section">
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
             
-            标签
+            关于
           </a>
         </li>
       
@@ -313,6 +317,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/热修复/" itemprop="url" rel="index">
+                    <span itemprop="name">热修复</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -348,9 +374,7 @@
       
 
       
-        <h4 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h4><p>
-
-</p><p>2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于现在市场上的主流相关库的使用与相关源码的解析是很有必要的!</p>
+        <p>2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于现在市场上的主流相关库的使用与相关源码的解析是很有必要的!</p>
 <a id="more"></a>
 <h5 id="关于热修复"><a href="#关于热修复" class="headerlink" title="关于热修复"></a>关于热修复</h5><p>
 
@@ -416,6 +440,12 @@
 
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/热修复/" rel="tag"># 热修复</a>
+          
+        </div>
       
 
       
@@ -520,14 +550,28 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
           
 
           
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
 
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
           
 
         </nav>
@@ -559,7 +603,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#写在前面的话"><span class="nav-number">1.</span> <span class="nav-text">写在前面的话</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于热修复"><span class="nav-number">1.1.</span> <span class="nav-text">关于热修复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tinker运行流程"><span class="nav-number">1.2.</span> <span class="nav-text">Tinker运行流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">2.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于热修复"><span class="nav-number">1.</span> <span class="nav-text">关于热修复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tinker运行流程"><span class="nav-number">2.</span> <span class="nav-text">Tinker运行流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number"></span> <span class="nav-text">写在后面的话</span></a></div>
             
 
           </div>
