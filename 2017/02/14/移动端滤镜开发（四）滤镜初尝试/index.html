@@ -107,7 +107,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-14T11:28:17.000Z">
+<meta property="og:updated_time" content="2017-02-14T11:30:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="移动端滤镜开发（四）滤镜初尝试">
 <meta name="twitter:description" content="前面几个章节分别介绍了关于OpenGL实现图片显示，相机预览，视频播放这些功能，使用滤镜的载体这里我们算是造好了，接下来就是展开我的滤镜开发之旅了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果，What? 还有这等好事，那么接下来下这个自带的媒体效果框架。
@@ -523,8 +523,7 @@
 <h5 id="（2）-简单滤镜的实现"><a href="#（2）-简单滤镜的实现" class="headerlink" title="（2）.简单滤镜的实现"></a>（2）.简单滤镜的实现</h5><p>
 
 </p><p>这里其实就是实现几种比较简单的滤镜效果，让大家对于滤镜相关有一个从浅到深的了解过程，</p>
-<p>######1.Brightness滤镜</p>
-<p>
+<h6 id="1-Brightness滤镜"><a href="#1-Brightness滤镜" class="headerlink" title="1.Brightness滤镜"></a>1.Brightness滤镜</h6><p>
 
 </p><p>图片亮度指图像色彩的明暗程度，所以图片亮度是和RGB三色的值是有关联的<br>除了亮度还有色差I，信号值Q也是与RGB色有关联，下面是他们的计算公式</p>
 <p>| Y |    |0.31  0.59  0.11   |    | R |<br>| I  | =  |0.60 -0.28  -0.32 | * | G |<br>|Q |     |0.21  -0.52 -0.31 |    | B |</p>
@@ -545,8 +544,7 @@
 <p>运行如下</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/1605450-5c0964ade177525b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 亮度增量为-0.5f效果"></p>
 <p>到这里我们实现的第一个滤镜就完成了，虽然很简单，但是还是很有意义的嘛，哈哈</p>
-<p>######2.灰度效果滤镜</p>
-<p>
+<h6 id="2-灰度效果滤镜"><a href="#2-灰度效果滤镜" class="headerlink" title="2.灰度效果滤镜"></a>2.灰度效果滤镜</h6><p>
 
 </p><p>RGB转换为单色的[0 ~256]之间的灰度，最常用的转换公式如下：</p>
 <p>Gray = 0.299 <em> red + 0.587 </em> green + 0.114 * blue;</p>
@@ -555,8 +553,7 @@
 <p>其实就是将上面的公式通过着色器语言表示出来</p>
 <p>运行如下</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 灰度图片"></p>
-<p>######3.底片效果滤镜</p>
-<p>
+<h6 id="3-底片效果滤镜"><a href="#3-底片效果滤镜" class="headerlink" title="3.底片效果滤镜"></a>3.底片效果滤镜</h6><p>
 
 </p><p>底片效果其实是对图像的逆反处理</p>
 <p>将对应的(R, G, B)像素替换成(255 - R, 255 - G, 255 - B)</p>
@@ -564,8 +561,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">        &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">        &quot; \n&quot; +</div><div class="line">        &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">        &quot; \n&quot; +</div><div class="line">        &quot; void main()\n&quot; +</div><div class="line">        &quot; &#123;\n&quot; +</div><div class="line">        &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">        &quot;     \n&quot; +</div><div class="line">        &quot;     gl_FragColor = vec4((vec3(1.0f) - textureColor.rgb), textureColor.w);\n&quot; +</div><div class="line">        &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
 <p>运行如下</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 底片效果"></p>
-<p>######4.浮雕效果滤镜</p>
-<p>
+<h6 id="4-浮雕效果滤镜"><a href="#4-浮雕效果滤镜" class="headerlink" title="4.浮雕效果滤镜"></a>4.浮雕效果滤镜</h6><p>
 
 </p><p>前面几个滤镜效果相对较为简单，这个浮雕效果呢，相对稍微复杂一点，但是其实也是对RGB的值去进行修改，算法步骤也相对多一些</p>
 <p>浮雕图象效果是指图像的前景前向凸出背景。常见于一些纪念碑的雕刻上，要实现浮雕效果步骤如下：我们把图象的一个象素和左上方的象素进行求差运算，并加上一个灰度。这个灰度就是表示背景颜色。这里我们设置这个插值为128 (图象RGB的值是0-255)。同时,我们还应该把这两个颜色的差值转换为亮度信息.否则浮雕图像会出现彩色。</p>
@@ -579,8 +575,7 @@
 <p><img src="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 浮雕效果图"></p>
 <p>这个效果看起来就还不错，算法其实也是很简单的</p>
 <p>那么到这里就不对其他的滤镜效果进行概述了，后面的文章还会对复杂的效果进行讲解</p>
-<p>####写在后面的话</p>
-<p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
 
 </p><p>OpenGL自带的媒体框架其实效果还是可以的，但是大多还是比较简单的图片渲染，在实际开发中，其实还是不能够满足我们的业务需求的，所以后面我们会自己去写shader来实现不同的滤镜效果，peace~~~</p>
 
@@ -766,7 +761,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-媒体效果框架实现滤镜"><span class="nav-number">1.</span> <span class="nav-text">一.媒体效果框架实现滤镜</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#媒体效果框架介绍"><span class="nav-number">1.1.</span> <span class="nav-text">媒体效果框架介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#媒体效果框架应用"><span class="nav-number">1.2.</span> <span class="nav-text">媒体效果框架应用</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-简单滤镜开发"><span class="nav-number">2.</span> <span class="nav-text">二.简单滤镜开发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#（1）-图像基本属性"><span class="nav-number">2.1.</span> <span class="nav-text">（1）.图像基本属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#（2）-简单滤镜的实现"><span class="nav-number">2.2.</span> <span class="nav-text">（2）.简单滤镜的实现</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-媒体效果框架实现滤镜"><span class="nav-number">1.</span> <span class="nav-text">一.媒体效果框架实现滤镜</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#媒体效果框架介绍"><span class="nav-number">1.1.</span> <span class="nav-text">媒体效果框架介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#媒体效果框架应用"><span class="nav-number">1.2.</span> <span class="nav-text">媒体效果框架应用</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-简单滤镜开发"><span class="nav-number">2.</span> <span class="nav-text">二.简单滤镜开发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#（1）-图像基本属性"><span class="nav-number">2.1.</span> <span class="nav-text">（1）.图像基本属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#（2）-简单滤镜的实现"><span class="nav-number">2.2.</span> <span class="nav-text">（2）.简单滤镜的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-Brightness滤镜"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.Brightness滤镜</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-灰度效果滤镜"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.灰度效果滤镜</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-底片效果滤镜"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.底片效果滤镜</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#4-浮雕效果滤镜"><span class="nav-number">2.2.4.</span> <span class="nav-text">4.浮雕效果滤镜</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
             
 
           </div>
