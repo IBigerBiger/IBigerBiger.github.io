@@ -107,7 +107,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-14T11:30:48.000Z">
+<meta property="og:updated_time" content="2017-02-14T12:58:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="移动端滤镜开发（四）滤镜初尝试">
 <meta name="twitter:description" content="前面几个章节分别介绍了关于OpenGL实现图片显示，相机预览，视频播放这些功能，使用滤镜的载体这里我们算是造好了，接下来就是展开我的滤镜开发之旅了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果，What? 还有这等好事，那么接下来下这个自带的媒体效果框架。
@@ -485,12 +485,15 @@
 <p>很简单也没有什么好解释的</p>
 <p>运行呢？</p>
 <p>如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-8fef66ac48253f6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 亮度效果"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-8fef66ac48253f6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 亮度效果"><br></div>
+
 <p>接下来我们再尝试下另外几种</p>
 <p>鱼眼镜头扭曲效果</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-578fc7f967ed79a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 鱼眼镜头扭曲效果"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-578fc7f967ed79a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 鱼眼镜头扭曲效果"><br></div>
+
 <p>LOMO效果</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-4fd94728b4017fc1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 LOMO效果"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-4fd94728b4017fc1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 LOMO效果"><br></div>
+
 <p>更多的效果就不做演示了，参考上面的代码自己去尝试就好了</p>
 <p><strong>上面对OpenGL自带媒体模块实现滤镜效果进行了讲解，但是由于效果相对比较单一并且比较简单，并不能够满足于我们一些业务上面的需求，所以接下来就开启我们真正的滤镜实现之旅了，上面所提到Effect类实现其实也是通过Shader的方式来完成的，这些Shader程序内置在Android中，所以后面我们自己自己编写的滤镜其实也是用同样的方法。</strong></p>
 <h4 id="二-简单滤镜开发"><a href="#二-简单滤镜开发" class="headerlink" title="二.简单滤镜开发"></a>二.简单滤镜开发</h4><h5 id="（1）-图像基本属性"><a href="#（1）-图像基本属性" class="headerlink" title="（1）.图像基本属性"></a>（1）.图像基本属性</h5><p>
@@ -539,10 +542,12 @@
 <p>这里我就直接贴上来了，应该比较简单，</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">               &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; void main()\n&quot; +</div><div class="line">               &quot; &#123;\n&quot; +</div><div class="line">               &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">               &quot;     \n&quot; +</div><div class="line">               &quot;     gl_FragColor = vec4((textureColor.rgb + vec3(0.5f)), textureColor.w);\n&quot; +</div><div class="line">               &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
 <p>可以看到这里我们是将取出来的颜色RGB值都增加了0.5f,那么接下来我们看下运行的结果</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-3ec9ee3478de5395.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 亮度增量为0.5f效果"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-3ec9ee3478de5395.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 亮度增量为0.5f效果"><br></div>
+
 <p>接下来将亮度降低0.5f继续看下效果</p>
 <p>运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-5c0964ade177525b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 亮度增量为-0.5f效果"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-5c0964ade177525b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 亮度增量为-0.5f效果"><br></div>
+
 <p>到这里我们实现的第一个滤镜就完成了，虽然很简单，但是还是很有意义的嘛，哈哈</p>
 <h6 id="2-灰度效果滤镜"><a href="#2-灰度效果滤镜" class="headerlink" title="2.灰度效果滤镜"></a>2.灰度效果滤镜</h6><p>
 
@@ -552,7 +557,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">               &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; void main()\n&quot; +</div><div class="line">               &quot; &#123;\n&quot; +</div><div class="line">               &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">               &quot;     \n&quot; +</div><div class="line">               &quot;     float gray = textureColor.r * 0.299 + textureColor.g * 0.587 + textureColor.b * 0.114;\n&quot; +</div><div class="line">               &quot;     gl_FragColor = vec4(gray, gray, gray, textureColor.w);\n&quot; +</div><div class="line">               &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
 <p>其实就是将上面的公式通过着色器语言表示出来</p>
 <p>运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 灰度图片"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 灰度图片"><br></div>
+
 <h6 id="3-底片效果滤镜"><a href="#3-底片效果滤镜" class="headerlink" title="3.底片效果滤镜"></a>3.底片效果滤镜</h6><p>
 
 </p><p>底片效果其实是对图像的逆反处理</p>
@@ -560,7 +566,8 @@
 <p>所以我们修改下片段着色器程序</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">        &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">        &quot; \n&quot; +</div><div class="line">        &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">        &quot; \n&quot; +</div><div class="line">        &quot; void main()\n&quot; +</div><div class="line">        &quot; &#123;\n&quot; +</div><div class="line">        &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">        &quot;     \n&quot; +</div><div class="line">        &quot;     gl_FragColor = vec4((vec3(1.0f) - textureColor.rgb), textureColor.w);\n&quot; +</div><div class="line">        &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
 <p>运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 底片效果"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 底片效果"><br></div>
+
 <h6 id="4-浮雕效果滤镜"><a href="#4-浮雕效果滤镜" class="headerlink" title="4.浮雕效果滤镜"></a>4.浮雕效果滤镜</h6><p>
 
 </p><p>前面几个滤镜效果相对较为简单，这个浮雕效果呢，相对稍微复杂一点，但是其实也是对RGB的值去进行修改，算法步骤也相对多一些</p>
@@ -572,7 +579,8 @@
 <p>读取raw下面文件方法如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public String readShaderFromRawResource(final int resourceId)&#123;</div><div class="line">       final InputStream inputStream = MagicParams.context.getResources().openRawResource(</div><div class="line">               resourceId);</div><div class="line">       final InputStreamReader inputStreamReader = new InputStreamReader(</div><div class="line">               inputStream);</div><div class="line">       final BufferedReader bufferedReader = new BufferedReader(</div><div class="line">               inputStreamReader);</div><div class="line"></div><div class="line">       String nextLine;</div><div class="line">       final StringBuilder body = new StringBuilder();</div><div class="line"></div><div class="line">       try&#123;</div><div class="line">           while ((nextLine = bufferedReader.readLine()) != null)&#123;</div><div class="line">               body.append(nextLine);</div><div class="line">               body.append(&apos;\n&apos;);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">       catch (IOException e)&#123;</div><div class="line">           return null;</div><div class="line">       &#125;</div><div class="line">       return body.toString();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
 <p>接下来运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 浮雕效果图"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 浮雕效果图"><br></div>
+
 <p>这个效果看起来就还不错，算法其实也是很简单的</p>
 <p>那么到这里就不对其他的滤镜效果进行概述了，后面的文章还会对复杂的效果进行讲解</p>
 <h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
@@ -623,6 +631,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/14/移动端滤镜开发（五）普通滤镜开发/" rel="prev" title="移动端滤镜开发（五）普通滤镜开发">
+                移动端滤镜开发（五）普通滤镜开发 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -708,7 +720,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

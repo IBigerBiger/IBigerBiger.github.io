@@ -102,7 +102,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7e1749028c423d84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ee0e3b56b5484873.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-13T12:05:49.000Z">
+<meta property="og:updated_time" content="2017-02-14T13:06:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（一）介绍与接入">
 <meta name="twitter:description" content="2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于">
@@ -392,32 +392,42 @@
 <p>下载后会发现包含tinker-sample-android，这个就是官方提供的演示DEMO，导入后我们需要修改一些东西，找到build.gradle文件中tinkerId = getTinkerIdValue() 并将其替换成tinkerId = “tinkerId”(这里的值可以随意设置).再替换ignoreWarning = false 为ignoreWarning = true</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tinkerId = getTinkerIdValue() -&gt;tinkerId = &quot;tinkerId&quot;</div><div class="line">ignoreWarning = false -&gt;ignoreWarning = true</div></pre></td></tr></table></figure>
 <p>接下来运行编译代码打包debug apk并安装，我们会发现build路径下多出了一个bakApk文件夹如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-fe19a15db5c46ca0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 bakApk文件夹"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-fe19a15db5c46ca0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 bakApk文件夹"><br></div>
+
 <p>接下来需要修改build.gradle文件中相关东西，如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-97d1d70b9a0011df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 build.gradle文件中相关东西"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-97d1d70b9a0011df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 build.gradle文件中相关东西"><br></div>
+
 <p>这里的版本对应我们bakApk的apk版本就好了</p>
 <p>接下来就是对代码进行修改</p>
 <p>这里的修改其实代码本身就提供了，主要如下</p>
 <p>R.string.test_resource对应的字符串资源的值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;!--&lt;string name=&quot;test_resource&quot;&gt;I am in the base apk&lt;/string&gt;--&gt;</div><div class="line">&lt;string name=&quot;test_resource&quot;&gt;I am in the patch apk&lt;/string&gt;</div></pre></td></tr></table></figure></p>
 <p>并且多增加一条log<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Log.e(TAG, &quot;i am on patch onCreate&quot;);</div></pre></td></tr></table></figure></p>
-<p>如下图<br><img src="http://upload-images.jianshu.io/upload_images/1605450-2fd67ac896e6a4b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 增加log"></p>
+<p>如下图</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-2fd67ac896e6a4b4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 增加log"><br></div>
+
 <p>代码已经修改好了，接下来就是打补丁包的过程了<br>在Gradle脚本中找到’app:/Tasks/tinker/tinkerPatchDebug’这条命令，执行即可以打补丁包了</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-7c56835efb480bc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 Gradle脚本"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7c56835efb480bc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 Gradle脚本"><br></div>
+
 <p>执行tinkerPatchDebug，如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-5ef16d42447b69be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 执行tinkerPatchDebug"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-5ef16d42447b69be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 执行tinkerPatchDebug"><br></div>
+
 <p>这里告诉了我们补丁包的位置，在build/outputs/tinkerPatch/debug中的patch_signed_7zip.apk文件，如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-6a8f0b2f73af89c5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 补丁包位置"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-6a8f0b2f73af89c5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 补丁包位置"><br></div>
+
 <p>接下来把这个补丁包放到手机指定的位置就可以了</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-7e1749028c423d84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图7 demoAPP"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7e1749028c423d84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图7 demoAPP"><br></div>
+
 <p>这时候点击LOAD PATCH的button将插件加载，提示成功后,点击KILL SELF结束当前进程</p>
 <p>重新启动后,即可发现变化</p>
 <p>首先看一下未加载补丁的LOG</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-ee0e3b56b5484873.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图8 未加载补丁的LOG"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-ee0e3b56b5484873.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图8 未加载补丁的LOG"><br></div>
+
 <p>接下来看加载补丁后的LOG</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图9 加载补丁的LOG"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图9 加载补丁的LOG"><br></div>
+
 <p>到这里Tinker的使用流程就已经结束了，我们可看到了热修复的结果</p>
 <p>至于接入呢，有了提供的demo，我相信这都不是事</p>
-<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
+<h5 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h5><p>
 
 </p><p>Tinker热修复成功了，那么接下来就是要去了解整个Tinker的运行原理，所以后面就是对Tinker相关的源码进行解析！peace~~~</p>
 
@@ -550,7 +560,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -603,7 +613,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于热修复"><span class="nav-number">1.</span> <span class="nav-text">关于热修复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tinker运行流程"><span class="nav-number">2.</span> <span class="nav-text">Tinker运行流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number"></span> <span class="nav-text">写在后面的话</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于热修复"><span class="nav-number">1.</span> <span class="nav-text">关于热修复</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Tinker运行流程"><span class="nav-number">2.</span> <span class="nav-text">Tinker运行流程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
             
 
           </div>

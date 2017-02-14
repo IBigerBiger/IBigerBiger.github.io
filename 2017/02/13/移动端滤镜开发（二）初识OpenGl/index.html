@@ -101,7 +101,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d057b2513dce45a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-35b55dbac44150e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7123486a6b52fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-13T12:06:27.000Z">
+<meta property="og:updated_time" content="2017-02-14T13:00:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="移动端滤镜开发（二）初识OpenGl">
 <meta name="twitter:description" content="上一篇文章对Android端的ColorMatrix进行了讲解，虽然说可以满足我们做滤镜的简单需求，但是对于视频和相机这些更多方面的滤镜需求就不能够满足需求了，所以为了滤镜可以在更多场景使用，选择用OpenGL来实现滤镜效果，由于OpenGL是通过GPU来计算的，所以处理起来速度会更快，也会避免由于图像计算较复杂带来的OOM问题。
@@ -366,10 +366,13 @@
 </ul>
 </p><p>OpenGl的坐标系与Android的坐标系不同，是三维坐标系，原点在中间，x 轴向右，y 轴向上，z 轴朝向我们，x y z 取值范围都是 [-1, 1]</p>
 <p>如图所示</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-cbaf8c321ee41687.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 OpenGl坐标系"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-cbaf8c321ee41687.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 OpenGl坐标系"><br></div>
+
 <p>OpenGL 纹理坐标系为二维坐标系，原点在左下角，s（x）轴向右，t（y）轴向上，x y 取值范围都是 [0, 1]：</p>
 <p>如图所示</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-f6dd70ec79ee6dc3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 纹理坐标系"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-f6dd70ec79ee6dc3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 纹理坐标系"><br></div>
+
+
 <p>其实通过介绍这些基础知识，大家应该可以对OpenGl基本的实现有点思路了。</p>
 <p><strong>注意</strong>：OpenGL ES 2.0需要Android2.2 (API Level 8) 及以上版本，所以请确保你的Android项目的运行目标的API等级不低于8或更高。</p>
 <h4 id="二-OpenGl简单构造"><a href="#二-OpenGl简单构造" class="headerlink" title="二.OpenGl简单构造"></a>二.OpenGl简单构造</h4><p>
@@ -395,7 +398,9 @@
 <p><strong>4.Activity中显示</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class OpenGLActivity extends Activity &#123;</div><div class="line"></div><div class="line">    private GLSurfaceView mGLSurfaceView;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line"></div><div class="line">        mGLSurfaceView = new MyGLSurfaceView(this);</div><div class="line">        setContentView(mGLSurfaceView);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>这里就是创建一个GLSurfaceView对象，并将其设置为当前Activity的ContentView</p>
 <p>运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-0c51b547759f81c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 仅带颜色的GLSurfaceView"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-0c51b547759f81c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 仅带颜色的GLSurfaceView"><br></div>
+
+
 <h4 id="三-OpenGl实现Hello-World"><a href="#三-OpenGl实现Hello-World" class="headerlink" title="三.OpenGl实现Hello World"></a>三.OpenGl实现Hello World</h4><p>
 
 </p><p>OpenGl的Hello World当然不是我们认知的Hello World，而是实现一个最基础的图形显示</p>
@@ -441,7 +446,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 unused) &#123;</div><div class="line"></div><div class="line">//清除指定的buffer到预设值。可清除以下四类buffer:</div><div class="line">//1）GL_COLOR_BUFFER_BIT</div><div class="line">//2）GL_DEPTH_BUFFER_BIT</div><div class="line">//3）GL_ACCUM_BUFFER_BIT</div><div class="line">//4）GL_STENCIL_BUFFER_BIT</div><div class="line">GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);</div><div class="line"></div><div class="line">//安装一个program object，并把它作为当前rendering state的一部分。</div><div class="line">GLES20.glUseProgram(mProgram);</div><div class="line"></div><div class="line">//Enable由索引index指定的通用顶点属性数组。</div><div class="line">GLES20.glEnableVertexAttribArray(mPositionHandle);</div><div class="line"></div><div class="line">//定义一个通用顶点属性数组。当渲染时，它指定了通用顶点属性数组从索引index处开始的位置和数据格式</div><div class="line">GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false,</div><div class="line">        12, mVertexBuffer);</div><div class="line"></div><div class="line">//三个成员变量mode,first,count</div><div class="line">//1) mode:指明render原语，如：GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_QUAD_STRIP, GL_QUADS, 和 GL_POLYGON。</div><div class="line">//2) first: 指明Enable数组中起始索引。</div><div class="line">//3) count: 指明被render的原语个数。</div><div class="line">//可以预先使用单独的数据定义vertex、normal和color，然后通过一个简单的glDrawArrays构造一系列原语。当调用 glDrawArrays时，它使用每个enable的数组中的count个连续的元素，来构造一系列几何原语，从第first个元素开始</div><div class="line">GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);</div><div class="line"></div><div class="line">//Disable由索引index指定的通用顶点属性数组。</div><div class="line">GLES20.glDisableVertexAttribArray(mPositionHandle);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>注释已经写的很详细了，就不详细分析了</p>
 <p>接下来运行如图</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-d057b2513dce45a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 蓝色的三角形"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-d057b2513dce45a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 蓝色的三角形"><br></div>
+
 <h4 id="四-OpenGl实现图像显示"><a href="#四-OpenGl实现图像显示" class="headerlink" title="四.OpenGl实现图像显示"></a>四.OpenGl实现图像显示</h4><p>
 
 </p><p>经过上面的讲解大家应该对OpenGl简单使用有一定的了解了吧，OK，接下来回到我们这个系统最初的目的，首先我们来实现用OpenGl展示图片</p>
@@ -460,7 +466,8 @@
 <p>如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">private static final float[] VERTEX = &#123;</div><div class="line">                    -1.0f, -1.0f, 0.0f,</div><div class="line">                    1.0f, -1.0f, 0.0f,</div><div class="line">                    -1.0f, 1.0f, 0.0f,</div><div class="line">                     1.0f, 1.0f, 0.0f,</div><div class="line">&#125;;</div><div class="line"></div><div class="line">GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);</div></pre></td></tr></table></figure>
 <p>运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-35b55dbac44150e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 矩形"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-35b55dbac44150e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 矩形"><br></div>
+
 <h5 id="2-着色器程序修改"><a href="#2-着色器程序修改" class="headerlink" title="2.着色器程序修改"></a>2.着色器程序修改</h5><p>
 
 </p><p>因为我们要显示图片，自然之前的着色器程序是不能满足需求的，那么我们简单分析一下，怎么才能把图片渲染上去呢？首先图片纹理要传进去，其次还得知道什么地方绘制</p>
@@ -483,7 +490,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 gl) &#123;</div><div class="line">    ...</div><div class="line">    </div><div class="line">    GLES20.glEnableVertexAttribArray(mTexCoordHandle);</div><div class="line">    GLES20.glVertexAttribPointer(mTexCoordHandle, 2, GLES20.GL_FLOAT, false, 0,</div><div class="line">            mUvTexVertexBuffer);</div><div class="line"></div><div class="line">    GLES20.glUniform1i(mTexSamplerHandle, 0);</div><div class="line">    GLES20.glDisableVertexAttribArray(mTexCoordHandle);</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>注意这里的glUniform1i方法，这里的第二个参数和前面提到的glActiveTexture方法的后缀要一致</p>
 <p>到这里基本就结束了，运行如下</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-7123486a6b52fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 图像显示"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7123486a6b52fd83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 图像显示"><br></div>
+
 <h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
 
 </p><p>通过这么一大串的内容，我相信大家应该都对OpenGl在安卓上面的实现有一定了解了吧，关于GLSL语言呢，大家可以自行去了解一下，这会对后面的文章有一定帮助，下一篇则是介绍如何用OpenGl实现摄像机预览与音频播放，peace~~</p>
@@ -621,7 +629,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

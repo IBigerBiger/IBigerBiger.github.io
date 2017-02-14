@@ -127,7 +127,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-aa88c9176248e063.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-be45fc7dbdef5146.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-4d354b55984f3f94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-13T11:49:05.000Z">
+<meta property="og:updated_time" content="2017-02-14T13:08:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="移动端滤镜开发（一）ColorMatrix实现滤镜效果">
 <meta name="twitter:description" content="关于滤镜开发本着兴趣与之前项目有一点小小涉及的原因，对移动端的滤镜相关开发有小小的研究，故将相关的内容整理出来，供大家一起交流。
@@ -388,12 +388,17 @@
 <h4 id="一-矩阵"><a href="#一-矩阵" class="headerlink" title="一.矩阵"></a>一.矩阵</h4><p>
 
 </p><p>首先我们得了解<strong>矩阵</strong>这个概念及相关的运算</p>
-<h6 id="1-定义"><a href="#1-定义" class="headerlink" title="(1).定义"></a>(1).定义</h6><p></p><p><br>由 m × n 个数aij排成的m行n列的数表称为m行n列的矩阵，简称m × n矩阵。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-7b7156e456f98723.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 矩阵"></p>
-<h6 id="2-基本运算"><a href="#2-基本运算" class="headerlink" title="(2).基本运算"></a>(2).基本运算</h6><p><img src="http://upload-images.jianshu.io/upload_images/1605450-6c8e1aaa62c8626b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 矩阵加法"></p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-8bac552c2e8becb4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 矩阵减法"></p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-e91568ce136eec6c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 矩阵数乘"></p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-dd5b50a131596374.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 矩阵乘法"></p>
+<h5 id="1-定义"><a href="#1-定义" class="headerlink" title="(1).定义"></a>(1).定义</h5><p></p><p><br>由 m × n 个数aij排成的m行n列的数表称为m行n列的矩阵，简称m × n矩阵。</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7b7156e456f98723.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 矩阵"><br></div>
+
+<h5 id="2-基本运算"><a href="#2-基本运算" class="headerlink" title="(2).基本运算"></a>(2).基本运算</h5><div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-6c8e1aaa62c8626b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 矩阵加法"><br></div>
+
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-8bac552c2e8becb4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 矩阵减法"><br></div>
+
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-e91568ce136eec6c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 矩阵数乘"><br></div>
+
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-dd5b50a131596374.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 矩阵乘法"><br></div>
+
 <h4 id="二-Android颜色矩阵"><a href="#二-Android颜色矩阵" class="headerlink" title="二.Android颜色矩阵"></a>二.Android颜色矩阵</h4><p>
 
 </p><p>Android中的颜色矩阵是用来表示三原色和透明度的4×5的矩阵</p>
@@ -407,13 +412,15 @@
 <li>第五列用于表示颜色的偏移量</li>
 </ul>
 <p>一个颜色则使用[R, G, B, A]的方式进行表示，所以矩阵与颜色的计算方式则为</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-6c764f81f84e7d83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 矩阵与颜色的计算方式"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-6c764f81f84e7d83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 矩阵与颜色的计算方式"><br></div>
+
 <p>所以通过颜色矩阵我们会对原有的颜色进行改变</p>
 <p>通过一个小的例子来实验一下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">ColorMatrix colorMatrix = new ColorMatrix(new float[]&#123;</div><div class="line">        0, 0, 0, 0, 0,</div><div class="line">        0, 1, 0, 0, 0,</div><div class="line">        0, 0, 0, 0, 0,</div><div class="line">        0, 0, 0, 1, 0,</div><div class="line">&#125;);</div><div class="line"></div><div class="line">canvas.drawBitmap(bitmap, null, new Rect(0, 0, getWidth()/2, getWidth()/2 * bitmap.getHeight() / bitmap.getWidth()), mPaint);</div><div class="line"></div><div class="line">canvas.translate(getWidth()/2, 0);</div><div class="line"></div><div class="line">mPaint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));</div><div class="line">canvas.drawBitmap(bitmap, null, new Rect(0, 0, getWidth()/2, getWidth()/2 * bitmap.getHeight() / bitmap.getWidth()), mPaint);</div></pre></td></tr></table></figure>
 <p>可以看到这边我们设置的颜色矩阵是仅仅保留绿色通道的，所以通过计算得到新的颜色为[0,G,0,A]</p>
 <p>接下来看看最后的效果</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-d8837881e7714e87.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图7 保留绿色通道效果图"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-d8837881e7714e87.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图7 保留绿色通道效果图"><br></div>
+
 <h4 id="三-颜色处理运算方式"><a href="#三-颜色处理运算方式" class="headerlink" title="三.颜色处理运算方式"></a>三.颜色处理运算方式</h4><p>
 
 </p><p>#####（1）setSaturation（设置饱和度）</p>
@@ -424,44 +431,59 @@
 <p>ColorMatrix提供的setSaturation函数是对RGB的饱和度都进行调整</p>
 <p>其中： 参数float sat：表示把当前色彩饱和度放大的倍数。取值为0表示完全无色彩，即灰度图像（黑白图像）；取值为1时，表示色彩不变动；当取值大于1时，显示色彩过度饱和 </p>
 <p>如图所示</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-0f771e0af03ffcfa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图8 色彩饱和度设置为0"></p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-b944bb6cf184fd27.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图9 色彩饱和度设置为5"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-0f771e0af03ffcfa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图8 色彩饱和度设置为0"><br></div>
+
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-b944bb6cf184fd27.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图9 色彩饱和度设置为5"><br></div>
+
 <p>#####（2）setScale (色彩缩放)</p>
 <p>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* rScale 表示红色的数值的缩放比例</div><div class="line">* gScale 表示绿色的数值的缩放比例</div><div class="line">* bScale 表示蓝色的数值的缩放比例</div><div class="line">* aScale 表示透明度的数值的缩放比例</div><div class="line">*/</div><div class="line"></div><div class="line">public void setScale(float rScale, float gScale, float bScale,float aScale)</div></pre></td></tr></table></figure>
 </p><p>ColorMatrix的缩放方法，其实就是根据矩阵的运算规则，对R、G、B、A的数值分别进行缩放操作</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-6dd3d2e52241d416.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图10 色彩缩放"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-6dd3d2e52241d416.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图10 色彩缩放"><br></div>
+
 <p>像上面的最开始举的例子其实就是对色彩进行缩放，设置的是单色道的缩放</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 绿色通道</div><div class="line">mColorMatrix.setScale(0,1,0,1);</div></pre></td></tr></table></figure>
 <p>当然也可以对每个色道进行修改</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mColorMatrix.setScale(1.2f,1.5f,1.1f,1);</div></pre></td></tr></table></figure>
 <p>如图所示</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-60e06b8d73e4f74e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图11 色彩缩放"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-60e06b8d73e4f74e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图11 色彩缩放"><br></div>
+
 <p>#####（3）setRotate (色彩旋转)</p>
 <p>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">* 用于色调的旋转运算</div><div class="line">* axis=0 表示色调围绕红色进行旋转</div><div class="line">* axis=1 表示色调围绕绿色进行旋转</div><div class="line">* axis=2 表示色调围绕蓝色进行旋转</div><div class="line">*/</div><div class="line"></div><div class="line">public void setRotate(int axis, float degrees)</div></pre></td></tr></table></figure>
-</p><p><img src="http://upload-images.jianshu.io/upload_images/1605450-de20f424c37374ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图12 三原色坐标系"></p>
-<p>1）围绕红色轴旋转</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-de20f424c37374ed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图12 三原色坐标系"><br></div>
+
+</p><p>1）围绕红色轴旋转</p>
 <p>我们可以根据三原色来建立一个三维<strong>向量</strong>坐标系，当围绕红色旋转时，我们将红色虚化为一个点，绿色为横坐标，蓝色为纵坐标，旋转θ°。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-1ecac4c315fb779e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图13 围绕红色轴旋转坐标系"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-1ecac4c315fb779e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图13 围绕红色轴旋转坐标系"><br></div>
+
 <p>根据平行四边形法则R、G、B、A各值计算结果:</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-93b3871a243b8966.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20G%20=%20G%27\cdot%20\cos\theta%20+%20B%27\cdot%20\sin\theta%20$$" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20B%20=%20-G%27\cdot%20\sin\theta%20+%20B%27\cdot%20\cos\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-1694054f7a617ad7.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-93b3871a243b8966.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20G%20=%20G%27\cdot%20\cos\theta%20+%20B%27\cdot%20\sin\theta%20$$" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20B%20=%20-G%27\cdot%20\sin\theta%20+%20B%27\cdot%20\cos\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-1694054f7a617ad7.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br></div>
+
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mColorMatrix.setRotate(0,90);</div></pre></td></tr></table></figure>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-f142c79b9d5544e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图14 围绕红色轴旋转坐标系90度"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-f142c79b9d5544e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图14 围绕红色轴旋转坐标系90度"><br></div>
+
+
 <p>2）围绕绿色轴旋转</p>
 <p>绿色虚化为一个点，蓝色为横坐标轴，红色为纵坐标轴，旋转θ°。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-1ca90495997d352f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图15 围绕绿色轴旋转坐标系"></p>
-<p>根据平行四边形法则R、G、B、A各值计算结果:<br><img src="http://latex.codecogs.com/png.latex?$$%20R%20=%20R%27\cdot%20\cos\theta-B%27\cdot%20\sin\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-3cbfe03cdef7d984.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20B%20=%20R%27\cdot%20\sin\theta%20+%20B%27\cdot%20\cos\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-f777ffd203bc25ad.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-1ca90495997d352f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图15 围绕绿色轴旋转坐标系"><br></div>
+
+<p>根据平行四边形法则R、G、B、A各值计算结果:</p>
+<div align="center"><br><img src="http://latex.codecogs.com/png.latex?$$%20R%20=%20R%27\cdot%20\cos\theta-B%27\cdot%20\sin\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-3cbfe03cdef7d984.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20B%20=%20R%27\cdot%20\sin\theta%20+%20B%27\cdot%20\cos\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-f777ffd203bc25ad.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br></div>
+
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mColorMatrix.setRotate(1,90);</div></pre></td></tr></table></figure>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-6684e8b5cf6d0e67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图16 围绕绿色轴旋转坐标系90度"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-6684e8b5cf6d0e67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图16 围绕绿色轴旋转坐标系90度"><br></div>
+
+
 <p>3）围绕蓝色轴旋转</p>
 <p>蓝色虚化为一个点，红色为横坐标轴，绿色为纵坐标轴，旋转θ°。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-9d46ca7005b61cf6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图17 围绕蓝色轴旋转坐标系"></p>
-<p>根据平行四边形法则R、G、B、A各值计算结果:<br><img src="http://latex.codecogs.com/png.latex?$$%20R%20=%20R%27\cdot%20\cos\theta+G%27\cdot%20\sin\theta%20$$" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20G%20=%20-R%27\cdot%20\sin\theta+G%27\cdot%20\cos\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-aa88c9176248e063.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-be45fc7dbdef5146.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mColorMatrix.setRotate(2,90);</div></pre></td></tr></table></figure>
-<p><img src="http://upload-images.jianshu.io/upload_images/1605450-4d354b55984f3f94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图18 围绕蓝色轴旋转坐标系90度"></p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-9d46ca7005b61cf6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图17 围绕蓝色轴旋转坐标系"><br></div>
+
+<p>根据平行四边形法则R、G、B、A各值计算结果:</p>
+<div align="center"><br><img src="http://latex.codecogs.com/png.latex?$$%20R%20=%20R%27\cdot%20\cos\theta+G%27\cdot%20\sin\theta%20$$" alt=""><img src="http://latex.codecogs.com/png.latex?$$%20G%20=%20-R%27\cdot%20\sin\theta+G%27\cdot%20\cos\theta%20$$" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-aa88c9176248e063.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://upload-images.jianshu.io/upload_images/1605450-be45fc7dbdef5146.latex?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br></div><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mColorMatrix.setRotate(2,90);</div></pre></td></tr></table></figure><br><br><div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-4d354b55984f3f94.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图18 围绕蓝色轴旋转坐标系90度"><br></div>
+
 <h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
 
 </p><p>其实这一篇的ColorMatrix和我们整个的滤镜开发并没有太多的关联，所以这边也就简单的介绍一下了，毕竟用ColorMatrix来实现滤镜效果不能照顾到视频和相机相关，并且对于相对较复杂的滤镜也确实无能为力，所以后面会介绍更加给力的方法来实现滤镜效果,peace~~</p>
@@ -599,7 +621,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -652,7 +674,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于滤镜开发"><span class="nav-number">1.</span> <span class="nav-text">关于滤镜开发</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一-矩阵"><span class="nav-number">2.</span> <span class="nav-text">一.矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-定义"><span class="nav-number">2.0.1.</span> <span class="nav-text">(1).定义</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-基本运算"><span class="nav-number">2.0.2.</span> <span class="nav-text">(2).基本运算</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-Android颜色矩阵"><span class="nav-number">3.</span> <span class="nav-text">二.Android颜色矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-颜色处理运算方式"><span class="nav-number">4.</span> <span class="nav-text">三.颜色处理运算方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">5.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于滤镜开发"><span class="nav-number">1.</span> <span class="nav-text">关于滤镜开发</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一-矩阵"><span class="nav-number">2.</span> <span class="nav-text">一.矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-定义"><span class="nav-number">2.1.</span> <span class="nav-text">(1).定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-基本运算"><span class="nav-number">2.2.</span> <span class="nav-text">(2).基本运算</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-Android颜色矩阵"><span class="nav-number">3.</span> <span class="nav-text">二.Android颜色矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-颜色处理运算方式"><span class="nav-number">4.</span> <span class="nav-text">三.颜色处理运算方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">5.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
             
 
           </div>

@@ -95,7 +95,7 @@
 <meta property="og:site_name" content="IBigerBiger的成长之路">
 <meta property="og:description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
 首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下">
-<meta property="og:updated_time" content="2017-02-13T12:05:58.000Z">
+<meta property="og:updated_time" content="2017-02-14T13:07:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（二）补丁包加载源码分析">
 <meta name="twitter:description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
@@ -393,7 +393,7 @@
 <p>接下来启动了AbstractResultService，并把插件的路径传递过去了</p>
 <p>AbstractResultService的实现在SampleResultService类里面，SampleResultService的onPatchResult删除了原始的插件文件。</p>
 <p>到这里插件加载分析就基本结束了</p>
-<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>
+<h5 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h5><p>
 
 </p><p>插件加载分析结束了，但是却没有去分析dexDiff差分的计算，而这个dexDiff差分计算则是区分的Tinker与其他相同方案的热修复库，dexDiff是基于 Dex 的文件结构来下手，将产生变化的结构提取出来，产生的补丁非常小，而且在 diff 的过程中也处理了一些会造成补丁包很大的场景，所以等后面有时间将这一块补上，下一篇文章则是对dex文件加载进行源码分析了，peace~~~</p>
 
@@ -530,7 +530,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -583,7 +583,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#补丁包加载流程"><span class="nav-number">1.</span> <span class="nav-text">补丁包加载流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number"></span> <span class="nav-text">写在后面的话</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#补丁包加载流程"><span class="nav-number">1.</span> <span class="nav-text">补丁包加载流程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#写在后面的话"><span class="nav-number">2.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
             
 
           </div>

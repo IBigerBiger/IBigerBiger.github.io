@@ -1,0 +1,965 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="滤镜开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章对简单滤镜实现有一定的讲解，那么这一篇则是对图像处理更加深层次的说明，对于一张图片怎么处理起来效果会看起来更好呢？我想大部分人首先就会想到PS软件，确实对于图像的处理PS有很多的功能，一般处理图片呢会用到下面这些工具
+ 
+
+
+
+通过这些工具可以对图片各种修改，当然除了这种处理之外难免还会出现加上水印或者边框这种类型的需求，那么这种修改一般用PS中的图层混合，ps中的图层混合如下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端滤镜开发（五）普通滤镜开发">
+<meta property="og:url" content="http://yoursite.com/2017/02/14/移动端滤镜开发（五）普通滤镜开发/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="上一篇文章对简单滤镜实现有一定的讲解，那么这一篇则是对图像处理更加深层次的说明，对于一张图片怎么处理起来效果会看起来更好呢？我想大部分人首先就会想到PS软件，确实对于图像的处理PS有很多的功能，一般处理图片呢会用到下面这些工具
+ 
+
+
+
+通过这些工具可以对图片各种修改，当然除了这种处理之外难免还会出现加上水印或者边框这种类型的需求，那么这种修改一般用PS中的图层混合，ps中的图层混合如下">
+<meta property="og:image" content="http://i1.piimg.com/567571/11ce7fba5c3a3bc5.png">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-be9e582722012a28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ae44707746daecb7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-2b5a46265b7ac672.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7cee14753996c30d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-e27df514fcb45c8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-df2194a0edcd0ffc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1cb07e7856535d0b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-75d46fe1fa09a202.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-b6816482aadf0a5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-cc627a6430a09aac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-a1ea0de31b105e1c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-10a896265f765b5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-fe7c1dc7392d9109.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-41ee85cae9c56ae6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-10a896265f765b5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-23ccfa8e073a6241.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1336dfe5fe222a73.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-b43f295221c54338.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-63675f5f4ac46d52.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-c3be215611b5ed1d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7bc7f4863569e4a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d591b30507963129.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-2b022e4f94306ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-031754c79f0d0031.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-12835887260726e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-02-14T12:57:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端滤镜开发（五）普通滤镜开发">
+<meta name="twitter:description" content="上一篇文章对简单滤镜实现有一定的讲解，那么这一篇则是对图像处理更加深层次的说明，对于一张图片怎么处理起来效果会看起来更好呢？我想大部分人首先就会想到PS软件，确实对于图像的处理PS有很多的功能，一般处理图片呢会用到下面这些工具
+ 
+
+
+
+通过这些工具可以对图片各种修改，当然除了这种处理之外难免还会出现加上水印或者边框这种类型的需求，那么这种修改一般用PS中的图层混合，ps中的图层混合如下">
+<meta name="twitter:image" content="http://i1.piimg.com/567571/11ce7fba5c3a3bc5.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/14/移动端滤镜开发（五）普通滤镜开发/"/>
+
+
+
+
+
+  <title> 移动端滤镜开发（五）普通滤镜开发 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/14/移动端滤镜开发（五）普通滤镜开发/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移动端滤镜开发（五）普通滤镜开发
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-14T20:21:53+08:00">
+                2017-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/14/移动端滤镜开发（五）普通滤镜开发/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/14/移动端滤镜开发（五）普通滤镜开发/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章对简单滤镜实现有一定的讲解，那么这一篇则是对图像处理更加深层次的说明，对于一张图片怎么处理起来效果会看起来更好呢？我想大部分人首先就会想到PS软件，确实对于图像的处理PS有很多的功能，一般处理图片呢会用到下面这些工具</p>
+ <div align="center"><br><img src="http://i1.piimg.com/567571/11ce7fba5c3a3bc5.png" alt="图1 图片处理"><br></div>
+
+
+
+<p>通过这些工具可以对图片各种修改，当然除了这种处理之外难免还会出现加上水印或者边框这种类型的需求，那么这种修改一般用PS中的图层混合，ps中的图层混合如下</p>
+<a id="more"></a>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-be9e582722012a28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 图层混合模式"><br></div>
+
+<p>接下来就来分别说明下关于图层混合与图片处理</p>
+<h3 id="一-图层混合"><a href="#一-图层混合" class="headerlink" title="一.图层混合"></a>一.图层混合</h3><p>所谓图层混合模式就是指一个层与其下图层的色彩叠加方式，在这之前我们所使用的是正常模式，除了正常以外，还有很多种混合模式，它们都可以产生迥异的合成效果。</p>
+<p> 首先看正常模式</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-ae44707746daecb7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 正常模式"><br></div>
+
+
+<p>接下来试下不同的效果,如柔光模式</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-2b5a46265b7ac672.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 柔光模式"><br></div>
+
+
+<p>大家也可以对其他的效果也可以进行更多的尝试与了解</p>
+<h4 id="1-图片混合模式介绍"><a href="#1-图片混合模式介绍" class="headerlink" title="1.图片混合模式介绍"></a>1.图片混合模式介绍</h4><p>上面的Ps图层混合的图我们看到很多混合模式，那么这里就一一介绍下这些混合模式</p>
+<p></p><p><br><strong>1.溶解模式</strong></p>
+<p>溶解模式下混合色的不透明度及填充都是100%的话，我们就看不到基色图层。降低混合色图层的不透明度后，我们就会发现结果色中出现了很多细小的颗粒。这些颗粒会随着混合色的不透明度变化。不透明度越低混合色图层就被溶解的越多。剩下的部分就越少。不透明度越高混合色图层被溶解的部分就越少，剩下的部分就越多，结果色就越接近混合色。</p>
+<p><strong>2.变暗模式</strong></p>
+<p>变暗混合模式下，它会把混合色与基色进行对比，分别选择R，G，B三组数值中最小的数值，也就是最暗的颜色作为结果色的数值。</p>
+<p>B&lt;=A: C=B<br>B&gt;=A: C=A</p>
+<p><strong>3.正片叠底</strong></p>
+<p>正片叠底混合原理：它是按照混合色与基色中的各R，G，B值计算，计算公式：结果色R=混合色R * 基色R / 255，G值与B值同样的方法计算。最后得到的R,G,B值就是结果色的颜色。</p>
+<p><strong>4.颜色加深</strong></p>
+<p>颜色加深可以快速增加图片的暗部。它的计算公式：结果色 = （基色 + 混合色 - 255）* 255 / 混合色。其中（基色 + 混合色 - 255）如果出现负数就直接归0。因此在基色与混合色都较暗的时候都是直接变成黑色的。这样结果色的暗部就会增加。整体效果看上去对比较为强烈。</p>
+<p><strong>5.线性加深</strong></p>
+<p>线性加深的计算公式是：结果色 = 基色 + 混合色 - 255，如果基色 + 混合色的数值小于255，结果色就为0。由这个公式可以看出，画面暗部会直接变成黑色。因此画面整体会更暗。白色与基色混合得到基色，黑色与基色混合得到黑色。</p>
+<p><strong>6.深色模式</strong></p>
+<p>深色模式是通过计算混合色与基色的所有通道的数值，然后选择数值较小的作为结果色。因此结果色只跟混合色或基色相同，不会产生出另外的颜色。白色与基色混合色得到基色，黑色与基色混合得到黑色。深色模式中，混合色与基色的数值是固定的，我们颠倒位置后，混合色出来的结果色是没有变化的。</p>
+<p><strong>7.变亮模式</strong></p>
+<p>变亮模式跟变暗模式是相对的，它是通过混合色与基色的相关数值进行比较，选择较大的数值作为结果色。因此结果色会更亮，同时颜色也会变化。</p>
+<p><strong>8.滤色模式</strong></p>
+<p>滤色模式与正片叠底模式相对。它的计算公式是：255 - 混合色的补色 * 基色补色 / 255。得到的数据会比混合及基色更大，因此结果色会更亮。从计算公式也可以看出基色或混合色任何一项为255也就是白色，结果色数值就是255为白色。任何一项数值为0，也就是为黑色的话，结果色就跟数值不为0的一致。</p>
+<p><strong>9.颜色减淡</strong></p>
+<p>颜色减淡是通过混合色及基色的各通道颜色值进行对比，减少二者的对比度使基色的变亮来反映混合色。它的计算公式：结果色 = 基色 + (混合色 * 基色) / (255 - 混合色)。混合色为黑色，结果色就等于基色，混合色为白色结果色就为白色。基色为黑色结果色就为黑色。</p>
+<p><strong>10.线性减淡</strong></p>
+<p>线性减淡是通过查看每个通道的颜色信息，并通过增加亮度使基色变亮以反映混合色。它的计算公式：结果色 = 基色 +混合色，其中基色与混合色的数值大于255，系统就默认为最大值也就是255。<br>由公式可以分析出混合色为黑色结果色就等于基色，混合色为白色结果色就为白色。基色也一样。我们颠倒混合色及基色的位置，结果色也不会变化。</p>
+<p><strong>11.浅色模式</strong></p>
+<p>浅色模式是通过计算混合色与基色所有通道的数值总和，哪个数值大就选为结果色。因此结果色只能在混合色与基色中选择，不会产生第三种颜色。与深色模式刚好相反。</p>
+<p><strong>12.叠加模式</strong></p>
+<p>叠加模式比较特别，它是通过分析基色个通道的数值，对颜色进行正片叠加或滤色混合，结果色保留基色的明暗对比，因此结果色以基色为主导。<br>计算公式：<br>基色 &lt; = 128：结果色 = 混合色 <em> 基色 / 128；基色 &gt; 128：结果色 = 255 - （255 - 混合色）</em> (255 - 基色) / 128。从公式可以看出，结果色会根据基色的颜色数值选择不同的计算公式。</p>
+<p><strong>13.柔光模式</strong></p>
+<p>柔光模式是根据混合色的通道数值选择不同的公式计算混合色。数值大于128的时候，结果色就比基色稍亮；数值小于或等于128，结果色就比基色稍暗。柔光模式是以基色为主导，混合色只相应改变局部明暗。其中混合色为黑色，结果色不会为黑色，只比结果色稍暗，混合色为中性色，结果色跟基色一样。<br>计算公式：<br>混合色 &lt;=128：结果色 = 基色 + (2 <em> 混合色 - 255) </em> (基色 - 基色 <em> 基色 / 255) / 255；<br>混合色 &gt;128： 结果色 = 基色 + (2 </em> 混合色 - 255) <em> (Sqrt(基色/255)</em>255 - 基色)/255。</p>
+<p><strong>14.强光模式</strong></p>
+<p>强光模式跟叠加模式十分类似，只是在计算的时候需要通过混合色来控制，混合色的数值小于或等于128的时候，颜色会变暗；混合色的数值大于128的时候，颜色会变亮。混合色为白色，结果色就为白色；混合色为黑色，结果为黑色。混合色起到主导作用。<br>计算公式：<br>混合色 &lt;= 128：结果色 = 混合色 <em> 基色 / 128；<br>混合色 &gt; 128 ：结果色 = 255 - （255 - 混合色） </em> (255 - 基色) / 128.</p>
+<p><strong>15.亮光模式</strong></p>
+<p>亮光模式是通过增加或减少对比度是颜色变暗或变亮，具体取决于混合色的数值。混合色比中性灰色暗，结果色就相应的变暗，混合色比中性灰色亮，结果色就相应的变亮。有点类似颜色加深或颜色减淡。<br>计算公式：<br>A—基色；B—混合色<br>C=A-(255-A)<em>(255-2B)/2B 当混合色&gt;128时<br>C=A+[A</em>(2B-255)]/[255-(2B-255)</p>
+<p><strong>16.线性光模式</strong></p>
+<p>线性光模式通过减少或增加亮度，来使颜色加深或减淡。具体取决于混合色的数值。混合色数值比中性灰色暗的时候进行相应的加深混合；混合色的数值比中性灰色亮的时候进行减淡混合。这里的加深及减淡时线性加深或线性减淡。<br>计算公式：结果色 = 2 * 混合色 + 基色 -255。数值大于255取255。</p>
+<p><strong>17.点光模式</strong></p>
+<p>点光模式会根据混合色的颜色数值替换相应的颜色。如果混合色数值小于中性灰色，那么就替换比混合色亮的像素；相反混合色的数值大于中性灰色，则替换比混合色暗的像素，因此混合出来的颜色对比较大。<br>计算公式：<br>基色 &lt; 2 <em> 混合色 - 255：结果色 = 2 </em> 混合色 - 255；<br>2 <em> 混合色 - 255 &lt; 基色 &lt; 2 </em> 混合色 ：结果色 = 基色；<br>基色 &gt; 2 <em> 混合色：结果色 = 2 </em> 混合色。</p>
+<p><strong>18.实色混合</strong></p>
+<p>实色混合是把混合色颜色中的红、绿、蓝通道数值，添加到基色的RGB值中。结果色的R、G、B通道的数值只能是255或0。因此结构色只有一下八种可能：红、绿、蓝、黄、青、洋红、白、黑。由此看以看出结果色是非常纯的颜色。<br>计算公式：<br>混合色 + 基色 &lt; 255：结果色 = 0 ；混合色 + 基色 &gt;= 255：结果色 = 255。</p>
+<p><strong>19.差值模式</strong></p>
+<p>差值模式通过查看每个通道的数值，用基色减去混合色或用混合色减去基色。具体取决于混合色与基色那个通道的数值更大。白色与任何颜色混合得到反相色，黑色与任何颜色混合颜色不变。<br>计算公式：<br>结果色 = 绝对值（混合色 - 基色）</p>
+<p><strong>20.排除模式</strong></p>
+<p>排除模式是跟差值模式非常类似的混合模式，只是排除模式的结果色对比度没有差值模式强。白色与基色混合得到基色补色，黑色与基色混合得到基色。<br>计算公式：<br>结果色 = (混合色 + 基色) - 混合色 * 基色 / 128。</p>
+<p><strong>21.减去模式</strong></p>
+<p>减去模式查看各通道的颜色信息，并从基色中减去混合色。如果出现负数就剪切为零；与基色相同的颜色混合得到黑色；白色与基色混合得到黑色；黑色与基色混合得到基色。<br>计算公式：<br>结果色 = 基色 - 混合色。</p>
+<p><strong>22.划分模式</strong></p>
+<p>划分模式查看每个通道的颜色信息，并用基色分割混合色。基色数值大于或等于混合色数值，混合出的颜色为白色。基色数值小于混合色，结果色比基色更暗。因此结果色对比非常强。白色与基色混合得到基色，黑色与基色混合得到白色。<br>计算公式：<br>结果色 = (基色 / 混合色) * 255。</p>
+<p><strong>23.色相模式</strong></p>
+<p>输出图像的色调为上层，饱和度和亮度保持为下层。对于灰色上层，结果为去色的下层。</p>
+<p><strong>24.饱和度模式</strong></p>
+<p>输出图像的饱和度为上层，色调和亮度保持为下层。</p>
+<p><strong>25.颜色模式</strong></p>
+<p>输出图像的亮度为下层，色调和饱和度保持为上层。</p>
+<p><strong>26.明度模式</strong></p>
+<p>输出图像的亮度为上层，色调和饱和度保持为下层。</p>
+<h4 id="2-OpenGl实现混合模式"><a href="#2-OpenGl实现混合模式" class="headerlink" title="2.OpenGl实现混合模式"></a>2.OpenGl实现混合模式</h4><p></p><p><br>这里还是以之前的OpenGl显示图片为例子，但是由于图层混合模式需要两张图片，所以对之前的代码进行小的修改</p>
+<p><strong>首先增加新的图片纹理</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">int[] mTexNames2 = new int[2];</div><div class="line">GLES20.glGenTextures(1, mTexNames2, 1);</div><div class="line"></div><div class="line">bitmap = BitmapFactory.decodeResource(mResources, R.drawable.p_300px2);</div><div class="line">GLES20.glActiveTexture(GLES20.GL_TEXTURE1);</div><div class="line">GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTexNames2[0]);</div><div class="line">GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER,</div><div class="line">        GLES20.GL_LINEAR);</div><div class="line">GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER,</div><div class="line">        GLES20.GL_LINEAR);</div><div class="line">GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,</div><div class="line">        GLES20.GL_REPEAT);</div><div class="line">GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,</div><div class="line">        GLES20.GL_REPEAT);</div><div class="line">GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);</div><div class="line">bitmap.recycle();</div></pre></td></tr></table></figure>
+<p>注意我这里glActiveTexture与之前不同，为一个新的纹理，后面绘制新的图片也需要用这个纹理</p>
+<p><strong>接下来获取 shader 代码中的新的变量索引</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">private int mTexSamplerHandle2;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onSurfaceChanged(GL10 gl, int width, int height) &#123;</div><div class="line">    ...</div><div class="line">    mTexCoordHandle = GLES20.glGetAttribLocation(mProgram, &quot;a_texCoord&quot;);</div><div class="line">    mTexSamplerHandle2 = GLES20.glGetUniformLocation(mProgram, &quot;s_texture2&quot;);</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>最后绘制</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 gl) &#123;</div><div class="line">    ...</div><div class="line">    GLES20.glUniform1i(mTexSamplerHandle2, 1);</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来就是需要修改片段着色器程序了根据不同的模式来创建不同的程序</p>
+<p>这里我们选取几个效果实现</p>
+<h4 id="1-正常模式"><a href="#1-正常模式" class="headerlink" title="(1).正常模式"></a>(1).正常模式</h4><p>
+
+</p><p>正常模式下，则为第二张叠加在第一张图片上面，对于我们输出的颜色需要从图片一和图片二共同获取，所以这时候第二张图片透明部分则显示为第一张图片，不透明部分显示第二张图片</p>
+<p>接下来上片段着色器程序代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">varying highp vec2 v_texCoord;</div><div class="line"></div><div class="line">uniform sampler2D s_texture;</div><div class="line">uniform sampler2D s_texture2;</div><div class="line"></div><div class="line">void main() &#123;</div><div class="line"></div><div class="line">    mediump vec4 textureColor = texture2D(s_texture, v_texCoord);</div><div class="line">    mediump vec4 textureColor2 = texture2D(s_texture2, v_texCoord);</div><div class="line"></div><div class="line">    vec4 outputColor;</div><div class="line">    outputColor.r = textureColor2.r + textureColor.r * textureColor.a * (1.0 - textureColor2.a);</div><div class="line">    outputColor.g = textureColor2.g + textureColor.g * textureColor.a * (1.0 - textureColor2.a);</div><div class="line">    outputColor.b = textureColor2.b + textureColor.b * textureColor.a * (1.0 - textureColor2.a);</div><div class="line"></div><div class="line">    outputColor.a = textureColor2.a + textureColor.a * (1.0 - textureColor2.a);</div><div class="line"></div><div class="line">    gl_FragColor = outputColor;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码就不做过多解释了，接下来运行如下</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7cee14753996c30d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 正常模式"><br></div>
+
+
+<h4 id="2-柔光模式"><a href="#2-柔光模式" class="headerlink" title="(2).柔光模式"></a>(2).柔光模式</h4><p>
+
+</p><p>柔光模式是根据混合色的通道数值选择不同的公式计算混合色。数值大于128的时候，结果色就比基色稍亮；数值小于或等于128，结果色就比基色稍暗。柔光模式是以基色为主导，混合色只相应改变局部明暗。其中混合色为黑色，结果色不会为黑色，只比结果色稍暗，混合色为中性色，结果色跟基色一样。<br>计算公式：<br>混合色 &lt;=128：结果色 = 基色 + (2 <em> 混合色 - 255) </em> (基色 - 基色 <em> 基色 / 255) / 255；<br>混合色 &gt;128： 结果色 = 基色 + (2 </em> 混合色 - 255) <em> (Sqrt(基色/255)</em>255 - 基色)/255。</p>
+<p>接下来上片段着色器程序代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">varying highp vec2 v_texCoord;</div><div class="line"></div><div class="line">uniform sampler2D s_texture;</div><div class="line">uniform sampler2D s_texture2;</div><div class="line"></div><div class="line">void main() &#123;</div><div class="line"></div><div class="line">    mediump vec4 textureColor = texture2D(s_texture, v_texCoord);</div><div class="line">    mediump vec4 textureColor2 = texture2D(s_texture2, v_texCoord);</div><div class="line"></div><div class="line">    float ra;</div><div class="line">    if(textureColor2.r &lt;= 0.5)&#123;</div><div class="line">        ra = textureColor.r + (2.0 * textureColor2.r - 1.0) * (textureColor.r - textureColor.r * textureColor.r);</div><div class="line">    &#125;else&#123;</div><div class="line">        ra = textureColor.r + (2.0 * textureColor2.r - 1.0) * (sqrt(textureColor.r) - textureColor.r);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    float ga;</div><div class="line">    if(textureColor2.g &lt;= 0.5)&#123;</div><div class="line">        ga = textureColor.g + (2.0 * textureColor2.g - 1.0) * (textureColor.g - textureColor.g * textureColor.g);</div><div class="line">    &#125;else&#123;</div><div class="line">        ga = textureColor.g + (2.0 * textureColor2.g - 1.0) * (sqrt(textureColor.g) - textureColor.g);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    float ba;</div><div class="line">    if(textureColor2.b &lt;= 0.5)&#123;</div><div class="line">        ba = textureColor.b + (2.0 * textureColor2.b - 1.0) * (textureColor.b - textureColor.b * textureColor.b);</div><div class="line">    &#125;else&#123;</div><div class="line">        ba = textureColor.b + (2.0 * textureColor2.b - 1.0) * (sqrt(textureColor.b) - textureColor.b);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    gl_FragColor = vec4(ra, ga, ba, 1.0);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行如下</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-e27df514fcb45c8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 柔光模式"><br></div>
+
+
+<h4 id="3-线性加深模式"><a href="#3-线性加深模式" class="headerlink" title="(3).线性加深模式"></a>(3).线性加深模式</h4><p>
+
+</p><p>线性加深的计算公式是：结果色 = 基色 + 混合色 - 255，如果基色 + 混合色的数值小于255，结果色就为0。由这个公式可以看出，画面暗部会直接变成黑色。因此画面整体会更暗。白色与基色混合得到基色，黑色与基色混合得到黑色。</p>
+<p>接下来上片段着色器程序代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">varying highp vec2 v_texCoord;</div><div class="line"></div><div class="line">uniform sampler2D s_texture;</div><div class="line">uniform sampler2D s_texture2;</div><div class="line"></div><div class="line">void main() &#123;</div><div class="line"></div><div class="line">    mediump vec4 textureColor = texture2D(s_texture, v_texCoord);</div><div class="line">    mediump vec4 textureColor2 = texture2D(s_texture2, v_texCoord);</div><div class="line"></div><div class="line">    gl_FragColor = textureColor + textureColor2 - vec4(1.0);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行如下：</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-df2194a0edcd0ffc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br></div>
+
+<p>更多的效果大家可以去自己尝试</p>
+<h3 id="二-图片处理"><a href="#二-图片处理" class="headerlink" title="二.图片处理"></a>二.图片处理</h3><p>关于图层混合我们已经用GLSL语言去实现并运行实现了需要的效果了，接下来就是关于图片处理了，上面的图我们看到图片处理的方法太多了，我们这里首先先挑两个处理方法来说明</p>
+<h4 id="（1-曲线调整"><a href="#（1-曲线调整" class="headerlink" title="（1).曲线调整"></a>（1).曲线调整</h4><p>曲线调整是Photoshop的最常用的重要功能之一，所以了解他的实现与原理是很有必要的。</p>
+<p>首先看下PhotoShop中的曲线调整</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-1cb07e7856535d0b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 曲线调整框"><br><br><br><img src="http://upload-images.jianshu.io/upload_images/1605450-75d46fe1fa09a202.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 曲线调整"><br></div>
+
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-b6816482aadf0a5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 曲线调整对应图片的变化图片"><br></div>
+
+<h5 id="1-曲线调整原理"><a href="#1-曲线调整原理" class="headerlink" title="1.曲线调整原理"></a>1.曲线调整原理</h5><p></p><p><br>对于一个RGB图像,  可以对R,  G,  B 通道进行独立的曲线调整，即，对三个通道分别使用三条曲线（Curve）。还可以再增加一条曲线对 三个通道进行整体调整。 因此，对一个图像，可以用四条曲线调整。最终的结果，是四条曲线调整后合并产生的结果。</p>
+<p>我们首先对单一的通道调整，如图</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-cc627a6430a09aac.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 单通道曲线调整"><br></div>
+
+<p>图中，横轴是输入，比左到右分别表示0到255.  纵轴是输出，从下到上分别表示0到255.</p>
+<p>该曲线由三个点定义，座标分别为：  点1（0，0），  点2（85，143），点3（255，255）<br>点1和点3是默认产生的，点2是我们新增加的。这样这三个点就生成了一条曲线</p>
+<p>所以图片中红色通道的值都要按这条曲线来生成新的值，蓝绿通道的值不发生改变</p>
+<p>比如之前一个点的RGB值为（85，125，125），那么经过红色通道的调整后，这个点的RGB值为（143，125，125）</p>
+<p>同理于蓝色通道，绿色通道以及整个RGB通道的曲线调整</p>
+<p>到这里大家基本了解了曲线调整的流程了，那么接下来就需要知道这条曲线是如何生成的</p>
+<h5 id="2-曲线生产"><a href="#2-曲线生产" class="headerlink" title="2.曲线生产"></a>2.曲线生产</h5><p>
+
+</p><p>结合上面的图，我们可以发现这条曲线的特点，仅需要定义几个控制点，就可以定义一条平滑的曲线，且曲线同时通过所有控制点。根据这个特性我们可以判断这里的曲线是三次样条插值Cubic Spline Interpolation（简称Spline插值），生成曲线时，只需要给出几个控制点，调用曲线生成函数即可，然后可以根据这个函数来生成新的RGB值。</p>
+<p>三次样条函数:</p>
+<p>定义:函数S(x)∈C2[a,b] ，且在每个小区间[ xj,xj+1 ]上是三次多项式，其中a =x0 &lt;x1&lt;…&lt; xn= b 是给定节点，则称S(x)是节点x0,x1,…xn上的三次样条函数。若在节点x j 上给定函数值Yj= f (Xj).( j =0, 1, , n) ，并成立S(xj ) =yj .( j= 0, 1, , n) ，则称S(x)为三次样条插值函数。<br>实际计算时还需要引入边界条件才能完成计算。边界通常有自然边界（边界点的二阶导为0），夹持边界（边界点导数给定），非扭结边界（使两端点的三阶导与这两端点的邻近点的三阶导相等）。</p>
+<h5 id="3-曲线调整模拟"><a href="#3-曲线调整模拟" class="headerlink" title="3.曲线调整模拟"></a>3.曲线调整模拟</h5><p>
+
+</p><p>要模拟出曲线调整的效果，首先要实现三次样条函数</p>
+<p>这个我就不做过多的介绍了，网上也有不少例子</p>
+<p>上代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line">public class Chazhi&#123;</div><div class="line">	</div><div class="line">	int[][] range = new int[50][2];</div><div class="line">	int number = 0;</div><div class="line">	int choice = 0;</div><div class="line">	</div><div class="line">	public double Thrice(int inputx)//三次自然样条插值算法</div><div class="line">	&#123;</div><div class="line">		double a[] = new double[50];</div><div class="line">		double b[] = new double[50];</div><div class="line">		double c[] = new double[50];</div><div class="line">		double d[] = new double[50];</div><div class="line">		double h[] = new double[50];</div><div class="line">		double s = 0;</div><div class="line">		double x = 0;</div><div class="line">		int temp = 0;</div><div class="line">		double s1[] = new double[50];</div><div class="line">		double s2[] = new double[50];</div><div class="line"></div><div class="line">		for(int i = 0; i &lt; number - 1; i ++)</div><div class="line">		&#123;</div><div class="line">			for(int j = number - 2; j &gt;= i; j --)</div><div class="line">			&#123;</div><div class="line">				if(range[j+1][0]&lt;range[j][0])</div><div class="line">				&#123;</div><div class="line">					temp = range[j + 1][0];</div><div class="line">					range[j + 1][0] = range[j][0];</div><div class="line">					range[j][0] = temp;</div><div class="line">					temp = range[j + 1][1];</div><div class="line">					range[j + 1][1] = range[j][1];</div><div class="line">					range[j][1] = temp;					</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		for(int k = 0; k &lt;= number - 2; k ++)</div><div class="line">		&#123;</div><div class="line">			h[k] = range[k+1][0] - range[k][0];</div><div class="line">		&#125;</div><div class="line">		a[1] = 2 * (h[0] + h[1]);</div><div class="line">		for(int k = 2; k &lt;= number - 2; k ++)</div><div class="line">		&#123;</div><div class="line">			a[k] = 2 * (h[k-1] + h[k]) - h[k-1] * h[k-1] / a[k-1];</div><div class="line">		&#125;</div><div class="line">		for(int k = 1; k &lt;= number - 1; k ++)</div><div class="line">		&#123;</div><div class="line">			c[k] = (range[k][1] - range[k - 1][1])/h[k-1];</div><div class="line">		&#125;</div><div class="line">		for(int k = 1; k &lt;= number - 2; k ++)</div><div class="line">		&#123;</div><div class="line">			d[k] = 6*(c[k+1]-c[k]);</div><div class="line">		&#125;</div><div class="line">		b[1] = d[1];</div><div class="line">		for(int k = 2; k &lt;= number - 2; k ++)</div><div class="line">		&#123;</div><div class="line">			b[k] = d[k]-b[k-1]*h[k-1]/a[k];</div><div class="line">		&#125;</div><div class="line">		s2[number-2] = b[number - 2]/a[number - 2];</div><div class="line">		for(int k = number - 3; k &gt;=1; k --)</div><div class="line">		&#123;</div><div class="line">			s2[k] = (b[k]-h[k]*s2[k+1])/a[k];</div><div class="line">		&#125;</div><div class="line">		s2[0]=0;</div><div class="line">		s2[number - 1]=0;</div><div class="line">		</div><div class="line">		if(inputx == 255 || inputx == 0)&#123;</div><div class="line">			return inputx;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		for(int k = 0; k &lt;= number - 2; k ++)</div><div class="line">		&#123;</div><div class="line">			if(inputx &lt; range[k + 1][0])&#123;</div><div class="line">				</div><div class="line">				s1[k] = c[k + 1] - s2[k + 1] * h[k] / 6 - s2[k] * h[k] / 3;</div><div class="line">				s = range[k][1] + s1[k] * (inputx - range[k][0]) + s2[k] * (inputx - range[k][0]) * (inputx - range[k][0]) / 2 +</div><div class="line">				    (s2[k + 1]-s2[k]) * (inputx - range[k][0]) * (inputx - range[k][0]) * (inputx - range[k][0]) / 6 / h[k];	</div><div class="line"></div><div class="line">				break;</div><div class="line">			&#125;	</div><div class="line">		&#125;</div><div class="line">		return s;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Chazhi chazhi = new Chazhi();</div><div class="line">chazhi.range[chazhi.number][0] = 0;</div><div class="line">chazhi.range[chazhi.number][1] = 0;</div><div class="line">chazhi.number ++;</div><div class="line">chazhi.range[chazhi.number][0] = 114;</div><div class="line">chazhi.range[chazhi.number][1] = 176;</div><div class="line">chazhi.number ++;</div><div class="line">chazhi.range[chazhi.number][0] = 255;</div><div class="line">chazhi.range[chazhi.number][1] = 255;</div><div class="line">chazhi.number ++;</div><div class="line"></div><div class="line"> r = Math.abs((int) chazhi.Thrice(r));</div></pre></td></tr></table></figure>
+<p>这里只是对红色通道进行了曲线模拟并且选取的点为（0，0），（114，176），（255，255），模拟后，我们看生成的图片是什么效果</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-a1ea0de31b105e1c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 模拟效果"><br></div>
+
+<p>所以经过我们模拟后的效果与Photoshop中的效果一致</p>
+<h4 id="（2-色阶调整"><a href="#（2-色阶调整" class="headerlink" title="（2).色阶调整"></a>（2).色阶调整</h4><p>上面说了曲线调整，接下来看看PhotoShop的色阶调整</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-10a896265f765b5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 色阶调整"><br></div>
+
+<p>我们尝试下去修改输入色阶</p>
+<p>如下</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-fe7c1dc7392d9109.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 色阶调整输入色阶"><br></div>
+
+<p>可以看到图片的变化如下</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-41ee85cae9c56ae6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 色阶调整对应图片的变化"><br></div>
+
+<p>所以我们来了解下色阶调整带来的变化</p>
+<h5 id="1-色阶调整的原理"><a href="#1-色阶调整的原理" class="headerlink" title="1.色阶调整的原理"></a>1.色阶调整的原理</h5><p>
+
+</p><p>色阶是什么：色阶就是用直方图描述出的整张图片的明暗信息</p>
+<p>我们继续看色阶调整的图</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-10a896265f765b5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 色阶调整"><br></div>
+
+<p>从左至右是从暗到亮的像素分布，黑色三角代表最暗地方（纯黑），白色三角代表最亮地方（纯白）。灰色三角代表中间调。</p>
+<p>每一个色阶定义有两组值：<br>一组是输入色阶值，包含黑灰白三个值， 上图中：黑点值为０，灰点为１.００，白点为２５５<br>另一组是输入色阶值，包含黑白两个值，上图中：输出色阶黑为０，白为２５５</p>
+<p>对于一个RGB图像,  可以对R,  G,  B 通道进行独立的色阶调整，即，对三个通道分别使用三个色阶定义值。还可以再对 三个通道进行整体色阶调整。 因此，对一个图像，可以用四次色阶调整。最终的结果，是四次调整后合并产生的结果。</p>
+<p>我们以红色通道为例，如下</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-23ccfa8e073a6241.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 红色通道色阶调整"><br></div>
+
+<p>这里：输入色阶值为:黑15,灰1.5,白200　　　输出色阶值为:黑12,白233</p>
+<p>则色阶调整的实现是:<br>当输入值&lt;黑点值(15)时,全部变为输出色阶的黑值(12)。　<br>当输入值&gt;白点(200)时,全部变为输出色阶的白值(233)。<br>当输入值介于黑值与白值之间(15-200)时，则结合灰度系数，按比例重新计算，变为一个新的值。</p>
+<p>同理于蓝色通道，绿色通道以及整个RGB通道的曲线调整</p>
+<h5 id="2-色阶调整模拟"><a href="#2-色阶调整模拟" class="headerlink" title="2.色阶调整模拟"></a>2.色阶调整模拟</h5><p>
+
+</p><p>上面已经说明了原理，这里就直接把模拟的代码贴上来了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line">public class LevlesAdjustment&#123;</div><div class="line">	</div><div class="line">	Levles[] levles;</div><div class="line">	</div><div class="line">	class Levles&#123;</div><div class="line">		</div><div class="line">		int Shadow = 0;  </div><div class="line">		double Midtones = 1.00; </div><div class="line">		int Highlight = 255; </div><div class="line"></div><div class="line">		int OutputShadow = 0;</div><div class="line">		int OutputHighlight = 255;</div><div class="line">		</div><div class="line">		boolean defined = false;</div><div class="line">		</div><div class="line">		public int doChange(int index)&#123;		</div><div class="line">			int diff = Highlight - Shadow;	</div><div class="line">			int outDiff = (int)(OutputHighlight - OutputShadow);</div><div class="line">			 double coef = 255.0 / diff;</div><div class="line">			 double outCoef = outDiff / 255.0;</div><div class="line">			 double exponent = 1.0 / Midtones;</div><div class="line">			 int v;</div><div class="line">			 if ( index &lt;= Shadow ) &#123;</div><div class="line">		            v = 0;</div><div class="line">		       &#125; else &#123;</div><div class="line">		            v = (int)((index - Shadow) * coef + 0.5);</div><div class="line">		            if (v &gt; 255) v = 255;</div><div class="line">		       &#125;</div><div class="line">			 v = (int)( Math.pow(v / 255.0, exponent) * 255.0 + 0.5 );</div><div class="line">			 return (int) (v * outCoef + OutputShadow + 0.5);</div><div class="line">			 </div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public LevlesAdjustment()&#123;</div><div class="line">		levles = new Levles[4];</div><div class="line">		for(int i = 0; i &lt; levles.length; i ++)&#123;</div><div class="line">			levles[i] = new Levles();	</div><div class="line">		&#125;</div><div class="line">		levles[0].Shadow = 10;</div><div class="line">		levles[0].Highlight = 24;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public int[] doChange(int[] rgb)&#123;</div><div class="line">		</div><div class="line">		for(int i = 0; i &lt; levles.length; i ++)&#123;</div><div class="line">			calcDefined(levles[i]);</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		for (int i = 0; i &lt; levles.length; i++) &#123;</div><div class="line">			   </div><div class="line">			if ( levles[i].defined ) &#123;</div><div class="line">				switch (i)&#123;</div><div class="line">				case 0:</div><div class="line">					rgb[0] = levles[i].doChange(rgb[0]);</div><div class="line">					break;</div><div class="line">				case 1:</div><div class="line">					rgb[1] = levles[i].doChange(rgb[1]);</div><div class="line">					break;</div><div class="line">				case 2:</div><div class="line">					rgb[2] = levles[i].doChange(rgb[2]);</div><div class="line">					break;</div><div class="line">				case 3:</div><div class="line">					rgb[0] = levles[i].doChange(rgb[0]);</div><div class="line">					rgb[1] = levles[i].doChange(rgb[1]);</div><div class="line">					rgb[2] = levles[i].doChange(rgb[2]);</div><div class="line">					break;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		return rgb;		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	private void calcDefined(Levles levles)&#123;</div><div class="line">		if ( levles.Shadow != 0 || levles.Midtones != 1.0 || levles.Highlight != 255 ) &#123;</div><div class="line">			levles.defined = true;</div><div class="line">			return;</div><div class="line">		&#125;</div><div class="line">		levles.defined = false;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里是将红色通道的Shadow设置为10，Highlight = 244，接下来看一下运行的效果图</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-1336dfe5fe222a73.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 运行效果图"><br></div>
+
+<p>通过与ps处理的效果图对比，显示效果一致</p>
+<p>前面几个小点都是对于PhotoShop中常用的处理的图片的方法的原理进行了分析，那么接下来自然就要考虑一下怎么用OpenGl去实现这样的效果呢？</p>
+<p>那么第一种方法自然就是模拟出这些处理方法，用glsl语言来实现这些方法，这么做当然是可以的，但是目前这些处理方法大多都是用C来实现的，glsl语言尚未有可以用的轮子，那么自然我们就要去造这个轮子，那我们不禁要思考一下这么做的成本和回报到底是否让我们满意，假设影像的大小为1024x768，那么对于其中的某一项的处理则总共要786432次运算，而且这些运动大多比较复杂，所以这么做其实相对来说并没有那么讨喜，成本相对较大，并且结果并没有达到很令人满意的效果，所以要思考下怎么用别的方式去实现。</p>
+<p>看了这么多的处理原理，我相信大家都应该了解每一个像素的点都将原来的RGB值替换了新的RGB值，所以我们可以建一张表，把所有色彩值经过处理之后的结果记录起来，然后把每个像素的色彩值拿去查表，得到处理之后的色彩值，那么我们只要做786432查表动作，这样确实会比上面的运算快上许多。但是问题还是伴随会出现，这个表怎么去获取又是一个问题，毕竟美工不可能一点一点给我们计算这个表，我们自己去算也是不现实的，所以有没有更加高效的方式呢？</p>
+<p>答案自然是肯定的，而这一解决方案就是Color Lookup Table(ColorLUT)技术</p>
+<h4 id="（3-Color-Lookup-Table-ColorLUT-技术"><a href="#（3-Color-Lookup-Table-ColorLUT-技术" class="headerlink" title="（3).Color Lookup Table(ColorLUT)技术"></a>（3).Color Lookup Table(ColorLUT)技术</h4><p>
+
+</p><p>上文提到查表的方法时候提到了怎么去获取这个表是一个问题，那其实ColorLUT就是为了解决这个问题的，对于一个处理RGB值的表，我们不需要将所有都记录下来，而是只记下部分的色彩，其他不在表内的色彩则用内插法取得处理后的结果。</p>
+<p>因为每个像素的色彩都是由RGB三种颜色组成，因此我们会以三维阵列的方式来储存这张表。如果把三维阵列中的每一个像素想像成三度空间中的一个点，而R、G、B分别代表X、Y、Z的座标，则阵列中的所有像素可以构成一个正立方体。以RGB 24bits为例，由于R、G、B的值为0~255，因此正方体的长宽高为255x255x255。当我们要查某个像素经过处理之后的色彩，只要将该像素处理前的RGB值当做X、Y、Z座标，位于那个位置上的像素则为处理后的颜色。</p>
+<p>如图所示</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-b43f295221c54338.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 三维空间图"><br></div>
+
+<p>这个图是以4x4x4的正方体X、Y、Z三个方向都只有在0、85、170、255这些位置有资料，如果座标不在这些点上，则必须跟周围的点做内差来得到色彩的近似值。</p>
+<p>而这些已有的颜色的值当我们通过PhotoShop进行各种操作时，则会将这些值替换成新的值，而这些新的值则就是上面所述的数组里面的关键值之一了。</p>
+<p>我们继续看上面的图毕竟是三维图，我们无法进行处理，所以把z轴的面去出来拼接在一起则会成为一个8x8的图片，这个图片是包含4个4x4的正方形，配上颜色如下图所示：</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-63675f5f4ac46d52.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 颜色二维图"><br></div>
+
+<p>以右上角正方形为例，这代表Z=0的平面，而X轴由左至右，Y轴为由上至下，左上角第一个像素代表位于(0,0,0)的点，第二个像素代表位于(85,0,0)的点，以此类推，由于这些像素代表的是未处理前的颜色，因此第一个像素的RGB值为0,0,0，第二的像素的RGB值为85,0,0</p>
+<p>接着我们将这张图经过Photoshop降低色彩饱和度，结果如下：</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-c3be215611b5ed1d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 颜色二维图"><br></div>
+
+<p>这张图内的每个像素，代表每个座标点处理之后的色彩。也就是说，如果我们想知道一个RGB值为85,0,0的像素降低饱和度之后的颜色，可从正立方体中位于(85,0,0)的点得知，也就是这张图中左上角第二个像素的颜色，RGB值为68,16,16。</p>
+<p>所以我们可以将这一技术运用到我们的滤镜开发中，从而避免上面的尴尬问题，接下来就是实现上面的ColorLUT技术</p>
+<p>#####ColorLUT实现</p>
+<p>ColorLUT的实现无非就是用GLSL的语言来实现识别上面的颜色二维图方法，这个我就不做过多的介绍了，这个在GPUImage里面已经有实现，我就不重复造轮子了，这里直接拿过来使用，代码如下，自己理解</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">varying highp vec2 textureCoordinate;</div><div class="line">uniform sampler2D inputImageTexture;</div><div class="line">uniform sampler2D inputImageTexture2;</div><div class="line"></div><div class="line">uniform lowp float intensity;</div><div class="line"></div><div class="line">void main() &#123;</div><div class="line"></div><div class="line">    highp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);</div><div class="line">    highp float blueColor = textureColor.b * 63.0;</div><div class="line"></div><div class="line">    highp vec2 quad1;</div><div class="line">    quad1.y = floor(floor(blueColor) / 8.0);</div><div class="line">    quad1.x = floor(blueColor) - (quad1.y * 8.0);</div><div class="line"></div><div class="line">    highp vec2 quad2;</div><div class="line">    quad2.y = floor(ceil(blueColor) / 8.0);</div><div class="line">    quad2.x = ceil(blueColor) - (quad2.y * 8.0);</div><div class="line"></div><div class="line">    highp vec2 texPos1;</div><div class="line">    texPos1.x = (quad1.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * textureColor.r);</div><div class="line">    texPos1.y = (quad1.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * textureColor.g);</div><div class="line"></div><div class="line">    highp vec2 texPos2;</div><div class="line">    texPos2.x = (quad2.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * textureColor.r);</div><div class="line">    texPos2.y = (quad2.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * textureColor.g);</div><div class="line"></div><div class="line">    lowp vec4 newColor1 = texture2D(inputImageTexture2, texPos1);</div><div class="line">    lowp vec4 newColor2 = texture2D(inputImageTexture2, texPos2);</div><div class="line"></div><div class="line">    lowp vec4 newColor = mix(newColor1, newColor2, fract(blueColor));</div><div class="line">    gl_FragColor = vec4(newColor.rgb, textureColor.w);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面这一张则是初始的颜色二维图</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7bc7f4863569e4a2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 颜色初始二维图"><br></div>
+
+<p>接下来就是来验证下ColorLUT的实际情况了</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-d591b30507963129.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 验证图"><br></div>
+
+
+<p>用上面的图来进行PS的调整</p>
+<p>调整如下：</p>
+<p>曲线调整： 红色通道调整 –&gt; 曝光度调整</p>
+<p>最后显示效果如下</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-2b022e4f94306ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图6 PS处理图"><br></div>
+
+<p>接下来对上面的初始颜色二维图进行同样的调整，如下</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-031754c79f0d0031.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图7 颜色二维图处理"><br></div>
+
+<p>接下来用上面的GLSL语言来验证,运行效果如下</p>
+ <div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-12835887260726e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图8 ColorLUT验证"><br></div>
+
+<p>通过运行图与前面的PS效果图对比，我们发现基本一致，所以通过ColorLUT技术解决了滤镜中关于滤镜生产这一大问题，所以只需要视觉同学对图片进行美化后用同样的流程处理一遍颜色二维图，就可以快速的生产大量优质的滤镜了</p>
+<h3 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h3><p>
+
+</p><p>这一大幅篇章主要是介绍了如何使用图层混合技术与ColorLUT技术解决了生产力的大问题，这样确实普通的滤镜开发都可以通过这种方式来实现，但是一些特殊的滤镜，比如马赛克滤镜，油画滤镜，粉笔画滤镜，这些效果的实现用ColorLUT技术不能实现，所以我们需要使用其他的方法，那么对于这些特殊滤镜的实现，我们在后面再进行说明，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/滤镜开发/" rel="tag"># 滤镜开发</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/14/移动端滤镜开发（四）滤镜初尝试/" rel="next" title="移动端滤镜开发（四）滤镜初尝试">
+                <i class="fa fa-chevron-left"></i> 移动端滤镜开发（四）滤镜初尝试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一-图层混合"><span class="nav-number">1.</span> <span class="nav-text">一.图层混合</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-图片混合模式介绍"><span class="nav-number">1.1.</span> <span class="nav-text">1.图片混合模式介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-OpenGl实现混合模式"><span class="nav-number">1.2.</span> <span class="nav-text">2.OpenGl实现混合模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-正常模式"><span class="nav-number">1.3.</span> <span class="nav-text">(1).正常模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-柔光模式"><span class="nav-number">1.4.</span> <span class="nav-text">(2).柔光模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-线性加深模式"><span class="nav-number">1.5.</span> <span class="nav-text">(3).线性加深模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二-图片处理"><span class="nav-number">2.</span> <span class="nav-text">二.图片处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#（1-曲线调整"><span class="nav-number">2.1.</span> <span class="nav-text">（1).曲线调整</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-曲线调整原理"><span class="nav-number">2.1.1.</span> <span class="nav-text">1.曲线调整原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-曲线生产"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.曲线生产</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-曲线调整模拟"><span class="nav-number">2.1.3.</span> <span class="nav-text">3.曲线调整模拟</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（2-色阶调整"><span class="nav-number">2.2.</span> <span class="nav-text">（2).色阶调整</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-色阶调整的原理"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.色阶调整的原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-色阶调整模拟"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.色阶调整模拟</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（3-Color-Lookup-Table-ColorLUT-技术"><span class="nav-number">2.3.</span> <span class="nav-text">（3).Color Lookup Table(ColorLUT)技术</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
