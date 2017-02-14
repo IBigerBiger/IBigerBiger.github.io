@@ -1,0 +1,937 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="滤镜开发," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前面几个章节分别介绍了关于OpenGL实现图片显示，相机预览，视频播放这些功能，使用滤镜的载体这里我们算是造好了，接下来就是展开我的滤镜开发之旅了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果，What? 还有这等好事，那么接下来下这个自带的媒体效果框架。
+一.媒体效果框架实现滤镜媒体效果框架介绍
+
+这个媒体效果框架主要包含Effect，EffectFactory与EffectConte">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端滤镜开发（四）滤镜初尝试">
+<meta property="og:url" content="http://yoursite.com/2017/02/14/移动端滤镜开发（四）滤镜初尝试/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="前面几个章节分别介绍了关于OpenGL实现图片显示，相机预览，视频播放这些功能，使用滤镜的载体这里我们算是造好了，接下来就是展开我的滤镜开发之旅了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果，What? 还有这等好事，那么接下来下这个自带的媒体效果框架。
+一.媒体效果框架实现滤镜媒体效果框架介绍
+
+这个媒体效果框架主要包含Effect，EffectFactory与EffectConte">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-8fef66ac48253f6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-578fc7f967ed79a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-4fd94728b4017fc1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-3ec9ee3478de5395.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-5c0964ade177525b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-02-14T11:28:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端滤镜开发（四）滤镜初尝试">
+<meta name="twitter:description" content="前面几个章节分别介绍了关于OpenGL实现图片显示，相机预览，视频播放这些功能，使用滤镜的载体这里我们算是造好了，接下来就是展开我的滤镜开发之旅了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果，What? 还有这等好事，那么接下来下这个自带的媒体效果框架。
+一.媒体效果框架实现滤镜媒体效果框架介绍
+
+这个媒体效果框架主要包含Effect，EffectFactory与EffectConte">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-8fef66ac48253f6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/14/移动端滤镜开发（四）滤镜初尝试/"/>
+
+
+
+
+
+  <title> 移动端滤镜开发（四）滤镜初尝试 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/14/移动端滤镜开发（四）滤镜初尝试/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移动端滤镜开发（四）滤镜初尝试
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-14T19:21:53+08:00">
+                2017-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/14/移动端滤镜开发（四）滤镜初尝试/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/14/移动端滤镜开发（四）滤镜初尝试/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面几个章节分别介绍了关于OpenGL实现图片显示，相机预览，视频播放这些功能，使用滤镜的载体这里我们算是造好了，接下来就是展开我的滤镜开发之旅了，然而OpenGL自带的媒体效果框架就可以实现滤镜的效果，What? 还有这等好事，那么接下来下这个自带的媒体效果框架。</p>
+<h4 id="一-媒体效果框架实现滤镜"><a href="#一-媒体效果框架实现滤镜" class="headerlink" title="一.媒体效果框架实现滤镜"></a>一.媒体效果框架实现滤镜</h4><h5 id="媒体效果框架介绍"><a href="#媒体效果框架介绍" class="headerlink" title="媒体效果框架介绍"></a>媒体效果框架介绍</h5><p>
+
+</p><p>这个媒体效果框架主要包含Effect，EffectFactory与EffectContex类，Effect类实现其实也是通过Shader的方式来完成的，这些Shader程序内置在Android中，我们只需要按照一定的方式来调用就行了</p>
+<p>当然当我们设置了不同的效果时候有些影响可能并不适用于所有平台，因此造成一定的影响之前，应用程序应该通过isEffectSupported(String)来判断是否支持该平台</p>
+<a id="more"></a>
+<p>接下来我们看下支持的效果</p>
+<ul>
+<li>EFFECT_AUTOFIX 基于直方图均衡尝试自动修正图像 </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_AUTOFIX);</div><div class="line">//调整的区间为0到1，0表示不调整，1为最大值</div><div class="line">mEffect.setParameter(&quot;scale&quot;, 0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_BACKDROPPER 替换输入帧为从所选视频的视频帧</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_BACKDROPPER);</div><div class="line">//选择Vedio的source</div><div class="line">mEffect.setParameter(&quot;source&quot;, Uri.toString);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_BITMAPOVERLAY 在源图像基础上覆盖新的图像</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_BITMAPOVERLAY);</div><div class="line">//设置覆盖的bitmap</div><div class="line">mEffect.setParameter(&quot;bitmap&quot;, bitmap);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_BLACKWHITE 调整最小和最大色彩像素强度的范围</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_BLACKWHITE);</div><div class="line">//最大色彩像素范围，调整的区间为0到1</div><div class="line">mEffect.setParameter(&quot;white&quot;, 0.5f);</div><div class="line">//最小色彩像素范围，调整的区间为0到1</div><div class="line">mEffect.setParameter(&quot;black&quot;, 0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_BRIGHTNESS 调整图片亮度</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_BRIGHTNESS);</div><div class="line">//1.0表示没有变化,增大表示增加亮度。</div><div class="line">mEffect.setParameter(&quot;brightness&quot;, 2f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_CONTRAST 调整图像的对比度</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_CONTRAST);</div><div class="line">//1.0表示没有变化,增大表示增加对比度。</div><div class="line">mEffect.setParameter(&quot;contrast&quot;, 2f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_CROP 从图片中裁剪一块矩形区域，如果裁剪区域落在图像边界之外，其结果是不确定的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_CROP);</div><div class="line">//起点位置区间为0到宽/高度</div><div class="line">mEffect.setParameter(&quot;xorigin&quot;, 0);</div><div class="line">mEffect.setParameter(&quot;yorigin&quot;, 0);</div><div class="line">//宽高，区间为1之间和图像减去xorigin/yorigin的距离。</div><div class="line">mEffect.setParameter(&quot;width&quot;, mWidth / 2);</div><div class="line">mEffect.setParameter(&quot;height&quot;, mHeight / 2);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_CROSSPROCESS 限制图片蓝色通道，增强红色和绿色通道</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_CROSSPROCESS);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_DOCUMENTARY 实现图片黑白纪实风格的效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_DOCUMENTARY);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_DUOTONE 用两个色调表示照片</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_DUOTONE);</div><div class="line">//设置第一颜色</div><div class="line">mEffect.setParameter(&quot;first_color&quot;, Color.YELLOW);</div><div class="line">//设置第二颜色</div><div class="line">mEffect.setParameter(&quot;second_color&quot;, Color.DKGRAY);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_FILLLIGHT 为图片填充背光</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_FILLLIGHT);</div><div class="line">//设置背光强度，0到1之间</div><div class="line">mEffect.setParameter(&quot;strength&quot;, 0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_FISHEYE 鱼眼镜头扭曲效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_FISHEYE);</div><div class="line">//设置扭曲程度，0到1之间</div><div class="line">mEffect.setParameter(&quot;scale&quot;, 0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_FLIP 垂直或水平翻转图像</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_FLIP);</div><div class="line">//设置垂直/水平方向是否反转</div><div class="line">mEffect.setParameter(&quot;vertical&quot;, true);</div><div class="line">mEffect.setParameter(&quot;horizontal&quot;, true);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_GRAIN 为图片添加电影颗粒效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_GRAIN);</div><div class="line">//设置颗粒强度，区别为0到1</div><div class="line">mEffect.setParameter(&quot;strength&quot;,0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_GRAYSCALE 图片转为灰度图</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_GRAYSCALE);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_LOMOISH 图片添加LOMO相机的风格效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_LOMOISH);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_NEGATIVE 反转图像的颜色,也就是底片效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_NEGATIVE);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_POSTERIZE 图片添加多色调分色效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_POSTERIZE);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_REDEYE 删除图片指定区域的红眼</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_REDEYE);</div><div class="line">//float类型数组，其中（F [2 * I]中，f [2 * I + 1]），用于指定第i眼睛中心的数组，区间为0到1之间</div><div class="line">mEffect.setParameter(&quot;centers&quot;,new float[]&#123;0.5f,0.6f&#125;);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_ROTATE 旋转图像</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_REDEYE);</div><div class="line">//旋转角度</div><div class="line">mEffect.setParameter(&quot;angle&quot;,180);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_SATURATE 调整图像色彩饱和度</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_REDEYE);</div><div class="line">//色彩饱和度的比例，区间为-1到1，0表示没有变化，而-1表示完全饱和度，即灰度</div><div class="line">mEffect.setParameter(&quot;scale&quot;,0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_SEPIA 图像转换为深褐色调</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_SEPIA);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_SHARPEN 使图像变的锐利</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_SHARPEN);</div><div class="line">//锐利程度，区间为0到1，0表示没有变化</div><div class="line">mEffect.setParameter(&quot;scale&quot;,0.5f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_STRAIGHTEN 根据指定的角度旋转图像，并且裁剪图像，是可见区域没有非图片覆盖部分</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_STRAIGHTEN);</div><div class="line">//旋转角度，区间为-45f到45f</div><div class="line">mEffect.setParameter(&quot;scale&quot;,45f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_TEMPERATURE 调整图像的色温</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_TEMPERATURE);</div><div class="line">//色温值，区间为0到1，0为冷色温，1为暖色温，0.5表示无变化</div><div class="line">mEffect.setParameter(&quot;scale&quot;,1f);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_TINT 通过设定的特殊颜色为图片调整</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_TINT);</div><div class="line">//特殊颜色</div><div class="line">mEffect.setParameter(&quot;tint&quot;,Color.RED);</div></pre></td></tr></table></figure>
+<ul>
+<li>EFFECT_VIGNETTE 添加消失外图像边缘效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Effect mEffect = effectContext.getFactory().createEffect(EffectFactory.EFFECT_TINT);</div><div class="line">//边缘消失程度，区间为0到1，0表示无变化</div><div class="line">mEffect.setParameter(&quot;&quot;scale&quot;,1f);</div></pre></td></tr></table></figure>
+<p>到这里所以的框架提供的效果就介绍完毕了，接下来我们把它应用看一下效果</p>
+<h5 id="媒体效果框架应用"><a href="#媒体效果框架应用" class="headerlink" title="媒体效果框架应用"></a>媒体效果框架应用</h5><p>
+
+</p><p>这里就以之前的显示图片的OpenGl程序为例子，简单改写一下就可以将效果应用上去了</p>
+<p>其实只用在onDrawFrame中加入相关代码就可以了</p>
+<p>如下,以设置图片亮度为例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawFrame(GL10 gl) &#123;</div><div class="line">  ...</div><div class="line">if(mEffectContext==null) &#123;</div><div class="line">    mEffectContext = EffectContext.createWithCurrentGlContext();</div><div class="line">&#125;</div><div class="line">if(mEffect!=null)&#123;</div><div class="line">    mEffect.release();</div><div class="line">&#125;</div><div class="line"></div><div class="line">EffectFactory factory = mEffectContext.getFactory();</div><div class="line">mEffect = factory.createEffect(EffectFactory.EFFECT_BRIGHTNESS);</div><div class="line">mEffect.setParameter(&quot;brightness&quot;, 2f);</div><div class="line">mEffect.apply(mTexNames[0], mWidth, mHeight, mTexNames[1]);</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很简单也没有什么好解释的</p>
+<p>运行呢？</p>
+<p>如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-8fef66ac48253f6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 亮度效果"></p>
+<p>接下来我们再尝试下另外几种</p>
+<p>鱼眼镜头扭曲效果</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-578fc7f967ed79a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 鱼眼镜头扭曲效果"></p>
+<p>LOMO效果</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-4fd94728b4017fc1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 LOMO效果"></p>
+<p>更多的效果就不做演示了，参考上面的代码自己去尝试就好了</p>
+<p><strong>上面对OpenGL自带媒体模块实现滤镜效果进行了讲解，但是由于效果相对比较单一并且比较简单，并不能够满足于我们一些业务上面的需求，所以接下来就开启我们真正的滤镜实现之旅了，上面所提到Effect类实现其实也是通过Shader的方式来完成的，这些Shader程序内置在Android中，所以后面我们自己自己编写的滤镜其实也是用同样的方法。</strong></p>
+<h4 id="二-简单滤镜开发"><a href="#二-简单滤镜开发" class="headerlink" title="二.简单滤镜开发"></a>二.简单滤镜开发</h4><h5 id="（1）-图像基本属性"><a href="#（1）-图像基本属性" class="headerlink" title="（1）.图像基本属性"></a>（1）.图像基本属性</h5><p>
+
+</p><p>工欲善其事必先利其器,所以对于数字图像的基本属性进行了解是很有必要的</p>
+<ul>
+<li><p>图像的像素数目（Pixel dimensions），是指在位图图像的宽度和高度方向上含有的像素数目。一幅图像在显示器上的显示效果由像素数目和显示器的设定共同决定</p>
+</li>
+<li><p>图像的分辨率（Image resolution） 图像的分辨率是指单位打印长度上的图像像素的数目，表示图像数字信息的数量或密度，它决定了图像的清晰程度。在同样大小的面积上，图像的分辨率越高，则组成图像的像素点越多，像素点越小，图像的清晰度越高。</p>
+</li>
+<li><p>图像的大小（File Size） 图像文件的大小首先决定了图像文件所需的磁盘存储空间，它一般以字节（byte）来度量，其计算公式为： 字节数=（位图高×位图宽×图像深度）/8 从计算公式可以看出来，图像文件的大小与像素数目直接相关。</p>
+</li>
+<li><p>图像颜色（Image Color） 图像颜色是指一幅图像中所具有的最多的颜色种类，通过图像处理软件，可以很容易地改变三原色的比例，混合成任意一种颜色。</p>
+</li>
+<li><p>图像深度（Image Depth） 图像深度也称图像的位深，是指描述图像中每个像素的数据所占的位数。图像的每一个像素对应的数据通常可以是1位（bit）或多位字节，用于存放该像素的颜色、亮度等信息，数据位数越多，对应的图像颜色种类越多。</p>
+</li>
+<li><p>色调（Tone） 色调就是各种图像色8彩模式下图像的原色（例如，RGB模式的图像的原以为R、G、B3种）的明暗度，色调的调整也就是对明暗度的调整。色调的范围为0—255，总共包括256种色调。</p>
+</li>
+<li><p>饱和度（Saturation） 饱和度是指图像颜色的深度，它表明了色彩的纯度，决定于物体反射或投射的特性。饱和度用与色调成一定比便的灰度数量来表示，取值范围通常为0%（饱和度最低）–100%（饱和度最高）。调整图像的饱和度也就是调整图像的色度，当将一幅图像的饱和度降低到0%时，就会变成为一个灰色的图偈，增加饱和度应付增加其色调。</p>
+</li>
+<li><p>色相（Hue） 色相就是色彩颜色，对色相的调整也就是在多种颜色之间的变化。例如，光由红、橙、黄、绿、青、蓝、紫7色组成，每一种颜色即代表一种色相。</p>
+</li>
+<li><p>亮度（Brightness） 亮度是指图像色彩的明暗程度，是人眼对物本明暗强度的感觉，取值为0%–100%。</p>
+</li>
+<li><p>对比度（Contrast） 对比度是指图像中不同颜色或明暗度的对比。对比度越大，两种颜色之间的差别也就越大，反之，就越相近。</p>
+</li>
+<li><p>图像的色彩通道 图像三原色按不同的比例进行混合可以产生许多种颜色，保存每一种原色信息及对其可进行调整处理所提供的方式或途径就是相应颜色的色彩通道。</p>
+</li>
+</ul>
+<h5 id="（2）-简单滤镜的实现"><a href="#（2）-简单滤镜的实现" class="headerlink" title="（2）.简单滤镜的实现"></a>（2）.简单滤镜的实现</h5><p>
+
+</p><p>这里其实就是实现几种比较简单的滤镜效果，让大家对于滤镜相关有一个从浅到深的了解过程，</p>
+<p>######1.Brightness滤镜</p>
+<p>
+
+</p><p>图片亮度指图像色彩的明暗程度，所以图片亮度是和RGB三色的值是有关联的<br>除了亮度还有色差I，信号值Q也是与RGB色有关联，下面是他们的计算公式</p>
+<p>| Y |    |0.31  0.59  0.11   |    | R |<br>| I  | =  |0.60 -0.28  -0.32 | * | G |<br>|Q |     |0.21  -0.52 -0.31 |    | B |</p>
+<p>即 </p>
+<ul>
+<li>Y = 0.31R + 0.59G+0.11B     </li>
+<li>I  = 0.60R - 0.28G - 0.32B     </li>
+<li>Q = 0.21R - 0.52B - 0.31B</li>
+</ul>
+<p>所以只要我们对图片中每一个点的RGB值进行等比增大或者降低就可以达到对图片亮度进行修改的目的</p>
+<p>亮度的取值在0到1之间，所以RGB三色的取值在也在0到1之间，所以这个增大和降低的取值在-1到1之间，当取-1时候图片亮度为0，此时图片为黑色，取1时候图片亮度为100%，此时图片为白色，取0时候则图片没有任何变化</p>
+<p>我们还是以之前的OpenGl显示图片为例子，这里我们需要做的改动只有FRAGMENT_SHADER，因为我们只能在片段着色器中才可以取到每个一点的颜色值，通过对这个颜色值进行修改从而达到我们需要的效果</p>
+<p>这里我就直接贴上来了，应该比较简单，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">               &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; void main()\n&quot; +</div><div class="line">               &quot; &#123;\n&quot; +</div><div class="line">               &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">               &quot;     \n&quot; +</div><div class="line">               &quot;     gl_FragColor = vec4((textureColor.rgb + vec3(0.5f)), textureColor.w);\n&quot; +</div><div class="line">               &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
+<p>可以看到这里我们是将取出来的颜色RGB值都增加了0.5f,那么接下来我们看下运行的结果</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-3ec9ee3478de5395.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 亮度增量为0.5f效果"></p>
+<p>接下来将亮度降低0.5f继续看下效果</p>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-5c0964ade177525b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 亮度增量为-0.5f效果"></p>
+<p>到这里我们实现的第一个滤镜就完成了，虽然很简单，但是还是很有意义的嘛，哈哈</p>
+<p>######2.灰度效果滤镜</p>
+<p>
+
+</p><p>RGB转换为单色的[0 ~256]之间的灰度，最常用的转换公式如下：</p>
+<p>Gray = 0.299 <em> red + 0.587 </em> green + 0.114 * blue;</p>
+<p>所以我们修改下片段着色器程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">               &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">               &quot; \n&quot; +</div><div class="line">               &quot; void main()\n&quot; +</div><div class="line">               &quot; &#123;\n&quot; +</div><div class="line">               &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">               &quot;     \n&quot; +</div><div class="line">               &quot;     float gray = textureColor.r * 0.299 + textureColor.g * 0.587 + textureColor.b * 0.114;\n&quot; +</div><div class="line">               &quot;     gl_FragColor = vec4(gray, gray, gray, textureColor.w);\n&quot; +</div><div class="line">               &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
+<p>其实就是将上面的公式通过着色器语言表示出来</p>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-b21e68703fb2ee50.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 灰度图片"></p>
+<p>######3.底片效果滤镜</p>
+<p>
+
+</p><p>底片效果其实是对图像的逆反处理</p>
+<p>将对应的(R, G, B)像素替换成(255 - R, 255 - G, 255 - B)</p>
+<p>所以我们修改下片段着色器程序</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">FRAGMENT_SHADER = &quot;precision mediump float;&quot; +</div><div class="line">        &quot;varying highp vec2 v_texCoord;\n&quot; +</div><div class="line">        &quot; \n&quot; +</div><div class="line">        &quot; uniform sampler2D s_texture;\n&quot; +</div><div class="line">        &quot; \n&quot; +</div><div class="line">        &quot; void main()\n&quot; +</div><div class="line">        &quot; &#123;\n&quot; +</div><div class="line">        &quot;     lowp vec4 textureColor = texture2D(s_texture, v_texCoord);\n&quot; +</div><div class="line">        &quot;     \n&quot; +</div><div class="line">        &quot;     gl_FragColor = vec4((vec3(1.0f) - textureColor.rgb), textureColor.w);\n&quot; +</div><div class="line">        &quot; &#125;&quot;;</div></pre></td></tr></table></figure>
+<p>运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-6013aaa58ff808e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图4 底片效果"></p>
+<p>######4.浮雕效果滤镜</p>
+<p>
+
+</p><p>前面几个滤镜效果相对较为简单，这个浮雕效果呢，相对稍微复杂一点，但是其实也是对RGB的值去进行修改，算法步骤也相对多一些</p>
+<p>浮雕图象效果是指图像的前景前向凸出背景。常见于一些纪念碑的雕刻上，要实现浮雕效果步骤如下：我们把图象的一个象素和左上方的象素进行求差运算，并加上一个灰度。这个灰度就是表示背景颜色。这里我们设置这个插值为128 (图象RGB的值是0-255)。同时,我们还应该把这两个颜色的差值转换为亮度信息.否则浮雕图像会出现彩色。</p>
+<p>取左上方像素的方法则需要根据图片的宽高来进行计算，我这里为了方便就直接设置为一个定值</p>
+<p>接下来看下代码的实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">#extension GL_OES_EGL_image_external : require</div><div class="line"></div><div class="line">varying highp vec2 v_texCoord;</div><div class="line">uniform sampler2D s_texture;</div><div class="line">const vec2 texSize = vec2(1920,1080);</div><div class="line"></div><div class="line">void main() &#123;</div><div class="line"></div><div class="line">    vec2 tex = v_texCoord;</div><div class="line">    vec2 upLeftUV = vec2(tex.x - 1.0/texSize.x, tex.y - 1.0/texSize.y);</div><div class="line">    vec4 curColor = texture2D(s_texture,v_texCoord);</div><div class="line">    vec4 upLeftColor = texture2D(s_texture,upLeftUV);</div><div class="line">    vec4 delColor = curColor - upLeftColor;</div><div class="line">    float h = 0.3*delColor.x + 0.59*delColor.y + 0.11*delColor.z;</div><div class="line">    vec4 bkColor = vec4(0.5, 0.5, 0.5, 1.0);</div><div class="line">     gl_FragColor = vec4(h,h,h,0.0) +bkColor;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里和前面的片段着色器程序一样，只是为了书写方便，所以写在raw文件夹下</p>
+<p>读取raw下面文件方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public String readShaderFromRawResource(final int resourceId)&#123;</div><div class="line">       final InputStream inputStream = MagicParams.context.getResources().openRawResource(</div><div class="line">               resourceId);</div><div class="line">       final InputStreamReader inputStreamReader = new InputStreamReader(</div><div class="line">               inputStream);</div><div class="line">       final BufferedReader bufferedReader = new BufferedReader(</div><div class="line">               inputStreamReader);</div><div class="line"></div><div class="line">       String nextLine;</div><div class="line">       final StringBuilder body = new StringBuilder();</div><div class="line"></div><div class="line">       try&#123;</div><div class="line">           while ((nextLine = bufferedReader.readLine()) != null)&#123;</div><div class="line">               body.append(nextLine);</div><div class="line">               body.append(&apos;\n&apos;);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">       catch (IOException e)&#123;</div><div class="line">           return null;</div><div class="line">       &#125;</div><div class="line">       return body.toString();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>接下来运行如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-1aa32cadcaa7a714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图5 浮雕效果图"></p>
+<p>这个效果看起来就还不错，算法其实也是很简单的</p>
+<p>那么到这里就不对其他的滤镜效果进行概述了，后面的文章还会对复杂的效果进行讲解</p>
+<p>####写在后面的话</p>
+<p>
+
+</p><p>OpenGL自带的媒体框架其实效果还是可以的，但是大多还是比较简单的图片渲染，在实际开发中，其实还是不能够满足我们的业务需求的，所以后面我们会自己去写shader来实现不同的滤镜效果，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/滤镜开发/" rel="tag"># 滤镜开发</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/13/移动端滤镜开发（三）OpenGL实现预览播放效果/" rel="next" title="移动端滤镜开发（三）OpenGL实现预览播放效果">
+                <i class="fa fa-chevron-left"></i> 移动端滤镜开发（三）OpenGL实现预览播放效果
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-媒体效果框架实现滤镜"><span class="nav-number">1.</span> <span class="nav-text">一.媒体效果框架实现滤镜</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#媒体效果框架介绍"><span class="nav-number">1.1.</span> <span class="nav-text">媒体效果框架介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#媒体效果框架应用"><span class="nav-number">1.2.</span> <span class="nav-text">媒体效果框架应用</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-简单滤镜开发"><span class="nav-number">2.</span> <span class="nav-text">二.简单滤镜开发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#（1）-图像基本属性"><span class="nav-number">2.1.</span> <span class="nav-text">（1）.图像基本属性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#（2）-简单滤镜的实现"><span class="nav-number">2.2.</span> <span class="nav-text">（2）.简单滤镜的实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
