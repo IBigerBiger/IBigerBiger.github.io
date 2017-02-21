@@ -89,14 +89,14 @@
 
 <meta name="description" content="上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频">
 <meta property="og:type" content="article">
-<meta property="og:title" content="移动端直播开发（一）直播服务器搭建">
+<meta property="og:title" content="移动端直播开发（二）数据源采集">
 <meta property="og:url" content="http://yoursite.com/2017/02/21/移动端直播开发（二）数据源采集/index.html">
 <meta property="og:site_name" content="IBigerBiger的成长之路">
 <meta property="og:description" content="上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1fc8da7acddf4b7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-21T12:13:36.000Z">
+<meta property="og:updated_time" content="2017-02-21T12:15:07.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="移动端直播开发（一）直播服务器搭建">
+<meta name="twitter:title" content="移动端直播开发（二）数据源采集">
 <meta name="twitter:description" content="上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频">
 <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-1fc8da7acddf4b7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
@@ -132,7 +132,7 @@
 
 
 
-  <title> 移动端直播开发（一）直播服务器搭建 | IBigerBiger的成长之路 </title>
+  <title> 移动端直播开发（二）数据源采集 | IBigerBiger的成长之路 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -283,7 +283,7 @@
             
             
               
-                移动端直播开发（一）直播服务器搭建
+                移动端直播开发（二）数据源采集
               
             
           </h1>
@@ -345,8 +345,7 @@
 
       
         <p>上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频数据采集为主</p>
-<p>####一.Camera视频数据源采集</p>
-<p>对于直播来说，数据采集的同时我们要做到，视频数据同时显示在手机屏幕上，至于怎么将视频数据显示在手机屏幕上面，这个之前的博文有涉及到，大家可以看<a href="http://ibigerbiger.me/2017/02/13/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%BB%A4%E9%95%9C%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89OpenGL%E5%AE%9E%E7%8E%B0%E9%A2%84%E8%A7%88%E6%92%AD%E6%94%BE%E6%95%88%E6%9E%9C/" target="_blank" rel="external">移动端滤镜开发（三）OpenGL实现预览播放效果</a>，当然这篇文章也对于Camera相关API进行了讲解。</p>
+<h4 id="一-Camera视频数据源采集"><a href="#一-Camera视频数据源采集" class="headerlink" title="一.Camera视频数据源采集"></a>一.Camera视频数据源采集</h4><p>对于直播来说，数据采集的同时我们要做到，视频数据同时显示在手机屏幕上，至于怎么将视频数据显示在手机屏幕上面，这个之前的博文有涉及到，大家可以看<a href="http://ibigerbiger.me/2017/02/13/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%BB%A4%E9%95%9C%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89OpenGL%E5%AE%9E%E7%8E%B0%E9%A2%84%E8%A7%88%E6%92%AD%E6%94%BE%E6%95%88%E6%9E%9C/" target="_blank" rel="external">移动端滤镜开发（三）OpenGL实现预览播放效果</a>，当然这篇文章也对于Camera相关API进行了讲解。</p>
 <p>接下来就是对于数据的采集了</p>
 <p>Android中的摄像头Camera提供了两个方式回调接口来获取每一帧数据：</p>
 <p>第一种方式：setPreviewCallback方法，设置回调接口：PreviewCallback，在回调方法：onPreviewFrame(byte[] data, Camera camera) 中处理每一帧数据</p>
@@ -360,8 +359,7 @@
 <p>这里也贴上上面说的视频数据转换的方法，供大家参考一下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">YuvImage = image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);</div><div class="line">ByteArrayOutputStream stream = new ByteArrayOutputStream();</div><div class="line">image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, stream);</div><div class="line">Bitmap bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());</div></pre></td></tr></table></figure>
 <p>这样其实就是获取到了当前这一帧的bitmap数据</p>
-<p>####二.音频数据源采集</p>
-<p>对于音频数据的采集，Android SDK 提供了两套音频采集的API，分别是：MediaRecorder 和 AudioRecord，前者是一个更加上层一点的API，它可以直接把手机麦克风录入的音频数据进行编码压缩（如AMR、MP3等）并存成文件，而后者则更接近底层，能够更加自由灵活地控制，可以得到原始的一帧帧PCM音频数据。</p>
+<h4 id="二-音频数据源采集"><a href="#二-音频数据源采集" class="headerlink" title="二.音频数据源采集"></a>二.音频数据源采集</h4><p>对于音频数据的采集，Android SDK 提供了两套音频采集的API，分别是：MediaRecorder 和 AudioRecord，前者是一个更加上层一点的API，它可以直接把手机麦克风录入的音频数据进行编码压缩（如AMR、MP3等）并存成文件，而后者则更接近底层，能够更加自由灵活地控制，可以得到原始的一帧帧PCM音频数据。</p>
 <p>对于我们需要实时的数据上传来说，肯定后者才是我们选择的方式</p>
 <p>接下来看一下AudioRecord采集音频资源的方式</p>
 <p>AudioRecord 的工作流程如下</p>
@@ -384,8 +382,7 @@
 </ul>
 <p>这些配置一般情况下都用上面代码里面的不变就好了，pcmBuffer就是我们采集到的音频数据</p>
 <p>音视频数据都采集完了，接下来就是要上传给我们的直播服务器了，但是在上传前我们需要做的工作就是进行编码</p>
-<p>####三.音视频编码</p>
-<h5 id="1-视频编码"><a href="#1-视频编码" class="headerlink" title="(1).视频编码"></a>(1).视频编码</h5><p>Android中视频编码有两种方式，主要是两个核心的类，一个是MediaCodec和MediaRecorder，这两个类有什么区别呢？其实很好理解，他们都可以对视频进行编码，但是MediaRecorder这个类相对于MediaCodec简单，因为他封装的很好，直接就是几个接口来完成视频录制，比如视频的编码格式，视频的保存路劲，视频来源等，用法简单，但是有一个问题就是不能接触到视频流数据了，处理不了原生的视频数据了，所以我们不能选择用MediaRecorder方式来进行编码。</p>
+<h4 id="三-音视频编码"><a href="#三-音视频编码" class="headerlink" title="三.音视频编码"></a>三.音视频编码</h4><h5 id="1-视频编码"><a href="#1-视频编码" class="headerlink" title="(1).视频编码"></a>(1).视频编码</h5><p>Android中视频编码有两种方式，主要是两个核心的类，一个是MediaCodec和MediaRecorder，这两个类有什么区别呢？其实很好理解，他们都可以对视频进行编码，但是MediaRecorder这个类相对于MediaCodec简单，因为他封装的很好，直接就是几个接口来完成视频录制，比如视频的编码格式，视频的保存路劲，视频来源等，用法简单，但是有一个问题就是不能接触到视频流数据了，处理不了原生的视频数据了，所以我们不能选择用MediaRecorder方式来进行编码。</p>
 <p>MediaCodec编码流程图如下</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/1605450-1fc8da7acddf4b7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 MediaCodec编码流程，来源于网络"></p>
 <p>对应的方法主要为：</p>
@@ -416,7 +413,7 @@
 <p><strong>音频编码后的格式为AAC格式，对于AAC格式说明如下：</strong></p>
 <p>[AAC]是由F[ra]unhofer IIS-A、杜比和AT&amp;T共同开发的一种音频格式，它是MPEG-2规范的一部分。AAC所采用的运算法则与MP3的运算法则有所不同，AAC通过结合其他的功能 来提高编码效率。AAC的音频算法在压缩能力上远远超过了以前的一些压缩算法（比如MP3等）。它还同时支持多达48个音轨、15个低频音轨、更多种采样率和比特率、多种语言的兼容能力、更高的解码效率。总之，AAC可以在比MP3文件缩小30%的前提下提供更好的音质。</p>
 <p>所以上面我们就实现了数据源的编码，编码其实分为两种，一种是利用系统的MediaCodec来编码的硬编，还有一种是软编，通常我们是用ffmpeg来软编，就不对软编进行说明了，有兴趣的可以自己去谷歌。</p>
-<p>####写在后面的话<br>我们通过采集与编码这一系列的操作拿到了可以推流的视频数据与音频数据，那么下一篇就是对推流相关介绍了，通过推流我们可以把这些数据传输到我们的视频服务器上，通过视频服务器的转发，从而可以实现移动端的直播，peace~~~</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>我们通过采集与编码这一系列的操作拿到了可以推流的视频数据与音频数据，那么下一篇就是对推流相关介绍了，通过推流我们可以把这些数据传输到我们的视频服务器上，通过视频服务器的转发，从而可以实现移动端的直播，peace~~~</p>
 
       
     </div>
@@ -600,7 +597,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-视频编码"><span class="nav-number">1.</span> <span class="nav-text">(1).视频编码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-音频编码"><span class="nav-number">2.</span> <span class="nav-text">(2).音频编码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-Camera视频数据源采集"><span class="nav-number">1.</span> <span class="nav-text">一.Camera视频数据源采集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-音频数据源采集"><span class="nav-number">2.</span> <span class="nav-text">二.音频数据源采集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-音视频编码"><span class="nav-number">3.</span> <span class="nav-text">三.音视频编码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-视频编码"><span class="nav-number">3.1.</span> <span class="nav-text">(1).视频编码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-音频编码"><span class="nav-number">3.2.</span> <span class="nav-text">(2).音频编码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">4.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
             
 
           </div>
