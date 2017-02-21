@@ -95,7 +95,7 @@
 <meta property="og:site_name" content="IBigerBiger的成长之路">
 <meta property="og:description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
 首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下">
-<meta property="og:updated_time" content="2017-02-14T13:07:13.000Z">
+<meta property="og:updated_time" content="2017-02-21T12:17:45.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（二）补丁包加载源码分析">
 <meta name="twitter:description" content="前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。
@@ -348,11 +348,11 @@
         <p>前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。</p>
 <p>首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下发的差异包与本应用的dex文件合并成成全量的dex文件，并进行opt优化，当再次启动APP时候则加载优化过的全量dex文件，将dex文件插入到DexPathList 中 dexElements的前面。</p>
 <p>所以Tinker其实是两个流程，一个是加载补丁包，另外一个是加载dex文件，两个的加载流程相对较长，这里分开说明，这一篇呢，主要介绍加载补丁包的流程。</p>
-<a id="more"></a>
 <h5 id="补丁包加载流程"><a href="#补丁包加载流程" class="headerlink" title="补丁包加载流程"></a>补丁包加载流程</h5><p>
 
 </p><p>加载补丁包的方法如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TinkerInstaller.onReceiveUpgradePatch(getApplicationContext(), &quot;FilePath&quot;);</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>往下看发现调用了TinkerInstaller的onReceiveUpgradePatch方法</p>
 <p>TinkerInstaller.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public static void onReceiveUpgradePatch(Context context, String patchLocation) &#123;</div><div class="line">    Tinker.with(context).getPatchListener().onPatchReceived(patchLocation);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>这里调用了PatchListener的onPatchReceived方法</p>

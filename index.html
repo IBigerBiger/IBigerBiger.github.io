@@ -1465,6 +1465,10 @@
           <p>前面一篇Tinker相关的文章已经介绍了Tinker热修复框架的使用与整个的修复流程，那么这一篇就要开启Tinker的源码解析之路了。</p>
 <p>首先简单说一下Tinker的原理，Tinker其实也是类似multidex的dex方式，将目标dex插入到数组最前面，主要是通过对比原dex文件（存在bug）与现dex文件（bug已修复）生成差异包，生成的差异包作为补丁包下发给客户端，客户端做一系列校验之后，将下发的差异包与本应用的dex文件合并成成全量的dex文件，并进行opt优化，当再次启动APP时候则加载优化过的全量dex文件，将dex文件插入到DexPathList 中 dexElements的前面。</p>
 <p>所以Tinker其实是两个流程，一个是加载补丁包，另外一个是加载dex文件，两个的加载流程相对较长，这里分开说明，这一篇呢，主要介绍加载补丁包的流程。</p>
+<h5 id="补丁包加载流程"><a href="#补丁包加载流程" class="headerlink" title="补丁包加载流程"></a>补丁包加载流程</h5><p>
+
+<p>加载补丁包的方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">TinkerInstaller.onReceiveUpgradePatch(getApplicationContext(), &quot;FilePath&quot;);</div></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/02/11/热修复Tinker（二）补丁包加载源码分析/#more" rel="contents">
@@ -1622,6 +1626,16 @@
       
         
           <p>2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于现在市场上的主流相关库的使用与相关源码的解析是很有必要的!</p>
+<h5 id="关于热修复"><a href="#关于热修复" class="headerlink" title="关于热修复"></a>关于热修复</h5><p>
+
+<p>热修复如其名一样，动态及时的去修复线上的bug，不需要用户重新下载APP，重新安装，也避免了应用重新发包各大应用市场的麻烦。</p>
+<p>目前热修复主要方案如下</p>
+<ul>
+<li>从NATIVE层入手，主要是阿里系的AndFix,Dexposed等</li>
+<li>从Classloader入手，主要是QQ空间补丁方案，NUWA,以及Tinker等</li>
+</ul>
+<p>这一篇主要是介绍以Classloader方案的Tinker</p>
+<p>首先我们要了解下整个Tinker的整个运行的流程</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/02/11/热修复Tinker（一）介绍与接入/#more" rel="contents">

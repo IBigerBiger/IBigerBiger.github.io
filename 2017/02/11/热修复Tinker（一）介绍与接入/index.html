@@ -102,7 +102,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-7e1749028c423d84.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ee0e3b56b5484873.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d8aa8d17eb42d3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-02-14T13:06:51.000Z">
+<meta property="og:updated_time" content="2017-02-21T12:17:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="热修复Tinker（一）介绍与接入">
 <meta name="twitter:description" content="2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于">
@@ -375,7 +375,6 @@
 
       
         <p>2016对于整个Android的开发来说是一个各种技术爆发的一年，特别是有一阵子的热修复，插件化相关，各家都开源了自己相关的库，而这些相关的东西虽然并不受谷歌与国外开发者的推崇，但是随着各种产品的业务需求增长，用户对于体验的提升，这样技术的出现也是必然的阶段，至于后面移动开发的方向我们不得而知，但是对于热修复，插件化这一系统的关于HOOK相关的知识，了解与学习是提升自生能力的比较好的途径，所以对于现在市场上的主流相关库的使用与相关源码的解析是很有必要的!</p>
-<a id="more"></a>
 <h5 id="关于热修复"><a href="#关于热修复" class="headerlink" title="关于热修复"></a>关于热修复</h5><p>
 
 </p><p>热修复如其名一样，动态及时的去修复线上的bug，不需要用户重新下载APP，重新安装，也避免了应用重新发包各大应用市场的麻烦。</p>
@@ -386,6 +385,7 @@
 </ul>
 <p>这一篇主要是介绍以Classloader方案的Tinker</p>
 <p>首先我们要了解下整个Tinker的整个运行的流程</p>
+<a id="more"></a>
 <h5 id="Tinker运行流程"><a href="#Tinker运行流程" class="headerlink" title="Tinker运行流程"></a>Tinker运行流程</h5><p>
 
 </p><p>Tinker的github地址如下<a href="https://github.com/Tencent/tinker/tree/dev" target="_blank" rel="external">https://github.com/Tencent/tinker/tree/dev</a></p>
