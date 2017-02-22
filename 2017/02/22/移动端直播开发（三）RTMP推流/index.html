@@ -1,0 +1,779 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="直播," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前面一篇文章已经对移动端数据源采集与编码进行了说明，接下来就是将之前采集的数据上传给我们的视频服务器了，通过视频服务器的转发，可以在web端，app端观看我们采集的数据，从而实现直播效果，对于上传直播数据，我们一般采用RTMP推流方式，那么首先我们要了解一下RTMP协议。
+一.RTMP协议RTMP协议是Real Time Message Protocol(实时信息传输协议)的缩写，它是由Adobe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端直播开发（三）RTMP推流">
+<meta property="og:url" content="http://yoursite.com/2017/02/22/移动端直播开发（三）RTMP推流/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="前面一篇文章已经对移动端数据源采集与编码进行了说明，接下来就是将之前采集的数据上传给我们的视频服务器了，通过视频服务器的转发，可以在web端，app端观看我们采集的数据，从而实现直播效果，对于上传直播数据，我们一般采用RTMP推流方式，那么首先我们要了解一下RTMP协议。
+一.RTMP协议RTMP协议是Real Time Message Protocol(实时信息传输协议)的缩写，它是由Adobe">
+<meta property="og:updated_time" content="2017-02-22T12:22:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端直播开发（三）RTMP推流">
+<meta name="twitter:description" content="前面一篇文章已经对移动端数据源采集与编码进行了说明，接下来就是将之前采集的数据上传给我们的视频服务器了，通过视频服务器的转发，可以在web端，app端观看我们采集的数据，从而实现直播效果，对于上传直播数据，我们一般采用RTMP推流方式，那么首先我们要了解一下RTMP协议。
+一.RTMP协议RTMP协议是Real Time Message Protocol(实时信息传输协议)的缩写，它是由Adobe">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/22/移动端直播开发（三）RTMP推流/"/>
+
+
+
+
+
+  <title> 移动端直播开发（三）RTMP推流 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/22/移动端直播开发（三）RTMP推流/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移动端直播开发（三）RTMP推流
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-22T20:12:53+08:00">
+                2017-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/22/移动端直播开发（三）RTMP推流/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/移动端直播开发（三）RTMP推流/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面一篇文章已经对移动端数据源采集与编码进行了说明，接下来就是将之前采集的数据上传给我们的视频服务器了，通过视频服务器的转发，可以在web端，app端观看我们采集的数据，从而实现直播效果，对于上传直播数据，我们一般采用RTMP推流方式，那么首先我们要了解一下RTMP协议。</p>
+<h4 id="一-RTMP协议"><a href="#一-RTMP协议" class="headerlink" title="一.RTMP协议"></a>一.RTMP协议</h4><p>RTMP协议是Real Time Message Protocol(实时信息传输协议)的缩写，它是由Adobe公司提出的一种应用层的协议，用来解决多媒体数据传输流的多路复用（Multiplexing）和分包（packetizing）的问题。</p>
+<h5 id="1-简要介绍"><a href="#1-简要介绍" class="headerlink" title="1.简要介绍"></a>1.简要介绍</h5><p>RTMP协议是应用层协议，是要靠底层可靠的传输层协议（通常是TCP）来保证信息传输的可靠性的。在基于传输层协议的链接建立完成后，一个RTMP协议的流媒体推流需要经过以下几个步骤：握手，建立连接，建立流，推流。RTMP连接都是以握手作为开始的。建立连接阶段用于建立客户端与服务器之间的“网络连接”；建立流阶段用于建立客户端与服务器之间的“网络流”；推流阶段用于传输视音频数据。</p>
+<p>接下来就简单介绍下这一过程</p>
+<h5 id="2-握手"><a href="#2-握手" class="headerlink" title="2.握手"></a>2.握手</h5><p>在rtmp连接建立后,服务端与客户端需要通过3次交换报文完成握手,握手其他的协议不同,是由三个静态大小的块,而不是可变大小的块组成的,客户端与服务器发送相同的三个chunk,客户端发送c0,c1,c2,服务端发送s0,s1,s2。</p>
+<a id="more"></a>
+<p><strong>发送规则</strong></p>
+<ul>
+<li>握手开始于客户端发送 C0，C1 块。</li>
+<li>在发送 C2 之前客户端必须等待接收 S1 。</li>
+<li>在发送任何数据之前客户端必须等待接收 S2。</li>
+<li>服务端在发送 S0 和 S1 之前必须等待接收 C0，也可以等待接收 C1。</li>
+<li>服务端在发送 S2 之前必须等待接收 C1。</li>
+<li>服务端在发送任何数据之前必须等待接收 C2。</li>
+</ul>
+<p><strong>数据格式</strong></p>
+<p><strong>C0与S0</strong><br>C0和S0的长度是一个字节，在 S0 中这个字段表示服务器选择的 RTMP 版本。rtmp1.0规范所定义的版本是 3；0-2 是早期产品所用的，已被丢弃；4-31保留在未来使用；32-255 不允许使用（为了区分其他以某一字符开始的文本协议）。如果服务无法识别客户端请求的版本，应该返回 3 。客户端可以选择减到版本 3 或选择取消握手。</p>
+<p><strong>C1与S1</strong><br>C1 和 S1 有 1536 字节长，由下列字段组成:<br>时间：4 字节 本字段包含时间戳。该时间戳应该是发送这个数据块的端点的后续块的时间起始点。可以是 0，* 或其他的 任何值。为了同步多个流，端点可能发送其块流的当前值。<br>零：4 字节 本字段必须是全零。<br>随机数据：1528 字节。 本字段可以包含任何值。 因为每个端点必须用自己初始化的握手和对端初始化的握 手来区分身份，所以这个数据应有充分的随机性。但是并不需要加密安全的随机值，或者动态值</p>
+<p><strong>C2与S2</strong><br>C2 和 S2 消息有 1536 字节长。只是 S1 和 C1 的回复。本消息由下列字段组成。<br>时间：4 字节 本字段必须包含对等段发送的时间（对 C2 来说是 S1，对 S2 来说是 C1）。<br>时间 2：4 字节 本字段必须包含先前发送的并被对端读取的包的时间戳。<br>随机回复：1528 字节 本字段必须包含对端发送的随机数据字段（对 C2 来说是 S1，对 S2 来说是 C1） 。 每个对等端可以用时间和时间 2 字段中的时间戳来快速地估计带宽和延迟。 但这样做可 能并不实用。</p>
+<p>RTMP握手的这个过程就是完成了两件事：1. 校验客户端和服务器端RTMP协议版本号，2. 是发了一堆数据，猜想应该是测试一下网络状况，看看有没有传错或者不能传的情况。</p>
+<h5 id="3-建立网络连接"><a href="#3-建立网络连接" class="headerlink" title="3.建立网络连接"></a>3.建立网络连接</h5><ul>
+<li>客户端发送命令消息中的“连接”(connect)到服务器，请求与一个服务应用实例建立连接。</li>
+<li>服务器接收到连接命令消息后，发送确认窗口大小(Window Acknowledgement Size)协议消息到客户端，同时连接到连接命令中提到的应用程序。</li>
+<li>服务器发送设置带宽()协议消息到客户端。</li>
+<li>客户端处理设置带宽协议消息后，发送确认窗口大小(Window Acknowledgement Size)协议消息到服务器端。</li>
+<li>服务器发送用户控制消息中的“流开始”(Stream Begin)消息到客户端。</li>
+<li>服务器发送命令消息中的“结果”(_result)，通知客户端连接的状态。</li>
+</ul>
+<p><strong>注意：</strong></p>
+<ol>
+<li><p>这里面的connect 命令消息，命令里面包含什么东西，协议中没有说，真实通信中要指定一些编解码的信息，这些信息是以AMF格式发送的, 其中audioCodecs和videoCodecs这两个指定音视频编码信息的不能少的。</p>
+</li>
+<li><p>Window Acknowledgement Size 是设置接收端消息窗口大小，一般是2500000字节，即告诉客户端你在收到我设置的窗口大小的这么多数据之后给我返回一个ACK消息，告诉我你收到了这么多消息。在实际做推流的时候推流端要接收很少的服务器数据，远远到达不了窗口大小，所以基本不用考虑这点。而对于服务器返回的ACK消息一般也不做处理，我们默认服务器都已经收到了这么多消息。</p>
+</li>
+<li><p>服务器返回的_result命令类型消息的payload length一般不会大于128字节，但是在最新的nginx-rtmp中返回的消息长度会大于128字节，所以一定要做好收包，组包的工作。</p>
+</li>
+</ol>
+<h5 id="4-建立网络流"><a href="#4-建立网络流" class="headerlink" title="4.建立网络流"></a>4.建立网络流</h5><p>创建完网络连接之后就可以创建网络流了</p>
+<ul>
+<li>客户端发送命令消息中releaseStream命令到服务器端</li>
+<li>客户端发送命令消息中FCPublish命令到服务器端</li>
+<li>客户端发送命令消息中的“创建流”（createStream）命令到服务器端。</li>
+<li>服务器端接收到“创建流”命令后，发送命令消息中的“结果”(_result)，通知客户端流的状态。</li>
+</ul>
+<p>解析服务器返回的消息会得到一个stream ID, 这个ID也就是以后和服务器通信的 message stream ID, 一般返回的是1，不固定。</p>
+<h5 id="5-推流命令"><a href="#5-推流命令" class="headerlink" title="5.推流命令"></a>5.推流命令</h5><p>推流准备工作的最后一步是 Publish Stream，即向服务器发一个publish命令，这个命令的message stream ID 就是上面 create stream 之后服务器返回的stream ID，发完这个命令一般不用等待服务器返回的回应，直接下一步发送音视频数据。有些rtmp库 还会发setMetaData消息，这个消息可以发也可以不发，里面包含了一些音视频编码的信息。</p>
+<p>当以上工作都完成的时候，就可以发送音视频了。</p>
+<h4 id="二-RTMP推流的实现流程"><a href="#二-RTMP推流的实现流程" class="headerlink" title="二.RTMP推流的实现流程"></a>二.RTMP推流的实现流程</h4><p>前面已经介绍了RTMP协议推流的流程，那么我们如何在Android上面实现推流呢？一般采用FFmpeg来进行推流的，我这里采用的是一款纯Java的推流库<a href="https://github.com/begeekmyfriend/yasea" target="_blank" rel="external">yasea</a>，之所以选择这个推流第三方库，主要是为了了解上述的RTMP协议推流的流程。</p>
+<p>接下来就结合代码来分析下实现推流的功能</p>
+<h5 id="1-握手"><a href="#1-握手" class="headerlink" title="1.握手"></a>1.握手</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">public void connect(String url) throws IOException &#123;</div><div class="line">    int port;</div><div class="line">    String host;</div><div class="line">    Matcher matcher = rtmpUrlPattern.matcher(url);</div><div class="line">    if (matcher.matches()) &#123;</div><div class="line">        tcUrl = url.substring(0, url.lastIndexOf(&apos;/&apos;));</div><div class="line">        swfUrl = &quot;&quot;;            </div><div class="line">        pageUrl = &quot;&quot;;            </div><div class="line">        host = matcher.group(1);</div><div class="line">        String portStr = matcher.group(3);</div><div class="line">        port = portStr != null ? Integer.parseInt(portStr) : 1935;</div><div class="line">        appName = matcher.group(4);</div><div class="line">        streamName = matcher.group(6);</div><div class="line">    &#125; else &#123;</div><div class="line">        throw new IllegalArgumentException(&quot;Invalid RTMP URL. Must be in format: rtmp://host[:port]/application[/streamName]&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // socket connection</div><div class="line">    Log.d(TAG, &quot;connect() called. Host: &quot; + host + &quot;, port: &quot; + port + &quot;, appName: &quot; + appName + &quot;, publishPath: &quot; + streamName);</div><div class="line">    socket = new Socket();</div><div class="line">    SocketAddress socketAddress = new InetSocketAddress(host, port);</div><div class="line">    socket.connect(socketAddress, 3000);</div><div class="line">    BufferedInputStream in = new BufferedInputStream(socket.getInputStream());</div><div class="line">    BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());</div><div class="line">    Log.d(TAG, &quot;connect(): socket connection established, doing handhake...&quot;);</div><div class="line">    handshake(in, out);</div><div class="line">    active = true;</div><div class="line">    Log.d(TAG, &quot;connect(): handshake done&quot;);</div><div class="line">    rtmpSessionInfo = new RtmpSessionInfo();</div><div class="line">    readThread = new ReadThread(rtmpSessionInfo, in, this);</div><div class="line">    writeThread = new WriteThread(rtmpSessionInfo, out, this);</div><div class="line">    readThread.start();</div><div class="line">    writeThread.start();</div><div class="line"></div><div class="line">    // Start the &quot;main&quot; handling thread</div><div class="line">    new Thread(new Runnable() &#123;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void run() &#123;</div><div class="line">            try &#123;</div><div class="line">                Log.d(TAG, &quot;starting main rx handler loop&quot;);</div><div class="line">                handleRxPacketLoop();</div><div class="line">            &#125; catch (IOException ex) &#123;</div><div class="line">                Logger.getLogger(RtmpConnection.class.getName()).log(Level.SEVERE, null, ex);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;).start();</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void handshake(InputStream in, OutputStream out) throws IOException &#123;</div><div class="line">    Handshake handshake = new Handshake();</div><div class="line">    handshake.writeC0(out);</div><div class="line">    handshake.writeC1(out); // Write C1 without waiting for S0</div><div class="line">    out.flush();</div><div class="line">    handshake.readS0(in);</div><div class="line">    handshake.readS1(in);</div><div class="line">    handshake.writeC2(out);</div><div class="line">    handshake.readS2(in);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里首先匹配我们需要上传的服务器地址进行匹配，接下来连接到视频服务器，接下来通过handshake方法来进行握手协议，接下来开启了两个线程，这两个线程是用来进行读写操作的，读是读取服务器返回的指令，写是向服务器发送指令，或者音视频信息，最后开启一个线程里面是handleRxPacketLoop方法，这个方法不断的读取服务器返回的指令。</p>
+<h5 id="2-建立网络连接"><a href="#2-建立网络连接" class="headerlink" title="2.建立网络连接"></a>2.建立网络连接</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">private void rtmpConnect() throws IOException, IllegalStateException &#123;</div><div class="line">if (fullyConnected || connecting) &#123;</div><div class="line">    throw new IllegalStateException(&quot;Already connected or connecting to RTMP server&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Mark session timestamp of all chunk stream information on connection.</div><div class="line">ChunkStreamInfo.markSessionTimestampTx();</div><div class="line"></div><div class="line">Log.d(TAG, &quot;rtmpConnect(): Building &apos;connect&apos; invoke packet&quot;);</div><div class="line">ChunkStreamInfo chunkStreamInfo = rtmpSessionInfo.getChunkStreamInfo(ChunkStreamInfo.RTMP_COMMAND_CHANNEL);</div><div class="line">Command invoke = new Command(&quot;connect&quot;, ++transactionIdCounter, chunkStreamInfo);</div><div class="line">invoke.getHeader().setMessageStreamId(0);</div><div class="line">AmfObject args = new AmfObject();</div><div class="line">args.setProperty(&quot;app&quot;, appName);</div><div class="line">args.setProperty(&quot;flashVer&quot;, &quot;LNX 11,2,202,233&quot;); // Flash player OS: Linux, version: 11.2.202.233</div><div class="line">args.setProperty(&quot;swfUrl&quot;, swfUrl);</div><div class="line">args.setProperty(&quot;tcUrl&quot;, tcUrl);</div><div class="line">args.setProperty(&quot;fpad&quot;, false);</div><div class="line">args.setProperty(&quot;capabilities&quot;, 239);</div><div class="line">args.setProperty(&quot;audioCodecs&quot;, 3575);</div><div class="line">args.setProperty(&quot;videoCodecs&quot;, 252);</div><div class="line">args.setProperty(&quot;videoFunction&quot;, 1);</div><div class="line">args.setProperty(&quot;pageUrl&quot;, pageUrl);</div><div class="line">args.setProperty(&quot;objectEncoding&quot;, 0);</div><div class="line">invoke.addData(args);</div><div class="line">writeThread.send(invoke);</div><div class="line"></div><div class="line">connecting = true;</div><div class="line">mHandler.onRtmpConnecting(&quot;connecting&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里配置了connect命令，前面也说到这个命令里面包含了很多东西<br>接下来就是服务器的返回信息分别是窗口大小与带宽信息,这些信息则由前面说的handleRxPacketLoop来读取并进行相关设置与反馈</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">private void handleRxPacketLoop() throws IOException &#123;</div><div class="line">    // Handle all queued received RTMP packets</div><div class="line">    while (active) &#123;</div><div class="line">        while (!rxPacketQueue.isEmpty()) &#123;</div><div class="line">            RtmpPacket rtmpPacket = rxPacketQueue.poll();</div><div class="line">            //Log.d(TAG, &quot;handleRxPacketLoop(): RTMP rx packet message type: &quot; + rtmpPacket.getHeader().getMessageType());</div><div class="line">            switch (rtmpPacket.getHeader().getMessageType()) &#123;</div><div class="line">                 ...</div><div class="line">                case WINDOW_ACKNOWLEDGEMENT_SIZE:</div><div class="line">                    WindowAckSize windowAckSize = (WindowAckSize) rtmpPacket;</div><div class="line">                    int size = windowAckSize.getAcknowledgementWindowSize();</div><div class="line">                    Log.d(TAG, &quot;handleRxPacketLoop(): Setting acknowledgement window size: &quot; + size);</div><div class="line">                    rtmpSessionInfo.setAcknowledgmentWindowSize(size);</div><div class="line">                    // Set socket option</div><div class="line">                    socket.setSendBufferSize(size);</div><div class="line">                    break;</div><div class="line">                case SET_PEER_BANDWIDTH:</div><div class="line">                    int acknowledgementWindowsize = rtmpSessionInfo.getAcknowledgementWindowSize();</div><div class="line">                    final ChunkStreamInfo chunkStreamInfo = rtmpSessionInfo.getChunkStreamInfo(ChunkStreamInfo.RTMP_CONTROL_CHANNEL);</div><div class="line">                    Log.d(TAG, &quot;handleRxPacketLoop(): Send acknowledgement window size: &quot; + acknowledgementWindowsize);</div><div class="line">                    writeThread.send(new WindowAckSize(acknowledgementWindowsize, chunkStreamInfo));</div><div class="line">                    break;</div><div class="line">                case COMMAND_AMF0:</div><div class="line">                    handleRxInvoke((Command) rtmpPacket);</div><div class="line">                    break;</div><div class="line">                default:</div><div class="line">                    Log.w(TAG, &quot;handleRxPacketLoop(): Not handling unimplemented/unknown packet of type: &quot; + rtmpPacket.getHeader().getMessageType());</div><div class="line">                    break;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        // Wait for next received packet</div><div class="line">        synchronized (rxPacketLock) &#123;</div><div class="line">            try &#123;</div><div class="line">                rxPacketLock.wait(500);</div><div class="line">            &#125; catch (InterruptedException ex) &#123;</div><div class="line">                Log.w(TAG, &quot;handleRxPacketLoop: Interrupted&quot;, ex);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里我们看到收到WINDOW_ACKNOWLEDGEMENT_SIZE这个命令后，将socket的BufferSize设置为指定的size了，收到SET_PEER_BANDWIDTH，writeThread发送了窗口大小的消息给服务器了，接下来服务器就会返回上面说的结果命令了，结果命令的处理为handleRxInvoke方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">private void handleRxInvoke(Command invoke) throws IOException &#123;</div><div class="line">    String commandName = invoke.getCommandName();</div><div class="line"></div><div class="line">    if (commandName.equals(&quot;_result&quot;)) &#123;</div><div class="line">        // This is the result of one of the methods invoked by us</div><div class="line">        String method = rtmpSessionInfo.takeInvokedCommand(invoke.getTransactionId());</div><div class="line"></div><div class="line">        Log.d(TAG, &quot;handleRxInvoke: Got result for invoked method: &quot; + method);</div><div class="line">        if (&quot;connect&quot;.equals(method)) &#123;</div><div class="line">            // Capture server ip/pid/id information if any</div><div class="line">            String serverInfo = onSrsServerInfo(invoke);</div><div class="line">            mHandler.onRtmpConnected(&quot;connected&quot; + serverInfo);</div><div class="line">            // We can now send createStream commands</div><div class="line">            connecting = false;</div><div class="line">            fullyConnected = true;</div><div class="line">            synchronized (connectingLock) &#123;</div><div class="line">                connectingLock.notifyAll();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">       ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>result信息匹配到是connect命令，会进行一些参数的设置</p>
+<p>这里网络连接就已经建立起来了</p>
+<h5 id="3-建立网络流"><a href="#3-建立网络流" class="headerlink" title="3.建立网络流"></a>3.建立网络流</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">private void createStream() &#123;</div><div class="line">    if (!fullyConnected) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Not connected to RTMP server&quot;);</div><div class="line">    &#125;</div><div class="line">    if (currentStreamId != -1) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Current stream object has existed&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    Log.d(TAG, &quot;createStream(): Sending releaseStream command...&quot;);</div><div class="line">    // transactionId == 2</div><div class="line">    Command releaseStream = new Command(&quot;releaseStream&quot;, ++transactionIdCounter);</div><div class="line">    releaseStream.getHeader().setChunkStreamId(ChunkStreamInfo.RTMP_STREAM_CHANNEL);</div><div class="line">    releaseStream.addData(new AmfNull());  // command object: null for &quot;createStream&quot;</div><div class="line">    releaseStream.addData(streamName);  // command object: null for &quot;releaseStream&quot;</div><div class="line">    writeThread.send(releaseStream);</div><div class="line"></div><div class="line">    Log.d(TAG, &quot;createStream(): Sending FCPublish command...&quot;);</div><div class="line">    // transactionId == 3</div><div class="line">    Command FCPublish = new Command(&quot;FCPublish&quot;, ++transactionIdCounter);</div><div class="line">    FCPublish.getHeader().setChunkStreamId(ChunkStreamInfo.RTMP_STREAM_CHANNEL);</div><div class="line">    FCPublish.addData(new AmfNull());  // command object: null for &quot;FCPublish&quot;</div><div class="line">    FCPublish.addData(streamName);</div><div class="line">    writeThread.send(FCPublish);</div><div class="line"></div><div class="line">    Log.d(TAG, &quot;createStream(): Sending createStream command...&quot;);</div><div class="line">    ChunkStreamInfo chunkStreamInfo = rtmpSessionInfo.getChunkStreamInfo(ChunkStreamInfo.RTMP_COMMAND_CHANNEL);</div><div class="line">    // transactionId == 4</div><div class="line">    Command createStream = new Command(&quot;createStream&quot;, ++transactionIdCounter, chunkStreamInfo);</div><div class="line">    createStream.addData(new AmfNull());  // command object: null for &quot;createStream&quot;</div><div class="line">    writeThread.send(createStream);</div><div class="line"></div><div class="line">    // Waiting for &quot;NetStream.Publish.Start&quot; response.</div><div class="line">    synchronized (publishLock) &#123;</div><div class="line">        try &#123;</div><div class="line">            publishLock.wait(5000);</div><div class="line">        &#125; catch (InterruptedException ex) &#123;</div><div class="line">            // do nothing</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里主要是向服务器发送了releaseStream，FCPublish与createStream三个命令，服务器收到这些命令后会向客户端返回result命令，命令中包含后面通讯用的stream ID</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">private void handleRxInvoke(Command invoke) throws IOException &#123;</div><div class="line">    String commandName = invoke.getCommandName();</div><div class="line"></div><div class="line">    if (commandName.equals(&quot;_result&quot;)) &#123;</div><div class="line">        // This is the result of one of the methods invoked by us</div><div class="line">        String method = rtmpSessionInfo.takeInvokedCommand(invoke.getTransactionId());</div><div class="line"></div><div class="line">        Log.d(TAG, &quot;handleRxInvoke: Got result for invoked method: &quot; + method);</div><div class="line">        ...</div><div class="line">         else if (&quot;createStream&quot;.contains(method)) &#123;</div><div class="line">            // Get stream id</div><div class="line">            currentStreamId = (int) ((AmfNumber) invoke.getData().get(1)).getValue();</div><div class="line">            Log.d(TAG, &quot;handleRxInvoke(): Stream ID to publish: &quot; + currentStreamId);</div><div class="line">            if (streamName != null &amp;&amp; publishType != null) &#123;</div><div class="line">                fmlePublish();</div><div class="line">            &#125;</div><div class="line">        &#125; </div><div class="line">       ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到最后调用了fmlePublish方法，这个方法是发送推流命令的</p>
+<h5 id="4-推流命令"><a href="#4-推流命令" class="headerlink" title="4.推流命令"></a>4.推流命令</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">private void fmlePublish() throws IllegalStateException &#123;</div><div class="line">    if (!fullyConnected) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Not connected to RTMP server&quot;);</div><div class="line">    &#125;</div><div class="line">    if (currentStreamId == -1) &#123;</div><div class="line">        throw new IllegalStateException(&quot;No current stream object exists&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    Log.d(TAG, &quot;fmlePublish(): Sending publish command...&quot;);</div><div class="line">    // transactionId == 0</div><div class="line">    Command publish = new Command(&quot;publish&quot;, 0);</div><div class="line">    publish.getHeader().setChunkStreamId(ChunkStreamInfo.RTMP_STREAM_CHANNEL);</div><div class="line">    publish.getHeader().setMessageStreamId(currentStreamId);</div><div class="line">    publish.addData(new AmfNull());  // command object: null for &quot;publish&quot;</div><div class="line">    publish.addData(streamName);</div><div class="line">    publish.addData(publishType);</div><div class="line">    writeThread.send(publish);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就是向服务器发送推流的命令</p>
+<p>到这里就是完成了RTMP推流的协议流程，完成后我们就可以将获取的音视频推流发送到视频服务器了</p>
+<p>如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void publishAudioData(byte[] data) throws IllegalStateException &#123;</div><div class="line">    if (!fullyConnected) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Not connected to RTMP server&quot;);</div><div class="line">    &#125;</div><div class="line">    if (currentStreamId == -1) &#123;</div><div class="line">        throw new IllegalStateException(&quot;No current stream object exists&quot;);</div><div class="line">    &#125;</div><div class="line">    if (!publishPermitted) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Not get the _result(Netstream.Publish.Start)&quot;);</div><div class="line">    &#125;</div><div class="line">    Audio audio = new Audio();</div><div class="line">    audio.setData(data);</div><div class="line">    audio.getHeader().setMessageStreamId(currentStreamId);</div><div class="line">    writeThread.send(audio);</div><div class="line">    mHandler.onRtmpAudioStreaming(&quot;audio streaming&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void publishVideoData(byte[] data) throws IllegalStateException &#123;</div><div class="line">    if (!fullyConnected) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Not connected to RTMP server&quot;);</div><div class="line">    &#125;</div><div class="line">    if (currentStreamId == -1) &#123;</div><div class="line">        throw new IllegalStateException(&quot;No current stream object exists&quot;);</div><div class="line">    &#125;</div><div class="line">    if (!publishPermitted) &#123;</div><div class="line">        throw new IllegalStateException(&quot;Not get the _result(Netstream.Publish.Start)&quot;);</div><div class="line">    &#125;</div><div class="line">    Video video = new Video();</div><div class="line">    video.setData(data);</div><div class="line">    video.getHeader().setMessageStreamId(currentStreamId);</div><div class="line">    writeThread.send(video);</div><div class="line">    videoFrameCacheNumber.getAndIncrement();</div><div class="line">    mHandler.onRtmpVideoStreaming(&quot;video streaming&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>由于我们的视频和音频是分开推流的，那么音视频同步问题怎么解决呢？</strong></p>
+<p>一般来说，视频同步指的是视频和音频同步，也就是说播放的声音要和当前显示的画面保持一致。想象以下，看一部电影的时候只看到人物嘴动没有声音传出；或者画面是激烈的战斗场景，而声音不是枪炮声却是人物说话的声音，这是非常差的一种体验。<br>在视频流和音频流中已包含了其以怎样的速度播放的相关数据，视频的帧率（Frame Rate）指示视频一秒显示的帧数（图像数）；音频的采样率（Sample Rate）表示音频一秒播放的样本（Sample）的个数。可以使用以上数据通过简单的计算得到其在某一Frame（Sample）的播放时间，以这样的速度音频和视频各自播放互不影响，在理想条件下，其应该是同步的，不会出现偏差。但，理想条件是什么大家都懂得。如果用上面那种简单的计算方式，慢慢的就会出现音视频不同步的情况。要不是视频播放快了，要么是音频播放快了，很难准确的同步。这就需要一种随着时间会线性增长的量，视频和音频的播放速度都以该量为标准，播放快了就减慢播放速度；播放快了就加快播放的速度。所以呢，视频和音频的同步实际上是一个动态的过程，同步是暂时的，不同步则是常态。以选择的播放速度量为标准，快的等待慢的，慢的则加快速度，是一个你等我赶的过程。</p>
+<p>播放速度标准量的的选择一般来说有以下三种：</p>
+<ul>
+<li>将视频同步到音频上，就是以音频的播放速度为基准来同步视频。视频比音频播放慢了，加快其播放速度；快了，则延迟播放。</li>
+<li>将音频同步到视频上，就是以视频的播放速度为基准来同步音频。</li>
+<li>将视频和音频同步外部的时钟上，选择一个外部时钟为基准，视频和音频的播放速度都以该时钟为标准。</li>
+</ul>
+<p>所以只要我们表示上正确的时间戳（dts），这样视频播放器就会根据这个这个时间戳去做音视频同步</p>
+<p>这个时间戳是在上传前添加上去的，时间可以用系统当前时间，也可以做其他设置</p>
+<p>yasea中也添加了时间戳如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">while (!writeQueue.isEmpty()) &#123;</div><div class="line">    RtmpPacket rtmpPacket = writeQueue.poll();</div><div class="line">    ChunkStreamInfo chunkStreamInfo = rtmpSessionInfo.getChunkStreamInfo(rtmpPacket.getHeader().getChunkStreamId());</div><div class="line">    chunkStreamInfo.setPrevHeaderTx(rtmpPacket.getHeader());</div><div class="line">    rtmpPacket.getHeader().setAbsoluteTimestamp((int) chunkStreamInfo.markAbsoluteTimestampTx());</div><div class="line">    rtmpPacket.writeTo(out, rtmpSessionInfo.getTxChunkSize(), chunkStreamInfo);</div><div class="line">    Log.d(TAG, &quot;WriteThread: wrote packet: &quot; + rtmpPacket + &quot;, size: &quot; + rtmpPacket.getHeader().getPacketLength());</div><div class="line">    if (rtmpPacket instanceof Command) &#123;</div><div class="line">        rtmpSessionInfo.addInvokedCommand(((Command) rtmpPacket).getTransactionId(), ((Command) rtmpPacket).getCommandName());</div><div class="line">    &#125;</div><div class="line">    if (rtmpPacket instanceof Video) &#123;</div><div class="line">        publisher.getVideoFrameCacheNumber().getAndDecrement();</div><div class="line">        calcFps();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">out.flush();</div></pre></td></tr></table></figure>
+<p>到这里就完成了RTMP推流相关的讲解，其实前面提到的yasea也把关于直播相关的内容集成进去了，虽然不明白为什么一个推流库要集成这些东西。。。</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>推流已经完成了，我们可以通过前面提到的vlc进行查看，但是我们要做的是移动端直播，所以下一篇就说一下关于移动端的播放与弹幕评论相关的知识，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/直播/" rel="tag"># 直播</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/21/移动端直播开发（二）数据源采集/" rel="next" title="移动端直播开发（二）数据源采集">
+                <i class="fa fa-chevron-left"></i> 移动端直播开发（二）数据源采集
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-RTMP协议"><span class="nav-number">1.</span> <span class="nav-text">一.RTMP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-简要介绍"><span class="nav-number">1.1.</span> <span class="nav-text">1.简要介绍</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-握手"><span class="nav-number">1.2.</span> <span class="nav-text">2.握手</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-建立网络连接"><span class="nav-number">1.3.</span> <span class="nav-text">3.建立网络连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-建立网络流"><span class="nav-number">1.4.</span> <span class="nav-text">4.建立网络流</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-推流命令"><span class="nav-number">1.5.</span> <span class="nav-text">5.推流命令</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-RTMP推流的实现流程"><span class="nav-number">2.</span> <span class="nav-text">二.RTMP推流的实现流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-握手"><span class="nav-number">2.1.</span> <span class="nav-text">1.握手</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-建立网络连接"><span class="nav-number">2.2.</span> <span class="nav-text">2.建立网络连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-建立网络流"><span class="nav-number">2.3.</span> <span class="nav-text">3.建立网络流</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-推流命令"><span class="nav-number">2.4.</span> <span class="nav-text">4.推流命令</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
