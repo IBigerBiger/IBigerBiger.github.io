@@ -1049,6 +1049,16 @@
         
           <p>上一篇文章对Android端的ColorMatrix进行了讲解，虽然说可以满足我们做滤镜的简单需求，但是对于视频和相机这些更多方面的滤镜需求就不能够满足需求了，所以为了滤镜可以在更多场景使用，选择用OpenGL来实现滤镜效果，由于OpenGL是通过GPU来计算的，所以处理起来速度会更快，也会避免由于图像计算较复杂带来的OOM问题。</p>
 <p>但是对于广大的开发者来说，OpenGl是一个相对来说比较陌生的东西，可能大家都听但是不是特别了解，所以这篇文章就对OpenGL进行简单的介绍，并实现图片用OpenGL显示出来。</p>
+<h4 id="一-OpenGl基础知识"><a href="#一-OpenGl基础知识" class="headerlink" title="一.OpenGl基础知识"></a>一.OpenGl基础知识</h4><p>
+
+<ul>
+<li>OpenGL 绘制的都是图形，包括形状和填充，基本形状是三角形。</li>
+<li>每个形状都有顶点，Vertix，顶点的序列就是一个图形。</li>
+<li>Shader，着色器，用来描述如何绘制（渲染），GLSL 是 OpenGL 的编程语言，全称就叫 OpenGL Shader Language。OpenGL 渲染需要两种 shader，vertex 和 fragment。</li>
+<li>Vertex shader（顶点着色器），控制顶点的绘制，指定坐标、变换等。</li>
+<li>Fragment shader（片段着色器），控制形状内区域渲染，纹理填充内容。</li>
+</ul>
+<p>OpenGl的坐标系与Android的坐标系不同，是三维坐标系，原点在中间，x 轴向右，y 轴向上，z 轴朝向我们，x y z 取值范围都是 [-1, 1]</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/02/13/移动端滤镜开发（二）初识OpenGl/#more" rel="contents">
