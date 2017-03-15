@@ -1,0 +1,886 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="插件," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前面一篇文章对于插件中资源的获取进行了讲解，我们可以利用这种方式来实现换肤等等功能，并且对于类加载器相关知识也有了一定的了解，这一篇则是对于插件中四大组件之一的Activity进行相关说明了。
+启动一个Activity有两种方式
+
+直接调用Context类的startActivity方法；这种方式启动的Activity没有Activity栈，因此不能以standard方式启动，必须加上FLAG_A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="插件化实现（三）Activity插件化">
+<meta property="og:url" content="http://yoursite.com/2017/03/15/插件化实现（三）Activity插件化/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="前面一篇文章对于插件中资源的获取进行了讲解，我们可以利用这种方式来实现换肤等等功能，并且对于类加载器相关知识也有了一定的了解，这一篇则是对于插件中四大组件之一的Activity进行相关说明了。
+启动一个Activity有两种方式
+
+直接调用Context类的startActivity方法；这种方式启动的Activity没有Activity栈，因此不能以standard方式启动，必须加上FLAG_A">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-5a13592354d63433.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-11479e06471f1954.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-9af7931196faeb16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-03-15T12:49:47.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="插件化实现（三）Activity插件化">
+<meta name="twitter:description" content="前面一篇文章对于插件中资源的获取进行了讲解，我们可以利用这种方式来实现换肤等等功能，并且对于类加载器相关知识也有了一定的了解，这一篇则是对于插件中四大组件之一的Activity进行相关说明了。
+启动一个Activity有两种方式
+
+直接调用Context类的startActivity方法；这种方式启动的Activity没有Activity栈，因此不能以standard方式启动，必须加上FLAG_A">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-5a13592354d63433.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/15/插件化实现（三）Activity插件化/"/>
+
+
+
+
+
+  <title> 插件化实现（三）Activity插件化 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/15/插件化实现（三）Activity插件化/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                插件化实现（三）Activity插件化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-15T20:12:53+08:00">
+                2017-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/15/插件化实现（三）Activity插件化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/15/插件化实现（三）Activity插件化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面一篇文章对于插件中资源的获取进行了讲解，我们可以利用这种方式来实现换肤等等功能，并且对于类加载器相关知识也有了一定的了解，这一篇则是对于插件中四大组件之一的Activity进行相关说明了。</p>
+<p>启动一个Activity有两种方式</p>
+<ul>
+<li>直接调用Context类的startActivity方法；这种方式启动的Activity没有Activity栈，因此不能以standard方式启动，必须加上FLAG_ACTIVITY_NEW_TASK这个Flag。</li>
+<li>调用被Activity类重载过的startActivity方法，通常在我们的Activity中直接调用这个方法就是这种形式；</li>
+</ul>
+<p>接下来看一下这两种方式的调用</p>
+<p>1.Context类的startActivity方法</p>
+<p>可以看到Context是一个抽象类，而这个startActivity也是一个抽象方法，如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public abstract void startActivity(Intent intent, @Nullable Bundle options);</div></pre></td></tr></table></figure></p>
+<p>它的具体实现是在ContextImpl内，我们看下ContextImpl类的startActivity方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void startActivity(Intent intent, Bundle options) &#123;</div><div class="line">    warnIfCallingFromSystemProcess();</div><div class="line">    if ((intent.getFlags()&amp;Intent.FLAG_ACTIVITY_NEW_TASK) == 0) &#123;</div><div class="line">        throw new AndroidRuntimeException(</div><div class="line">                &quot;Calling startActivity() from outside of an Activity &quot;</div><div class="line">                + &quot; context requires the FLAG_ACTIVITY_NEW_TASK flag.&quot;</div><div class="line">                + &quot; Is this really what you want?&quot;);</div><div class="line">    &#125;</div><div class="line">    mMainThread.getInstrumentation().execStartActivity(</div><div class="line">            getOuterContext(), mMainThread.getApplicationThread(), null,</div><div class="line">            (Activity) null, intent, -1, options);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里是调用了Instrumentation类的execStartActivity方法</p>
+<a id="more"></a>
+<p>2.Activity类的startActivity方法</p>
+<p>调用如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) &#123;</div><div class="line">    if (mParent == null) &#123;</div><div class="line">        Instrumentation.ActivityResult ar =</div><div class="line">            mInstrumentation.execStartActivity(</div><div class="line">                this, mMainThread.getApplicationThread(), mToken, this,</div><div class="line">                intent, requestCode, options);</div><div class="line">        if (ar != null) &#123;</div><div class="line">            mMainThread.sendActivityResult(</div><div class="line">                mToken, mEmbeddedID, requestCode, ar.getResultCode(),</div><div class="line">                ar.getResultData());</div><div class="line">        &#125;</div><div class="line">        if (requestCode &gt;= 0) &#123;</div><div class="line">            mStartedActivity = true;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        cancelInputsAndStartExitTransition(options);</div><div class="line">        // TODO Consider clearing/flushing other event sources and events for child windows.</div><div class="line">    &#125; else &#123;</div><div class="line">        if (options != null) &#123;</div><div class="line">            mParent.startActivityFromChild(this, intent, requestCode, options);</div><div class="line">        &#125; else &#123;</div><div class="line">            // Note we want to go through this method for compatibility with</div><div class="line">            // existing applications that may have overridden it.</div><div class="line">            mParent.startActivityFromChild(this, intent, requestCode);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以看到这里也是调用了Instrumentation类的execStartActivity方法</p>
+<p>所以其实这两种启动方式后面都是调用的同样的方法，对于启动插件中的Activity，自然我们是需要了解整个Activity的启动流程的，通过流程分析去寻找可以实现启动插件中Activity的方法</p>
+<h4 id="Activity启动流程"><a href="#Activity启动流程" class="headerlink" title="Activity启动流程"></a>Activity启动流程</h4><p>上面说到Activity启动会走到Instrumentation类的execStartActivity方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public ActivityResult execStartActivity(</div><div class="line">        Context who, IBinder contextThread, IBinder token, Activity target,</div><div class="line">        Intent intent, int requestCode, Bundle options) &#123;</div><div class="line">    IApplicationThread whoThread = (IApplicationThread) contextThread;</div><div class="line">    Uri referrer = target != null ? target.onProvideReferrer() : null;</div><div class="line">    ...</div><div class="line">    try &#123;</div><div class="line">        intent.migrateExtraStreamToClipData();</div><div class="line">        intent.prepareToLeaveProcess();</div><div class="line">        int result = ActivityManagerNative.getDefault()</div><div class="line">            .startActivity(whoThread, who.getBasePackageName(), intent,</div><div class="line">                    intent.resolveTypeIfNeeded(who.getContentResolver()),</div><div class="line">                    token, target != null ? target.mEmbeddedID : null,</div><div class="line">                    requestCode, 0, null, options);</div><div class="line">        checkStartActivityResult(result, intent);</div><div class="line">    &#125; catch (RemoteException e) &#123;</div><div class="line">        throw new RuntimeException(&quot;Failure from system&quot;, e);</div><div class="line">    &#125;</div><div class="line">    return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到这里的调用了ActivityManagerNative类的startActivity方法，而ActivityManagerNative实际上就是ActivityManagerService这个远程对象的Binder代理对象；每次需要与AMS打交道的时候，需要借助这个代理对象通过驱动进而完成IPC调用。</p>
+<p>所以我们可以去ActivityManagerService中寻找startActivity方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public final int startActivity(IApplicationThread caller, String callingPackage,</div><div class="line">        Intent intent, String resolvedType, IBinder resultTo, String resultWho, int requestCode,</div><div class="line">        int startFlags, ProfilerInfo profilerInfo, Bundle options) &#123;</div><div class="line">    return startActivityAsUser(caller, callingPackage, intent, resolvedType, resultTo,</div><div class="line">        resultWho, requestCode, startFlags, profilerInfo, options,</div><div class="line">        UserHandle.getCallingUserId());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里调用了startActivityAsUser方法，而这里又掉用了ActivityStackSupervisor类的startActivityMayWait方法。</p>
+<p>startActivityMayWait这个方法前面对参数进行了一系列处理，我们需要知道的是，在这个方法内部对传进来的Intent进行了解析，并尝试从中取出关于启动Activity的信息，然后这个方法调用了startActivityLocked方法；在startActivityLocked方法内部进行了一系列重要的检查：比如权限检查，Activity的exported属性检查等等；</p>
+<p>启动没有在Manifestfest中显示声明的Activity抛异常也是这里发生的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if (err == ActivityManager.START_SUCCESS &amp;&amp; aInfo == null) &#123;</div><div class="line">         // We couldn&apos;t find the specific class specified in the Intent.</div><div class="line">         // Also the end of the line.</div><div class="line">         err = ActivityManager.START_CLASS_NOT_FOUND;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>抛出异常后，Instrumentation类的execStartActivity方法调用checkStartActivityResult方法来捕获这个异常，然后报出错误信息如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">case ActivityManager.START_CLASS_NOT_FOUND:</div><div class="line">    if (intent instanceof Intent &amp;&amp; ((Intent)intent).getComponent() != null)</div><div class="line">        throw new ActivityNotFoundException(</div><div class="line">                &quot;Unable to find explicit activity class &quot;</div><div class="line">                + ((Intent)intent).getComponent().toShortString()</div><div class="line">                + &quot;; have you declared this activity in your AndroidManifest.xml?&quot;);</div><div class="line">        throw new ActivityNotFoundException(</div><div class="line">                &quot;No Activity found to handle &quot; + intent);</div></pre></td></tr></table></figure></p>
+<p>正常流程走的话，就是ActivityStackSupervisor与ActivityStack之间的调用方法了，我们没有必要了解这些调用方法到底做了什么，流程如下</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-5a13592354d63433.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 ActivityStackSupervisor与ActivityStack之间调用"><br></div>
+
+<p>这里最后调用了ActivityStackSupervisor中realStrartActivityLocked方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">final boolean realStartActivityLocked(ActivityRecord r,</div><div class="line">            ProcessRecord app, boolean andResume, boolean checkConfig)</div><div class="line">            throws RemoteException &#123;</div><div class="line">  ...</div><div class="line">  app.thread.scheduleLaunchActivity(new Intent(r.intent), r.appToken,</div><div class="line">                    System.identityHashCode(r), r.info, new Configuration(mService.mConfiguration),</div><div class="line">                    new Configuration(stack.mOverrideConfig), r.compat, r.launchedFromPackage,</div><div class="line">                    task.voiceInteractor, app.repProcState, r.icicle, r.persistentState, results,</div><div class="line">                    newIntents, !andResume, mService.isNextTransitionForward(), profilerInfo);</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从现在开始则是开始了真正的Activity对象创建以及启动过程，这里调用了ApplicationThread的scheduleLaunchActivity方法，而ApplicationThread与前面的ApplicationThread类一样，它真正的实现是在ActivityThread里，那么接下来看一下ActivityThread的scheduleLaunchActivity方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public final void scheduleLaunchActivity(Intent intent, IBinder token, int ident,</div><div class="line">        ActivityInfo info, Configuration curConfig, Configuration overrideConfig,</div><div class="line">        CompatibilityInfo compatInfo, String referrer, IVoiceInteractor voiceInteractor,</div><div class="line">        int procState, Bundle state, PersistableBundle persistentState,</div><div class="line">        List&lt;ResultInfo&gt; pendingResults, List&lt;ReferrerIntent&gt; pendingNewIntents,</div><div class="line">        boolean notResumed, boolean isForward, ProfilerInfo profilerInfo) &#123;</div><div class="line"></div><div class="line">    updateProcessState(procState, false);</div><div class="line"></div><div class="line">    ActivityClientRecord r = new ActivityClientRecord();</div><div class="line">    ...</div><div class="line">    sendMessage(H.LAUNCH_ACTIVITY, r);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ActivityThread中的Handler会对发送的LAUNCH_ACTIVITY消息进行处理，处理如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, &quot;activityStart&quot;);</div><div class="line">final ActivityClientRecord r = (ActivityClientRecord) msg.obj;</div><div class="line"></div><div class="line">r.packageInfo = getPackageInfoNoCheck(</div><div class="line">        r.activityInfo.applicationInfo, r.compatInfo);</div><div class="line">handleLaunchActivity(r, null);</div><div class="line">Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div></pre></td></tr></table></figure>
+<p>这里调用了handleLaunchActivity方法，而handleLaunchActivity内部又掉用了performLaunchActivity方法，这个方法代码较多，我省略掉对于我们来说不是很重要的代码，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">private Activity performLaunchActivity(ActivityClientRecord r, Intent customIntent) &#123;</div><div class="line">    ...</div><div class="line">    try &#123;</div><div class="line">        java.lang.ClassLoader cl = r.packageInfo.getClassLoader();</div><div class="line">        activity = mInstrumentation.newActivity(</div><div class="line">                cl, component.getClassName(), r.intent);</div><div class="line">        StrictMode.incrementExpectedActivityCount(activity.getClass());</div><div class="line">        r.intent.setExtrasClassLoader(cl);</div><div class="line">        r.intent.prepareToEnterProcess();</div><div class="line">        if (r.state != null) &#123;</div><div class="line">            r.state.setClassLoader(cl);</div><div class="line">        &#125;</div><div class="line">    &#125; catch (Exception e) &#123;</div><div class="line">        if (!mInstrumentation.onException(activity, e)) &#123;</div><div class="line">            throw new RuntimeException(</div><div class="line">                &quot;Unable to instantiate activity &quot; + component</div><div class="line">                + &quot;: &quot; + e.toString(), e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    try &#123;</div><div class="line">        Application app = r.packageInfo.makeApplication(false, mInstrumentation);</div><div class="line">        ...</div><div class="line">        if (activity != null) &#123;</div><div class="line">            Context appContext = createBaseContextForActivity(r, activity);</div><div class="line">            CharSequence title = r.activityInfo.loadLabel(appContext.getPackageManager());</div><div class="line">            Configuration config = new Configuration(mCompatConfiguration);</div><div class="line">            if (DEBUG_CONFIGURATION) Slog.v(TAG, &quot;Launching activity &quot;</div><div class="line">                    + r.activityInfo.name + &quot; with config &quot; + config);</div><div class="line">            activity.attach(appContext, this, getInstrumentation(), r.token,</div><div class="line">                    r.ident, app, r.intent, r.activityInfo, title, r.parent,</div><div class="line">                    r.embeddedID, r.lastNonConfigurationInstances, config,</div><div class="line">                    r.referrer, r.voiceInteractor);</div><div class="line">            ...</div><div class="line">            activity.mCalled = false;</div><div class="line">            if (r.isPersistable()) &#123;</div><div class="line">                mInstrumentation.callActivityOnCreate(activity, r.state, r.persistentState);</div><div class="line">            &#125; else &#123;</div><div class="line">                mInstrumentation.callActivityOnCreate(activity, r.state);</div><div class="line">            &#125;</div><div class="line">            ...</div><div class="line">    return activity;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到这里首先通过ClassLoader加载并通过反射创建Activity对象，如果Application还没有创建，那么创建Application对象，然后创建Context对象并回调相应的生命周期方法。</p>
+<p>那么到这里Activity启动的流程就结束了，这里其实我只是简单的描述了与我们本文有关的部分，当然如果有兴趣对其中流程更多细节了解的部分，可以去查看老罗的代码分析。</p>
+<h4 id="启动插件Activity"><a href="#启动插件Activity" class="headerlink" title="启动插件Activity"></a>启动插件Activity</h4><p>首先我们简单想一下启动插件Activity会面临的问题</p>
+<p>1.插件中的Activity并没有在我们的宿主Manifestfest中注册<br>2.Activity对象创建通过ClassLoader加载，这里的ClassLoader是宿主的加载器并非插件Apk的加载器</p>
+<p>那我们分别来解决这些已知的问题</p>
+<p><strong>瞒天过海</strong>—-启动非Manifestfest的Activity</p>
+<ul>
+<li>瞒天过海 ：意思是瞒住上天，偷渡大海。比喻用谎言和伪装向别人隐瞒自己的真实意图，在背地里偷偷地行动。</li>
+</ul>
+<p>怎么瞒住系统去启动非Manifestfest的Activity呢？</p>
+<p>我们可以在AndroidManifest.xml里面声明一个替身Activity，在启动的非Manifestfest的Activity的时候将它替换成我们的替身Activity，瞒住系统的检查，然后在合适的时候把这个假的替换成我们真正需要启动的Activity就可以了。</p>
+<p>那么接下来的问题就什么时候去将要启动Activity替换为替身Activity和将替身Activity再替换回要启动的Activity？</p>
+<p>上面对于Activity启动进行了分析，对于上面的流程可以简化为下图表示</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-11479e06471f1954.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图2 Activity启动流程简图"><br></div>
+
+<p>Activity信息检验过程是在AMS进程完成的，我们对system_server进程里面的操作无能为力，只有在我们App进程里面执行的过程才是有可能被Hook掉的。所以我们只能在第一步里面去做启动Activity替换为替身Activity，第三步做替身Activity替换回要启动的Activity，一步步来分别介绍处理。</p>
+<p><strong>1.启动Activity替换为替身Activity</strong></p>
+<p>我们之前在启动流程已经分析过了，两种启动方式都会调用到Instrumentation的execStartActivity方法，这里是App进程，而execStartActivity方法则调用ActivityManagerService的startActivity，这里则已经是AMS进程了，所以我们替换启动Activity貌似只有Instrumentation这个方法了。</p>
+<p>但是我们仔细分析一下如果hook住Instrumentation的话需要两个入口去做相关的hook，而且其中一个入口还与我们调用的Activity有关联，处理起来会比较麻烦，所以我们可以选择从调用ActivityManagerService这里入手看一下能否满足我们的需求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">int result = ActivityManagerNative.getDefault()</div><div class="line">           .startActivity(whoThread, who.getBasePackageName(), intent,</div><div class="line">                   intent.resolveTypeIfNeeded(who.getContentResolver()),</div><div class="line">                   token, target != null ? target.mEmbeddedID : null,</div><div class="line">                   requestCode, 0, null, options);</div></pre></td></tr></table></figure>
+<p>我们看一下这里的 ActivityManagerNative.getDefault()方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">static public IActivityManager getDefault() &#123;</div><div class="line">        return gDefault.get();</div><div class="line">&#125;</div><div class="line"></div><div class="line">private static final Singleton&lt;IActivityManager&gt; gDefault = new Singleton&lt;IActivityManager&gt;() &#123;</div><div class="line">    protected IActivityManager create() &#123;</div><div class="line">        IBinder b = ServiceManager.getService(&quot;activity&quot;);</div><div class="line">        if (false) &#123;</div><div class="line">            Log.v(&quot;ActivityManager&quot;, &quot;default service binder = &quot; + b);</div><div class="line">        &#125;</div><div class="line">        IActivityManager am = asInterface(b);</div><div class="line">        if (false) &#123;</div><div class="line">            Log.v(&quot;ActivityManager&quot;, &quot;default service = &quot; + am);</div><div class="line">        &#125;</div><div class="line">        return am;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>其实前面也说了，这里是调用了ActivityManagerService这个远程对象的Binder代理对象，而ActivityManagerService继承自ActivityManagerNative，ActivityManagerNative又继承了接口类IActivityManager，所以这里其实可以用动态代理的方式来hook住ActivityManagerService。</p>
+<p>至于动态代理是啥？自行百度了</p>
+<p>接下来看一下我们Hook住ActivityManagerService的方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">//获取ActivityManagerNative类</div><div class="line">Class&lt;?&gt; activityManagerNativeClass = Class.forName(&quot;android.app.ActivityManagerNative&quot;);</div><div class="line">//获取ActivityManagerNative中的变量gDefault</div><div class="line">Field gDefaultField = activityManagerNativeClass.getDeclaredField(&quot;gDefault&quot;);</div><div class="line">gDefaultField.setAccessible(true);</div><div class="line"></div><div class="line">//gDefault为静态变量，所以可以通过get(null)获取静态变量的对象</div><div class="line">Object gDefault = gDefaultField.get(null);</div><div class="line"></div><div class="line">Class&lt;?&gt; singleton = Class.forName(&quot;android.util.Singleton&quot;);</div><div class="line">Field mInstanceField = singleton.getDeclaredField(&quot;mInstance&quot;);</div><div class="line">mInstanceField.setAccessible(true);</div><div class="line"></div><div class="line">//获取gDefault获取原始的的IActivityManager对象</div><div class="line">Object rawIActivityManager = mInstanceField.get(gDefault);</div><div class="line">Class&lt;?&gt; iActivityManagerInterface = Class.forName(&quot;android.app.IActivityManager&quot;);</div><div class="line">//创建一个IActivityManager对象的代理对象, 然后替换这个字段, 让我们的代理对象帮忙干活</div><div class="line">Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),</div><div class="line">        new Class&lt;?&gt;[]&#123;iActivityManagerInterface&#125;, new IActivtyManangerHandler(rawIActivityManager));</div><div class="line">mInstanceField.set(gDefault, proxy);</div></pre></td></tr></table></figure>
+<p>所以当我们hook住这里的ActivityManagerNative后，下一次系统运行到这里就会获取到我们的代理对象，通过代理对象我们可以实现一些相关的替换工作。</p>
+<p>接下来看一下代理对象的代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">public class IActivtyManangerHandler implements InvocationHandler&#123;</div><div class="line"></div><div class="line">    Object mBase;</div><div class="line">    public IActivtyManangerHandler(Object mBase) &#123;</div><div class="line">        this.mBase = mBase;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</div><div class="line"></div><div class="line">        if (&quot;startActivity&quot;.equals(method.getName()))&#123;</div><div class="line"></div><div class="line">            Intent raw;</div><div class="line">            int index = 0;</div><div class="line">            for (int i = 0; i &lt; args.length; i++) &#123;</div><div class="line">                if (args[i] instanceof Intent) &#123;</div><div class="line">                    index = i;</div><div class="line">                    break;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            raw = (Intent) args[index];</div><div class="line">            ComponentName targetComponentName = raw.getComponent();</div><div class="line">            Intent intent = new Intent();</div><div class="line">            ComponentName subComponentName = new ComponentName(stubPackage,SubActivity.class.getName());</div><div class="line">            intent.setComponent(subComponentName);</div><div class="line">            intent.putExtra(ActivityHookHelper.EXTRA_TARGET_INTENT,raw);</div><div class="line">            args[index] = intent;</div><div class="line">            </div><div class="line">            return method.invoke(mBase,args);</div><div class="line">        &#125;</div><div class="line">        return method.invoke(mBase,args);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里其实就是监听到了ActivityManagerService的startActivity方法，然后我们取出之前存进去的启动需要启动Activity的intent，替换构建我们替身Activity的intent，同时将启动Activity的intent作为传递数据同时传递过去，完成这些操作后，最后调用method.invoke(mBase,args)方法，继续ActivityManagerService的startActivity方法，这时候已经将其中的参数替换了，并且用替身Activity是可以通过后续的各种Activity信息校验过程的。</p>
+<p>那么启动Activity替换为替身Activity我们这里已经完成了，接下来就是还原为启动Activity了</p>
+<p><strong>2.替身Activity还原为启动Activity</strong></p>
+<p>依据上面的代码分析与前面提到的只有在我们App进程里面执行的过程才是有可能被Hook掉的,所以我们可以处理的地方只有在ActivityStackSupervisor中realStrartActivityLocked方法调用ActivityThread的scheduleLaunchActivity方法后，也就是ActivityThread才是我们可能可以Hook的地方。</p>
+<p>scheduleLaunchActivity方法其实是发送LAUNCH_ACTIVITY消息，而接下来ActivityThread中的Handler会对发送的LAUNCH_ACTIVITY消息进行处理。</p>
+<p>那么我们了解下Handler是如何处理接收到的Message的，如果我们能拦截这个Message的接收过程，就有可能完成替身恢复工作；Handler类的dispathMesage如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public void dispatchMessage(Message msg) &#123;</div><div class="line">    if (msg.callback != null) &#123;</div><div class="line">        handleCallback(msg);</div><div class="line">    &#125; else &#123;</div><div class="line">        if (mCallback != null) &#123;</div><div class="line">            if (mCallback.handleMessage(msg)) &#123;</div><div class="line">                return;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        handleMessage(msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到默认情况下Handler的派发流程是：</p>
+<ul>
+<li>如果Message中的callback不为空，通过callback来处理（开头我们提到Message中有一个callback）</li>
+<li>如果Handler的mCallback不为空，通过mCallback来处理</li>
+<li>如果上面两个都为空，才调用handleMessage来处理</li>
+</ul>
+<p>而ActivityThread中仅仅是重构了Handler的handleMessage方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public void handleMessage(Message msg) &#123;</div><div class="line">        if (DEBUG_MESSAGES) Slog.v(TAG, &quot;&gt;&gt;&gt; handling: &quot; + codeToString(msg.what));</div><div class="line">        switch (msg.what) &#123;</div><div class="line">            case LAUNCH_ACTIVITY: &#123;</div><div class="line">                Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, &quot;activityStart&quot;);</div><div class="line">                final ActivityClientRecord r = (ActivityClientRecord) msg.obj;</div><div class="line"></div><div class="line">                r.packageInfo = getPackageInfoNoCheck(</div><div class="line">                        r.activityInfo.applicationInfo, r.compatInfo);</div><div class="line">                handleLaunchActivity(r, null);</div><div class="line">                Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div><div class="line">            &#125; break;</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以我们可以hook住Handler的mCallback，在mCallback.handleMessag中去进行处理，处理后手动调用Handler的handleMessage方法，这样就可以将我们要做的操作完成，并且顺利的调用了handleMessage方法。</p>
+<p>接下来看一下如何Hook住ActivityTread的Handler中的mCallback</p>
+<p>ActivityTread中有一个静态的ActivityTread变量currentActivityThread，我们可以通过这个静态变量获取到ActivityTread对象，然后获取ActivityTread类中的Handler对象，接下来将Handler对象中的mCallback替换为我们需要操作的Callback即可，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Class&lt;?&gt; activityThreadClass = Class.forName(&quot;android.app.ActivityThread&quot;);</div><div class="line">Method currentActivityThreadMethod = activityThreadClass.getDeclaredMethod(&quot;currentActivityThread&quot;);</div><div class="line">currentActivityThreadMethod.setAccessible(true);</div><div class="line">//获取ActivityThread对象</div><div class="line">Object currentActivityThread = currentActivityThreadMethod.invoke(null);</div><div class="line"></div><div class="line">Field mHField = activityThreadClass.getDeclaredField(&quot;mH&quot;);</div><div class="line">mHField.setAccessible(true);</div><div class="line">//获取ActivityThread变量mH对象</div><div class="line">Handler mH = (Handler) mHField.get(currentActivityThread);</div><div class="line"></div><div class="line">Field mCallBackField = Handler.class.getDeclaredField(&quot;mCallback&quot;);</div><div class="line">mCallBackField.setAccessible(true);</div><div class="line"></div><div class="line">//替换mH这个Handler对象的mCallback变量</div><div class="line">mCallBackField.set(mH, new ActivityThreadHandlerCallback(mH));</div></pre></td></tr></table></figure>
+<p>所以当scheduleLaunchActivity方法其实是发送LAUNCH_ACTIVITY消息后，其实是我们这里定义的ActivityThreadHandlerCallback这个Callback方法会收到这个消息与相关的参数，接下来我们看下ActivityThreadHandlerCallback这个Callback方法如何处理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">public class ActivityThreadHandlerCallback implements Handler.Callback&#123;</div><div class="line"></div><div class="line">    Handler mBase;</div><div class="line">    public ActivityThreadHandlerCallback(Handler base) &#123;</div><div class="line">        mBase = base;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean handleMessage(Message msg) &#123;</div><div class="line">        switch (msg.what)&#123;</div><div class="line">            case 100:</div><div class="line">                handleLaunchActivity(msg);</div><div class="line">                break;</div><div class="line">        &#125;</div><div class="line">        mBase.handleMessage(msg);</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void handleLaunchActivity(Message msg)&#123;</div><div class="line">        Object obj = msg.obj;</div><div class="line"></div><div class="line">        try &#123;</div><div class="line">            Field intent = obj.getClass().getDeclaredField(&quot;intent&quot;);</div><div class="line">            intent.setAccessible(true);</div><div class="line">            Intent raw = (Intent) intent.get(obj);</div><div class="line">            Intent target = raw.getParcelableExtra(ActivityHookHelper.EXTRA_TARGET_INTENT);</div><div class="line">            raw.setComponent(target.getComponent());</div><div class="line"></div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到我们这里其实就是取出了其中的替身intent对象，接下来将传递过来的真实Activity的intent对象替换掉替身intent对象，最后调用mH中重载的handleMessage方法，这样就可以继续走Activity的创建流程了，但是其中的数据已经被我们替换完成了。</p>
+<p>到这里就完成了关于启动非Manifestfest的Activity，我们绕过了AMS进行对于Activity相关的信息校验。</p>
+<p><strong>釜底抽薪</strong>—-替换宿主的ClassLoader</p>
+<ul>
+<li>瞒天过海 ：意思是把柴火从锅底抽掉，才能使水止沸。比喻从根本上解决问题。</li>
+</ul>
+<p>前面我们已经完成了关于启动非Manifestfest的Activity，这时候我们要是启动宿主中非Manifestfest的Activity肯定是没有问题的，但是要是启动插件中的Apk还是不行的，前面分析的时候也说到了这里的ClassLoader是宿主的加载器并非插件Apk的加载器</p>
+<p>我们继续看一下ClassLoader加载并通过反射创建Activity对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">java.lang.ClassLoader cl = r.packageInfo.getClassLoader();</div><div class="line">activity = mInstrumentation.newActivity(cl, component.getClassName(), r.intent);</div></pre></td></tr></table></figure>
+<p>这里系统通过待启动的Activity的类名className，然后使用ClassLoader对象cl把这个类加载进虚拟机，最后使用反射创建了这个Activity类的实例对象。cl这个ClasssLoader对象通过r.packageInfo对象的getClassLoader()方法得到，r.packageInfo是一个LoadedApk类的对象；那么，LoadedApk到底是个什么东西？？</p>
+<p>LoadedApk对象是APK文件在内存中的表示。 Apk文件的相关信息，诸如Apk文件的代码和资源，甚至代码里面的Activity，Service等组件的信息我们都可以通过此对象获取。</p>
+<p>而追溯这个r.packageInfo，他来源于handleMesage方法里</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, &quot;activityStart&quot;);</div><div class="line">final ActivityClientRecord r = (ActivityClientRecord) msg.obj;</div><div class="line"></div><div class="line">r.packageInfo = getPackageInfoNoCheck(</div><div class="line">        r.activityInfo.applicationInfo, r.compatInfo);</div><div class="line">handleLaunchActivity(r, null);</div><div class="line">Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div></pre></td></tr></table></figure>
+<p>这个r.packageInfo是调用getPackageInfoNoCheck方法获取到的，这个方法又调用了getPackageInfo，我们看下这个方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">private LoadedApk getPackageInfo(ApplicationInfo aInfo, CompatibilityInfo compatInfo,</div><div class="line">        ClassLoader baseLoader, boolean securityViolation, boolean includeCode,</div><div class="line">        boolean registerPackage) &#123;</div><div class="line">    final boolean differentUser = (UserHandle.myUserId() != UserHandle.getUserId(aInfo.uid));</div><div class="line">    synchronized (mResourcesManager) &#123;</div><div class="line">        WeakReference&lt;LoadedApk&gt; ref;</div><div class="line">        if (differentUser) &#123;</div><div class="line">            // Caching not supported across users</div><div class="line">            ref = null;</div><div class="line">        &#125; else if (includeCode) &#123;</div><div class="line">            ref = mPackages.get(aInfo.packageName);</div><div class="line">        &#125; else &#123;</div><div class="line">            ref = mResourcePackages.get(aInfo.packageName);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        LoadedApk packageInfo = ref != null ? ref.get() : null;</div><div class="line">        if (packageInfo == null || (packageInfo.mResources != null</div><div class="line">                &amp;&amp; !packageInfo.mResources.getAssets().isUpToDate())) &#123;</div><div class="line">            if (localLOGV) Slog.v(TAG, (includeCode ? &quot;Loading code package &quot;</div><div class="line">                    : &quot;Loading resource-only package &quot;) + aInfo.packageName</div><div class="line">                    + &quot; (in &quot; + (mBoundApplication != null</div><div class="line">                            ? mBoundApplication.processName : null)</div><div class="line">                    + &quot;)&quot;);</div><div class="line">            packageInfo =</div><div class="line">                new LoadedApk(this, aInfo, compatInfo, baseLoader,</div><div class="line">                        securityViolation, includeCode &amp;&amp;</div><div class="line">                        (aInfo.flags&amp;ApplicationInfo.FLAG_HAS_CODE) != 0, registerPackage);</div><div class="line"></div><div class="line">            if (mSystemThread &amp;&amp; &quot;android&quot;.equals(aInfo.packageName)) &#123;</div><div class="line">                packageInfo.installSystemApplicationInfo(aInfo,</div><div class="line">                        getSystemContext().mPackageInfo.getClassLoader());</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            if (differentUser) &#123;</div><div class="line">                // Caching not supported across users</div><div class="line">            &#125; else if (includeCode) &#123;</div><div class="line">                mPackages.put(aInfo.packageName,</div><div class="line">                        new WeakReference&lt;LoadedApk&gt;(packageInfo));</div><div class="line">            &#125; else &#123;</div><div class="line">                mResourcePackages.put(aInfo.packageName,</div><div class="line">                        new WeakReference&lt;LoadedApk&gt;(packageInfo));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return packageInfo;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里首先通过当前进程userId与传入App信息的userId是否相同，如果相同，那么可以共享缓存数据（要么缓存的代码数据，要么缓存的资源数据）</p>
+<p>接下来尝试获取缓存数据；如果没有命中缓存数据，才通过LoadedApk的构造函数创建了LoadedApk对象；创建成功之后，如果是同一个uid还放入了缓存。</p>
+<p>那么其实我们可以手动将我们的插件Apk的LoadApk放入这块缓存数据中，这样当系统获取的时候就可以获取到插件Apk的LoadApk信息，从而完成后面的创建Activity类的实例对象。</p>
+<p>那么我们需要先构建出插件Apk的LoadApk，而构建方法则可以用上述的getPackageInfo，但是这是一个私有的方法，可能会面临后续系统修改带来的变化，并不安全，而获取LoadApk还有一个公共方法就是前面提到的getPackageInfoNoCheck方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public final LoadedApk getPackageInfoNoCheck(ApplicationInfo ai,</div><div class="line">        CompatibilityInfo compatInfo) &#123;</div><div class="line">    return getPackageInfo(ai, compatInfo, null, false, true, false);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里需要两个参数</p>
+<ul>
+<li><p>ApplicationInfo 从一个特定的应用得到的信息。这些信息是从相对应的Androdimanifest.xml的&lt; application&gt;标签中收集到的。</p>
+</li>
+<li><p>CompatibilityInfo 顾名思义，代表这个App的兼容性信息，比如targetSDK版本等等，在CompatibilityInfo类里面有一个公有字段DEFAULT_COMPATIBILITY_INFO代表默认兼容性信息，我们用这个默认信息即可。</p>
+</li>
+</ul>
+<p><strong>构建ApplicationInfo</strong></p>
+<p>ApplicationInfo的数据从Androdimanifest.xml中获取，这与我们前面获取packageName与versionCode相类似，我们前面是通过自己解析相关标签获取的，由于ApplicationInfo中的数据相对较多，所以我们还是通过原生系统中的方法来获取ApplicationInfo。</p>
+<p>系统获取ApplicationInfo是通过PackageParser这个类的中的方法来实现的，但是这个类的兼容性很差；Google几乎在每一个Android版本都对这个类动刀子，如果坚持使用系统的解析方式，必须写一系列兼容行代码。</p>
+<p>我这里使用是6.0即API 23作为例子，非这个版本可能会出现问题</p>
+<p>6.0版本中的PackageParser使用generateApplication方法来获取ApplicationInfo，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public static ApplicationInfo generateApplicationInfo(Package p, int flags,</div><div class="line">   PackageUserState state)</div></pre></td></tr></table></figure>
+<p>由于PackageParser是@hide属性，我们首先将这个方法反射出来如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Class&lt;?&gt; packageParserClass = Class.forName(&quot;android.content.pm.PackageParser&quot;);</div><div class="line">Class&lt;?&gt; packageParser$PackageClass = Class.forName(&quot;android.content.pm.PackageParser$Package&quot;);</div><div class="line">Class&lt;?&gt; packageUserStateClass = Class.forName(&quot;android.content.pm.PackageUserState&quot;);</div><div class="line"></div><div class="line">Method generateApplicationInfoMethod = packageParserClass.getDeclaredMethod(&quot;generateApplicationInfo&quot;,</div><div class="line">        packageParser$PackageClass,int.class,packageUserStateClass);</div></pre></td></tr></table></figure>
+<p>这里需要三个参数，我们一一来构建他们</p>
+<ul>
+<li><p>PackageParser.Package<br>这个类代表从PackageParser中解析得到的某个apk包的信息，是磁盘上apk文件在内存中的数据结构表示，因此，要获取这个类，肯定需要解析整个apk文件。PackageParser中解析apk的核心方法是parsePackage，这个方法返回的就是一个Package类型的实例，因此我们调用这个方法即可，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> Object packageParser = packageParserClass.newInstance();</div><div class="line">Method parsePackageMethod = packageParserClass.getDeclaredMethod(&quot;parsePackage&quot;, File.class, int.class);</div><div class="line">Object packageObj = parsePackageMethod.invoke(packageParser, apkFile, 0);</div></pre></td></tr></table></figure>
+</li>
+<li><p>flags 这个是解析方式 我们选择0解析全部即可</p>
+</li>
+<li><p>PackageUserState 代表不同用户中包的信息。由于Android是一个多任务多用户系统，因此不同的用户同一个包可能有不同的状态，这里我们只需要获取包的信息，因此直接使用默认的即可。代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Object defaultPackageUserState = packageUserStateClass.newInstance();</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>到这里参数就准备好了，接下来就是调用上面反射出来的方法，生成我们需要的ApplicationInfo，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">ApplicationInfo applicationInfo = (ApplicationInfo) generateApplicationInfoMethod.invoke(packageParser,</div><div class="line">        packageObj, 0, defaultPackageUserState);</div><div class="line">String apkPath = apkFile.getPath();</div><div class="line"></div><div class="line">applicationInfo.sourceDir = apkPath;</div><div class="line">applicationInfo.publicSourceDir = apkPath;</div></pre></td></tr></table></figure>
+<p><strong>将插件Apk的LoadApk放入缓存数据</strong></p>
+<p>前面已经构建好了ApplicationInfo，接下来要构建插件Apk的LoadApk了，前面说了构建LoadApk需要用到getPackageInfoNoCheck方法，同时其中参数ApplicationInfo我们已经构建完成了，另外的一个CompatibilityInfo用默认即可，接下来看代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">//获取ActivityThread对象</div><div class="line">Class&lt;?&gt; activityThreadClass = Class.forName(&quot;android.app.ActivityThread&quot;);</div><div class="line">Method currentActivityThreadMethod = activityThreadClass.getDeclaredMethod(&quot;currentActivityThread&quot;);</div><div class="line">currentActivityThreadMethod.setAccessible(true);</div><div class="line">Object currentActivityThread = currentActivityThreadMethod.invoke(null);</div><div class="line"></div><div class="line">//反射获取getPackageInfoNoCheck方法</div><div class="line">Class&lt;?&gt; compatibilityInfoClass = Class.forName(&quot;android.content.res.CompatibilityInfo&quot;);</div><div class="line">Method getPackageInfoNoCheckMethod = activityThreadClass.getDeclaredMethod(&quot;getPackageInfoNoCheck&quot;, ApplicationInfo.class, compatibilityInfoClass);</div><div class="line"></div><div class="line">//构建CompatibilityInfo</div><div class="line">Field defaultCompatibilityInfoField = compatibilityInfoClass.getDeclaredField(&quot;DEFAULT_COMPATIBILITY_INFO&quot;);</div><div class="line">defaultCompatibilityInfoField.setAccessible(true);</div><div class="line">Object defaultCompatibilityInfo = defaultCompatibilityInfoField.get(null);</div><div class="line"></div><div class="line">//构建ApplicationInfo</div><div class="line">ApplicationInfo applicationInfo = generateApplicationInfo(apkFile);</div><div class="line"></div><div class="line">//生成插件的LoadedApk</div><div class="line">Object loadedApk = getPackageInfoNoCheckMethod.invoke(currentActivityThread, applicationInfo, defaultCompatibilityInfo);</div></pre></td></tr></table></figure>
+<p>代码注释很清楚了，这里就构建好了插件的LoadedApk，接下来我们需要替换其中的ClassLoader，关于插件的ClasLoader怎么生成在上一篇文章中已经有说明了，这里就不在赘述了，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">File optimizedDirectoryFile = TransFormerManager.getContext().getDir(&quot;dex&quot;, Context.MODE_PRIVATE);</div><div class="line">ClassLoader classLoader = new DexClassLoader(apkFile.getPath(), optimizedDirectoryFile.getPath(), null, ClassLoader.getSystemClassLoader());</div><div class="line">Field mClassLoaderField = loadedApk.getClass().getDeclaredField(&quot;mClassLoader&quot;);</div><div class="line">mClassLoaderField.setAccessible(true);</div><div class="line">mClassLoaderField.set(loadedApk, classLoader);</div></pre></td></tr></table></figure>
+<p>到这里就真正的构建好了插件的LoadedApk，接下来就是将插件Apk的LoadApk放入缓存数据中，我们首先获取<br>ActivityThread中的缓存Map变量mPackages，接下来直接调用put方法即可，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">//获取到 mPackages 这个静态成员变量, 这里缓存了dex包的信息</div><div class="line">Field mPackagesField = activityThreadClass.getDeclaredField(&quot;mPackages&quot;);</div><div class="line">mPackagesField.setAccessible(true);</div><div class="line">Map mPackages = (Map)mPackagesField.get(currentActivityThread);</div><div class="line"></div><div class="line">//保持引用，防止弱引用被GC</div><div class="line">mLoadedApk.put(applicationInfo.packageName, loadedApk);</div><div class="line"></div><div class="line">WeakReference weakReference = new WeakReference(loadedApk);</div><div class="line">mPackages.put(applicationInfo.packageName,weakReference);</div></pre></td></tr></table></figure>
+<p>那么到这里就可以将插件中的Activity启动起来了，当然这里的Activity就是纯的Activity非AppCompatActivity</p>
+<h4 id="关于启动插件AppCompatActivity"><a href="#关于启动插件AppCompatActivity" class="headerlink" title="关于启动插件AppCompatActivity"></a>关于启动插件AppCompatActivity</h4><p>对于上面的成功启动的插件Activity是指的纯的Activity并非AppCompatActivity，启动AppCompatActivity则会报错，当然我花了蛮久时间还是没有解决启动AppCompatActivity的问题，这里我将当时研究时候用的Hook方法和思路说明一下，希望有同学可以指导一下。</p>
+<p>当启动AppCompatActivity的时候，会报出如下错误信息</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-9af7931196faeb16.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图3 启动AppCompatActivity错误信息"><br></div>
+
+<p>可以看到这里成功启动了插件的AppCompatActivity,但是在AppCompatActivity构建Toolbar的时候出现问题了</p>
+<p>所以我们要看一下为什么会错误，错误信息在TypedArray的getDimensionPixelOffset方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public int getDimensionPixelOffset(int index, int defValue) &#123;</div><div class="line">    if (mRecycled) &#123;</div><div class="line">        throw new RuntimeException(&quot;Cannot make calls to a recycled instance!&quot;);</div><div class="line">    &#125;</div><div class="line">    index *= AssetManager.STYLE_NUM_ENTRIES;</div><div class="line">    final int[] data = mData;</div><div class="line">    final int type = data[index+AssetManager.STYLE_TYPE];</div><div class="line">    if (type == TypedValue.TYPE_NULL) &#123;</div><div class="line">        return defValue;</div><div class="line">    &#125; else if (type == TypedValue.TYPE_DIMENSION) &#123;</div><div class="line">        return TypedValue.complexToDimensionPixelOffset(</div><div class="line">                data[index + AssetManager.STYLE_DATA], mMetrics);</div><div class="line">    &#125; else if (type == TypedValue.TYPE_ATTRIBUTE) &#123;</div><div class="line">        final TypedValue value = mValue;</div><div class="line">        getValueAt(index*AssetManager.STYLE_NUM_ENTRIES, value);</div><div class="line">        throw new UnsupportedOperationException(</div><div class="line">                &quot;Failed to resolve attribute at index &quot; + index + &quot;: &quot; + value);</div><div class="line">    &#125;</div><div class="line">    throw new UnsupportedOperationException(&quot;Can&apos;t convert to dimension: type=0x&quot;</div><div class="line">            + Integer.toHexString(type));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到这里错误的原因就是type并非是TYPE_DIMENSION或者TYPE_NULL，所以才会报上述的错误，我查看了正常的启动这里的type是为TYPE_DIMENSION的，这里通过正常与错误对比是由于这里的data数据不一致，从而导致产生的type不一致从而导致的错误。</p>
+<p>而data数据是从mData获取的，这个mData是初始化就传进来的，而TintTypeArray在调用TypedArray的getDimensionPixelOffset方法时候会先初始化TypedArray，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public static TintTypedArray obtainStyledAttributes(Context context, AttributeSet set,</div><div class="line">        int[] attrs, int defStyleAttr, int defStyleRes) &#123;</div><div class="line">    TypedArray array = context.obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes);</div><div class="line">    return new TintTypedArray(context, array);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>经过层层调用，最后是通过Resource内部类Theme的obtainStyledAttributes方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public TypedArray obtainStyledAttributes(AttributeSet set,</div><div class="line">        @StyleableRes int[] attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) &#123;</div><div class="line">    final int len = attrs.length;</div><div class="line">    final TypedArray array = TypedArray.obtain(Resources.this, len);</div><div class="line"></div><div class="line">    // XXX note that for now we only work with compiled XML files.</div><div class="line">    // To support generic XML files we will need to manually parse</div><div class="line">    // out the attributes from the XML file (applying type information</div><div class="line">    // contained in the resources and such).</div><div class="line">    final XmlBlock.Parser parser = (XmlBlock.Parser)set;</div><div class="line">    AssetManager.applyStyle(mTheme, defStyleAttr, defStyleRes,</div><div class="line">            parser != null ? parser.mParseState : 0, attrs, array.mData, array.mIndices);</div><div class="line"></div><div class="line">    array.mTheme = this;</div><div class="line">    array.mXml = parser;</div><div class="line">    ...</div><div class="line">    return array;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过debug，发现在通过AssetManager.applyStyle()方法前，array是相同的，但是执行后两者arry就是天翻地覆的差别了，而AssetManager.applyStyle()又是调用下层的方法，无能为力，只好从applyStyle的参数下手，通过参数的差距来看运行错误的原因。</p>
+<p>通过debug对比我们会发现参数不同的情况存在mTheme与attrs这两个参数上面，而这里的mTheme是获取context中的theme，所以这两个参数其实都是来源于调用的地方，所以其实这个Context最上层的调用其实是我们启动的这个AppCompatActivity。</p>
+<p>而这个attrs参数经过向上查看，则来源于LayoutInflater的inflate方法，创建如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">final AttributeSet attrs = Xml.asAttributeSet(parser);</div></pre></td></tr></table></figure>
+<p>而这个parser则来源于上面的调用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">final Resources res = getContext().getResources();</div><div class="line"> final XmlResourceParser parser = res.getLayout(resource);</div></pre></td></tr></table></figure>
+<p>这个resource是系统自带的resource，所以在正常启动与异常启动都是一样的，所以这里其实又回到了Context上面。</p>
+<p>所以通过分析，问题出在了AppCompatActivity的Context中的两个变量了，分别是Resources与Resources.Theme，而在前面的Activity启动流程中我们可以得知这个AppCompatActivity的Context是在ActivtyThread内创建的。</p>
+<p>通过Context代码创建我们可以发现与LoadApk是有关系的</p>
+<p>所以我第一个想法是Hook掉LoadApk中的Resources，替换为宿主的Resources，但是这个想法是不能实现的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">Resources resources = packageInfo.getResources(mainThread);</div><div class="line">if (resources != null) &#123;</div><div class="line">    if (displayId != Display.DEFAULT_DISPLAY</div><div class="line">            || overrideConfiguration != null</div><div class="line">            || (compatInfo != null &amp;&amp; compatInfo.applicationScale</div><div class="line">                    != resources.getCompatibilityInfo().applicationScale)) &#123;</div><div class="line">        resources = mResourcesManager.getTopLevelResources(packageInfo.getResDir(),</div><div class="line">                packageInfo.getSplitResDirs(), packageInfo.getOverlayDirs(),</div><div class="line">                packageInfo.getApplicationInfo().sharedLibraryFiles, displayId,</div><div class="line">                overrideConfiguration, compatInfo);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">mResources = resources;</div></pre></td></tr></table></figure>
+<p>因为代码中虽然从LoadApk中获取了Resource，但是获取后又会重新创建一个，所以我们在LoadApk中Hook一个新的Resource是没有用的。</p>
+<p>所以只能另寻他法，通过创建Activity代码我们可以看到如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">activity.mCalled = false;</div><div class="line">if (r.isPersistable()) &#123;</div><div class="line">    mInstrumentation.callActivityOnCreate(activity, r.state, r.persistentState);</div><div class="line">&#125; else &#123;</div><div class="line">    mInstrumentation.callActivityOnCreate(activity, r.state);</div><div class="line">&#125;</div><div class="line">if (!activity.mCalled) &#123;</div><div class="line">    throw new SuperNotCalledException(</div><div class="line">        &quot;Activity &quot; + r.intent.getComponent().toShortString() +</div><div class="line">        &quot; did not call through to super.onCreate()&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以我们可以通过hook住Instrumentation这个类，至于怎么hook用动态代理的方式，当callActivityOnCreate执行时，我们先将这个方法拦截住，然后将这个Activity参数的Context变量Hook住，主要是将Context中的Resources与Resources.Theme替换为宿主的，从而Hook住。</p>
+<p>经过实践确实是起作用了，onCreate是通过了，但是在onResume里面又会产生错误，主要是Instrumentation这个动态代理我们只hook了callActivityOnCreate方法，但是onResume并非使用这种方式的，所以这个方法也只能作罢！</p>
+<p>虽然没有成功，但是还是有成果的，经过测试，会发现Resources.Theme是导致AppCompatContext不能启动的原因。</p>
+<p>Context中的Resources.Theme是通过Resources创建的，在上一篇说也有提到，所以就想通过Hook住Resources来使Context中的Resources.Theme是我们可以使用的Theme，至于怎么Hook住Resources，上面所采用的方式就不可以了，我们看一下ResourcesManager.getTopLevelResources方法，来看看这个Resources是如何创建的，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">Resources getTopLevelResources(String resDir, String[] splitResDirs,</div><div class="line">        String[] overlayDirs, String[] libDirs, int displayId,</div><div class="line">        Configuration overrideConfiguration, CompatibilityInfo compatInfo) &#123;</div><div class="line">    final float scale = compatInfo.applicationScale;</div><div class="line">    Configuration overrideConfigCopy = (overrideConfiguration != null)</div><div class="line">            ? new Configuration(overrideConfiguration) : null;</div><div class="line">    ResourcesKey key = new ResourcesKey(resDir, displayId, overrideConfigCopy, scale);</div><div class="line">    Resources r;</div><div class="line">    synchronized (this) &#123;</div><div class="line">        // Resources is app scale dependent.</div><div class="line">        if (DEBUG) Slog.w(TAG, &quot;getTopLevelResources: &quot; + resDir + &quot; / &quot; + scale);</div><div class="line"></div><div class="line">        WeakReference&lt;Resources&gt; wr = mActiveResources.get(key);</div><div class="line">        r = wr != null ? wr.get() : null;</div><div class="line">        //if (r != null) Log.i(TAG, &quot;isUpToDate &quot; + resDir + &quot;: &quot; + r.getAssets().isUpToDate());</div><div class="line">        if (r != null &amp;&amp; r.getAssets().isUpToDate()) &#123;</div><div class="line">            if (DEBUG) Slog.w(TAG, &quot;Returning cached resources &quot; + r + &quot; &quot; + resDir</div><div class="line">                    + &quot;: appScale=&quot; + r.getCompatibilityInfo().applicationScale</div><div class="line">                    + &quot; key=&quot; + key + &quot; overrideConfig=&quot; + overrideConfiguration);</div><div class="line">            return r;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到这里其实也是通过缓存去找这个Resources，所以通过Hook住ResourcesManager，向这个mActiveResources缓存中提前写入Resources，则可以在下一次获取Resources时候成功命中这块缓存，但是这么做还是会有问题的，主要是Context中Resources其实还是需要插件的Resources变量，而只是Context的Theme则用宿主的Theme变量，所以这么做是完全实现不了。</p>
+<p>所以只能寻找只Hook住Context的Theme变量的方式了，但是通过查看源码，并没有发现可以Hook的地方，故只能停留在这里了。。。</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>虽然对于启动插件AppCompatActivity我这里并没有成功，但是对于整个Activity的启动流程有了很深刻的映像，对于Hook相关的知识也有了一定的理解，相信对于后面的Hook相关的文章，大家一定可以轻松掌握了，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/插件/" rel="tag"># 插件</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/05/插件化实现（二）插件资源获取/" rel="next" title="插件化实现（二）插件资源获取">
+                <i class="fa fa-chevron-left"></i> 插件化实现（二）插件资源获取
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Activity启动流程"><span class="nav-number">1.</span> <span class="nav-text">Activity启动流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动插件Activity"><span class="nav-number">2.</span> <span class="nav-text">启动插件Activity</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于启动插件AppCompatActivity"><span class="nav-number">3.</span> <span class="nav-text">关于启动插件AppCompatActivity</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">4.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
