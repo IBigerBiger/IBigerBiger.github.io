@@ -1,0 +1,772 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="直播," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端直播开发（二）数据源采集">
+<meta property="og:url" content="http://yoursite.com/2017/01/26/移动端直播开发（二）数据源采集/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-1fc8da7acddf4b7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-03-18T08:33:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移动端直播开发（二）数据源采集">
+<meta name="twitter:description" content="上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-1fc8da7acddf4b7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/26/移动端直播开发（二）数据源采集/"/>
+
+
+
+
+
+  <title> 移动端直播开发（二）数据源采集 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/26/移动端直播开发（二）数据源采集/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移动端直播开发（二）数据源采集
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-26T20:12:53+08:00">
+                2017-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/01/26/移动端直播开发（二）数据源采集/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/26/移动端直播开发（二）数据源采集/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上面一篇介绍了直播服务器的搭建，并且也使用直播服务器实现了数据流的转发功能，那么这一篇主要介绍下关于Android端的数据采集相关的内容，那么Android端的需要采集的数据有哪些？主要是Camera摄像头获取的数据，与麦克风获取的音频数据，当然现在的直播软件也会有针对于游戏直播相关的桌面屏幕视频数据采集功能，但是由于桌面屏幕视频数据采集相对来说存在信息泄露的风险，这里就不做介绍，主要还是以音视频数据采集为主</p>
+<h4 id="一-Camera视频数据源采集"><a href="#一-Camera视频数据源采集" class="headerlink" title="一.Camera视频数据源采集"></a>一.Camera视频数据源采集</h4><p>对于直播来说，数据采集的同时我们要做到，视频数据同时显示在手机屏幕上，至于怎么将视频数据显示在手机屏幕上面，这个之前的博文有涉及到，大家可以看<a href="http://ibigerbiger.me/2017/02/13/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%BB%A4%E9%95%9C%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89OpenGL%E5%AE%9E%E7%8E%B0%E9%A2%84%E8%A7%88%E6%92%AD%E6%94%BE%E6%95%88%E6%9E%9C/" target="_blank" rel="external">移动端滤镜开发（三）OpenGL实现预览播放效果</a>，当然这篇文章也对于Camera相关API进行了讲解。</p>
+<p>接下来就是对于数据的采集了</p>
+<p>Android中的摄像头Camera提供了两个方式回调接口来获取每一帧数据：</p>
+<p>第一种方式：setPreviewCallback方法，设置回调接口：PreviewCallback，在回调方法：onPreviewFrame(byte[] data, Camera camera) 中处理每一帧数据</p>
+<p>第二种方式：setPreviewCallbackWithBuffer方法，同样设置回调接口：PreviewCallback，不过还需要一个方法配合使用：addCallbackBuffer，这个方法接受一个byte数组。</p>
+<p>两者的区别在于：</p>
+<p>第一种方式是onPreviewFrame回调方法会在每一帧数据准备好了就调用，但是第二种方式是在需要在前一帧的onPreviewFrame方法中调用addCallbackBuffer方法，下一帧的onPreviewFrame才会调用，同时addCallbackBuffer方法的参数的byte数据就是每一帧的原数据。所以这么一看就好理解了，就是第一种方法的onPreviewFrame调用是不可控制的，就是每一帧数据准备好了就回调，但是第二种方法是可控的，我们通过addCallbackBuffer的调用来控制onPreviewFrame的回调机制。</p>
+<a id="more"></a>
+<p>那么接下来就以第二种方法为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mCamera.setPreviewCallbackWithBuffer(new Camera.PreviewCallback() &#123;</div><div class="line">        @Override</div><div class="line">        public void onPreviewFrame(byte[] data, Camera camera) &#123;</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<p>这里面的data就是获取到的视频数据，这里的预览数据是 ImageFormat.NV21 格式的，一般情况下我们搭建的直播服务器会支持 ImageFormat.NV21 的资源，所以我们其实是这里拿数据进行编码后上传给服务器，OpenGL负责显示，当然其实这里我们也可以拿到数据然后通过转换显示在屏幕上面，但是这么做的主要会有类型转换的问题，对于性能开销方面还是会有影响，所以选择上面的OpenGL方式来做，毕竟OpenGL是通过GPU来运算的。</p>
+<p>这里也贴上上面说的视频数据转换的方法，供大家参考一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">YuvImage = image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);</div><div class="line">ByteArrayOutputStream stream = new ByteArrayOutputStream();</div><div class="line">image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, stream);</div><div class="line">Bitmap bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());</div></pre></td></tr></table></figure>
+<p>这样其实就是获取到了当前这一帧的bitmap数据</p>
+<h4 id="二-音频数据源采集"><a href="#二-音频数据源采集" class="headerlink" title="二.音频数据源采集"></a>二.音频数据源采集</h4><p>对于音频数据的采集，Android SDK 提供了两套音频采集的API，分别是：MediaRecorder 和 AudioRecord，前者是一个更加上层一点的API，它可以直接把手机麦克风录入的音频数据进行编码压缩（如AMR、MP3等）并存成文件，而后者则更接近底层，能够更加自由灵活地控制，可以得到原始的一帧帧PCM音频数据。</p>
+<p>对于我们需要实时的数据上传来说，肯定后者才是我们选择的方式</p>
+<p>接下来看一下AudioRecord采集音频资源的方式</p>
+<p>AudioRecord 的工作流程如下</p>
+<p>（1） 配置参数，初始化内部的音频缓冲区<br>（2） 开始采集<br>（3） 需要一个线程，不断地从 AudioRecord 的缓冲区将音频数据“读”出来，注意，这个过程一定要及时，否则就会出现“overrun”的错误，该错误在音频开发中比较常见，意味着应用层没有及时地“取走”音频数据，导致内部的音频缓冲区溢出。<br>（4） 停止采集，释放资源</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">int bufferSize = 2 * AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_STEREO;, SrsEncoder.AFORMAT);</div><div class="line">AudioRecord mic = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);</div><div class="line">mic.startRecording();</div><div class="line"></div><div class="line">byte pcmBuffer[] = new byte[4096];</div><div class="line">while (aloop &amp;&amp; !Thread.interrupted()) &#123;</div><div class="line">    int size = mic.read(pcmBuffer, 0, pcmBuffer.length);</div><div class="line">    if (size &lt;= 0) &#123;</div><div class="line">        Log.e(TAG, &quot;***** audio ignored, no data to read.&quot;);</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们了解下AudioRecord这几个参数的含义吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public AudioRecord(int audioSource, int sampleRateInHz, int channelConfig, int audioFormat,</div><div class="line">           int bufferSizeInBytes)</div></pre></td></tr></table></figure>
+<ul>
+<li><p>audioSource  该参数指的是音频采集的输入源，可选的值以常量的形式定义在 MediaRecorder.AudioSource 类中，常用的值包括：DEFAULT（默认），VOICE_RECOGNITION（用于语音识别，等同于DEFAULT），MIC（由手机麦克风输入），VOICE_COMMUNICATION（用于VoIP应用）等等</p>
+</li>
+<li><p>sampleRateInHz 采样率，注意，目前44100Hz是唯一可以保证兼容所有Android手机的采样率。</p>
+</li>
+<li><p>channelConfig  通道数的配置，可选的值以常量的形式定义在 AudioFormat 类中，常用的是 CHANNEL_IN_MONO（单通道），CHANNEL_IN_STEREO（双通道）</p>
+</li>
+<li><p>audioFormat 这个参数是用来配置“数据位宽”的，可选的值也是以常量的形式定义在 AudioFormat 类中，常用的是 ENCODING_PCM_16BIT（16bit），ENCODING_PCM_8BIT（8bit），注意，前者是可以保证兼容所有Android手机的</p>
+</li>
+<li><p>bufferSizeInBytes 这个参数配置的是 AudioRecord 内部的音频缓冲区的大小，该缓冲区的值不能低于一帧“音频帧”（Frame）的大小</p>
+</li>
+</ul>
+<p>这些配置一般情况下都用上面代码里面的不变就好了，pcmBuffer就是我们采集到的音频数据</p>
+<p>音视频数据都采集完了，接下来就是要上传给我们的直播服务器了，但是在上传前我们需要做的工作就是进行编码</p>
+<h4 id="三-音视频编码"><a href="#三-音视频编码" class="headerlink" title="三.音视频编码"></a>三.音视频编码</h4><h5 id="1-视频编码"><a href="#1-视频编码" class="headerlink" title="(1).视频编码"></a>(1).视频编码</h5><p>Android中视频编码有两种方式，主要是两个核心的类，一个是MediaCodec和MediaRecorder，这两个类有什么区别呢？其实很好理解，他们都可以对视频进行编码，但是MediaRecorder这个类相对于MediaCodec简单，因为他封装的很好，直接就是几个接口来完成视频录制，比如视频的编码格式，视频的保存路劲，视频来源等，用法简单，但是有一个问题就是不能接触到视频流数据了，处理不了原生的视频数据了，所以我们不能选择用MediaRecorder方式来进行编码。</p>
+<p>MediaCodec编码流程图如下</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1605450-1fc8da7acddf4b7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图1 MediaCodec编码流程，来源于网络"></p>
+<p>对应的方法主要为：</p>
+<ul>
+<li><p>getInputBuffers：获取需要编码数据的输入流队列，返回的是一个ByteBuffer数组</p>
+</li>
+<li><p>queueInputBuffer：输入流入队列</p>
+</li>
+<li><p>dequeueInputBuffer：从输入流队列中取数据进行编码操作</p>
+</li>
+<li><p>getOutputBuffers：获取编解码之后的数据输出流队列，返回的是一个ByteBuffer数组</p>
+</li>
+<li><p>dequeueOutputBuffer：从输出队列中取出编码操作之后的数据</p>
+</li>
+<li><p>releaseOutputBuffer：处理完成，释放ByteBuffer数据</p>
+</li>
+</ul>
+<p>接下来分析一下具体的流程：</p>
+<p>视频流有一个输入队列，和输出队列，分别对应getInputBuffers和getOutputBuffers这两个方法获取这个队列，然后对于输入流这端有两个方法一个是queueInputBuffers是将视频流入队列，dequeueInputBuffer是从输入流队列中取出数据进行编解码操作，在输出端这边有一个dequeueOutputBuffer方法从输出队列中获取视频数据，releaseOutputBuffers方法将处理完的输出视频流数据ByteBuffer放回视频流输出队列中，再次循环使用。这样视频流输入端和输出端分别对应一个ByteBuffer队列，这些ByteBuffer可以重复使用，在处理完数据之后再放回去即可。</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">MediaCodec vencoder;</div><div class="line">MediaCodecInfo vmci;</div><div class="line"></div><div class="line">// requires sdk level 16+, Android 4.1, 4.1.1, the JELLY_BEAN</div><div class="line">try &#123;</div><div class="line">    vencoder = MediaCodec.createByCodecName(vmci.getName());</div><div class="line">&#125; catch (IOException e) &#123;</div><div class="line">    Log.e(TAG, &quot;create vencoder failed.&quot;);</div><div class="line">    e.printStackTrace();</div><div class="line">    return -1;</div><div class="line">&#125;</div><div class="line"></div><div class="line">MediaFormat videoFormat = MediaFormat.createVideoFormat(&quot;&quot;video/avc&quot;&quot;, vCropWidth, vCropHeight);</div><div class="line">videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, mVideoColorFormat);</div><div class="line">videoFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 0);</div><div class="line">videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, 500 * 1000);</div><div class="line">videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 24);</div><div class="line">videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 48 / 24);</div><div class="line">vencoder.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);</div><div class="line"></div><div class="line">ByteBuffer[] inBuffers = vencoder.getInputBuffers();</div><div class="line">ByteBuffer[] outBuffers = vencoder.getOutputBuffers();</div><div class="line"></div><div class="line">vencoder.start();</div><div class="line"></div><div class="line">int inBufferIndex = vencoder.dequeueInputBuffer(-1);</div><div class="line">if (inBufferIndex &gt;= 0) &#123;</div><div class="line">    ByteBuffer bb = inBuffers[inBufferIndex];</div><div class="line">    bb.clear();</div><div class="line">    bb.put(mFrameBuffer, 0, mFrameBuffer.length);</div><div class="line">    long pts = System.nanoTime() / 1000 - mPresentTimeUs;</div><div class="line">    vencoder.queueInputBuffer(inBufferIndex, 0, mFrameBuffer.length, pts, 0);</div><div class="line">&#125;</div><div class="line"></div><div class="line">for (; ; ) &#123;</div><div class="line">    int outBufferIndex = vencoder.dequeueOutputBuffer(vebi, 0);</div><div class="line">    if (outBufferIndex &gt;= 0) &#123;</div><div class="line">        ByteBuffer mEncoderBuffer = outBuffers[outBufferIndex];</div><div class="line">        vencoder.releaseOutputBuffer(outBufferIndex, false);</div><div class="line">    &#125; else &#123;</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里首先要配置MediaCodec，配置了编码格式、视频大小、比特率、帧率等参数，然后就是通过vencoder来进行编码，最后编码得到mEncoderBuffer。</p>
+<p><strong>编码后的格式为H.264，对于H264格式说明如下：</strong></p>
+<p>H.264，MPEG-4,MPEG-2等这些都是压缩算法，毕竟带宽是有限的，为了获得更好的图像的传输和显示效果，就不断的想办法去掉一些信息，转换一些信息等等，这就是这些压缩算法的做的事情。H.264最大的优势是具有很高的数据压缩比率，在同等图像质量的条件下，H.264的压缩比是MPEG-2的2倍以上，是MPEG-4的1.5～2倍。举个例子，原始文件的大小如果为88GB，采用MPEG-2压缩标准压缩后变成3.5GB，压缩比为25∶1，而采用H.264压缩标准压缩后变为879MB，从88GB到879MB，H.264的压缩比达到惊人的102∶1！H.264为什么有那么高的压缩比？低码率（Low Bit Rate）起了重要的作用，和MPEG-2和MPEG-4 ASP等压缩技术相比，H.264压缩技术将大大节省用户的下载时间和数据流量收费。尤其值得一提的是，H.264在具有高压缩比的同时还拥有高质量流畅的图像。</p>
+<h5 id="2-音频编码"><a href="#2-音频编码" class="headerlink" title="(2).音频编码"></a>(2).音频编码</h5><p>音频编码其实也是采用上面的MediaCodec，区别在于配置的不同，流程是一致的，这里就不做说明了，直接上代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">MediaCodec aencoder;</div><div class="line">aencoder = MediaCodec.createEncoderByType(&quot;audio/mp4a-latm&quot;);</div><div class="line">MediaFormat audioFormat = MediaFormat.createAudioFormat(&quot;audio/mp4a-latm&quot;, 44100, 2);</div><div class="line">audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, 32 * 1000;);</div><div class="line">audioFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 0);</div><div class="line">aencoder.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);</div><div class="line"></div><div class="line">ByteBuffer[] inBuffers = aencoder.getInputBuffers();</div><div class="line">ByteBuffer[] outBuffers = aencoder.getOutputBuffers();</div><div class="line"></div><div class="line">aencoder.start();</div><div class="line"></div><div class="line">int inBufferIndex = aencoder.dequeueInputBuffer(-1);</div><div class="line">if (inBufferIndex &gt;= 0) &#123;</div><div class="line">    ByteBuffer bb = inBuffers[inBufferIndex];</div><div class="line">    bb.clear();</div><div class="line">    bb.put(mAudioData, 0, size);</div><div class="line">    long pts = System.nanoTime() / 1000 - mPresentTimeUs;</div><div class="line">    aencoder.queueInputBuffer(inBufferIndex, 0, size, pts, 0);</div><div class="line">&#125;</div><div class="line"></div><div class="line">for (; ; ) &#123;</div><div class="line">    int outBufferIndex = aencoder.dequeueOutputBuffer(aebi, 0);</div><div class="line">    if (outBufferIndex &gt;= 0) &#123;</div><div class="line">        ByteBuffer mEncoderBuffer = outBuffers[outBufferIndex];</div><div class="line">        aencoder.releaseOutputBuffer(outBufferIndex, false);</div><div class="line">    &#125; else &#123;</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里通过aencoder来进行编码，最后编码得到音频编码后的数据mEncoderBuffer。</p>
+<p><strong>音频编码后的格式为AAC格式，对于AAC格式说明如下：</strong></p>
+<p>[AAC]是由F[ra]unhofer IIS-A、杜比和AT&amp;T共同开发的一种音频格式，它是MPEG-2规范的一部分。AAC所采用的运算法则与MP3的运算法则有所不同，AAC通过结合其他的功能 来提高编码效率。AAC的音频算法在压缩能力上远远超过了以前的一些压缩算法（比如MP3等）。它还同时支持多达48个音轨、15个低频音轨、更多种采样率和比特率、多种语言的兼容能力、更高的解码效率。总之，AAC可以在比MP3文件缩小30%的前提下提供更好的音质。</p>
+<p>所以上面我们就实现了数据源的编码，编码其实分为两种，一种是利用系统的MediaCodec来编码的硬编，还有一种是软编，通常我们是用ffmpeg来软编，就不对软编进行说明了，有兴趣的可以自己去谷歌。</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>我们通过采集与编码这一系列的操作拿到了可以推流的视频数据与音频数据，那么下一篇就是对推流相关介绍了，通过推流我们可以把这些数据传输到我们的视频服务器上，通过视频服务器的转发，从而可以实现移动端的直播，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/直播/" rel="tag"># 直播</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/18/移动端直播开发（一）直播服务器搭建/" rel="next" title="移动端直播开发（一）直播服务器搭建">
+                <i class="fa fa-chevron-left"></i> 移动端直播开发（一）直播服务器搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/13/移动端直播开发（三）RTMP推流/" rel="prev" title="移动端直播开发（三）RTMP推流">
+                移动端直播开发（三）RTMP推流 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-Camera视频数据源采集"><span class="nav-number">1.</span> <span class="nav-text">一.Camera视频数据源采集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-音频数据源采集"><span class="nav-number">2.</span> <span class="nav-text">二.音频数据源采集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-音视频编码"><span class="nav-number">3.</span> <span class="nav-text">三.音视频编码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-视频编码"><span class="nav-number">3.1.</span> <span class="nav-text">(1).视频编码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-音频编码"><span class="nav-number">3.2.</span> <span class="nav-text">(2).音频编码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">4.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

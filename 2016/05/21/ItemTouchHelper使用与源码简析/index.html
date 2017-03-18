@@ -1,0 +1,817 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="ItemTouchHelper是什么？
+看看官方解释
+123/**  *  This is a utility class to add swipe to dismiss and drag &amp;amp; drop support to RecyclerView.  */
+通过这段解释其实可以清楚这个ItemTouchHelper到底是干什么的，它是一个可以给RecyclerView提供添加拖动排序与">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ItemTouchHelper使用与源码简析">
+<meta property="og:url" content="http://yoursite.com/2016/05/21/ItemTouchHelper使用与源码简析/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="ItemTouchHelper是什么？
+看看官方解释
+123/**  *  This is a utility class to add swipe to dismiss and drag &amp;amp; drop support to RecyclerView.  */
+通过这段解释其实可以清楚这个ItemTouchHelper到底是干什么的，它是一个可以给RecyclerView提供添加拖动排序与">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ebf56db6af4e40ee.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-3148fd61e48526bb.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-afc243c39c75de19.gif?imageMogr2/auto-orient/strip">
+<meta property="og:updated_time" content="2017-03-18T09:34:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ItemTouchHelper使用与源码简析">
+<meta name="twitter:description" content="ItemTouchHelper是什么？
+看看官方解释
+123/**  *  This is a utility class to add swipe to dismiss and drag &amp;amp; drop support to RecyclerView.  */
+通过这段解释其实可以清楚这个ItemTouchHelper到底是干什么的，它是一个可以给RecyclerView提供添加拖动排序与">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-ebf56db6af4e40ee.gif?imageMogr2/auto-orient/strip">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/05/21/ItemTouchHelper使用与源码简析/"/>
+
+
+
+
+
+  <title> ItemTouchHelper使用与源码简析 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/21/ItemTouchHelper使用与源码简析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ItemTouchHelper使用与源码简析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-21T19:47:53+08:00">
+                2016-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/05/21/ItemTouchHelper使用与源码简析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/21/ItemTouchHelper使用与源码简析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>ItemTouchHelper是什么？</strong></p>
+<p>看看官方解释</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">  *  This is a utility class to add swipe to dismiss and drag &amp; drop support to RecyclerView.</div><div class="line">  */</div></pre></td></tr></table></figure>
+<p>通过这段解释其实可以清楚这个ItemTouchHelper到底是干什么的，它是一个可以给RecyclerView提供添加拖动排序与滑动删除等等操作的工具类。</p>
+<p>大家应该清楚拖动排序与滑动删除其实如果代码去写会比较麻烦，所以ItemTouchHelper的出现也确实解决了这部分代码比较复杂的问题，这偏文章就简单的介绍下ItemTouchHelper的使用方法</p>
+<h4 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h4><p></p><p><br><strong>1.首先实现一个RecyclerView就好了</strong></p>
+<p>直接上代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">public class RecyclerAdapter extends RecyclerView.Adapter&lt;RecyclerAdapter.ItemViewHolder&gt;&#123;</div><div class="line"></div><div class="line">    private static final String[] STRINGS = new String[]&#123;</div><div class="line">            &quot;One&quot;, &quot;Two&quot;, &quot;Three&quot;, &quot;Four&quot;, &quot;Five&quot;, &quot;Six&quot;, &quot;Seven&quot;, &quot;Eight&quot;, &quot;Nine&quot;, &quot;Ten&quot;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    private final List&lt;String&gt; mItems = new ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    public RecyclerAdapter() &#123;</div><div class="line">        mItems.addAll(Arrays.asList(STRINGS));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) &#123;</div><div class="line">        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main, parent, false);</div><div class="line">        ItemViewHolder itemViewHolder = new ItemViewHolder(view);</div><div class="line">        return itemViewHolder;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onBindViewHolder(ItemViewHolder holder, int position) &#123;</div><div class="line">        holder.textView.setText(mItems.get(position));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public int getItemCount() &#123;</div><div class="line">        return mItems.size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static class ItemViewHolder extends RecyclerView.ViewHolder&#123;</div><div class="line"></div><div class="line">        public final TextView textView;</div><div class="line"></div><div class="line">        public ItemViewHolder(View itemView) &#123;</div><div class="line">            super(itemView);</div><div class="line">            textView = (TextView) itemView;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mRecyclerView.setAdapter(new RecyclerAdapter());</div><div class="line">mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));</div></pre></td></tr></table></figure>
+<p>创建好了，如下</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-ebf56db6af4e40ee.gif?imageMogr2/auto-orient/strip" alt="图1 RecycleView"><br></div>
+
+<p><strong>2.创建一个类继承ItemTouchHelper.Callback，并且与RecycleView建立链接</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class ItemTouchHelperCallback extends ItemTouchHelper.Callback&#123;</div><div class="line">    @Override</div><div class="line">    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建了一个类并继承了ItemTouchHelper.Callback与他的一些方法，但是些方法根据我们的需求需要重写</p>
+<p>需要重写getMovementFlags()方法来指定可以支持的拖放和滑动的方向使用helperItemTouchHelper.makeMovementFlags(int, int)来构造返回的flag。这里我们启用了上下左右两种方向。注：上下为拖动（drag），左右为滑动（swipe）。</p>
+<p>如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) &#123;</div><div class="line">    final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;</div><div class="line">    final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;</div><div class="line">    return makeMovementFlags(dragFlags, swipeFlags);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来建立与RecycleView的链接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback());</div><div class="line">mItemTouchHelper.attachToRecyclerView(mRecyclerView);</div></pre></td></tr></table></figure>
+<p>好的接下来就是见证奇迹的时刻了</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-3148fd61e48526bb.gif?imageMogr2/auto-orient/strip" alt="图2 RecycleView"><br></div>
+
+<p>但是显然不是我们想要的结果，但是还缺少什么呢？Adapter数据并没有发生实质性的变化，所以接下来工作就是去让Adapter内数据产生变化</p>
+<p><strong>3.通过接口改变Adapter数据</strong></p>
+<p>首先创建接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public interface IItemHelper &#123;</div><div class="line"></div><div class="line">    void onItemMove(int fromPosition, int toPosition);</div><div class="line"></div><div class="line">    void onItemDismiss(int position);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在callback中调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) &#123;</div><div class="line">    mRecyclerAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());</div><div class="line">    return false;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) &#123;</div><div class="line">    mRecyclerAdapter.onItemDismiss(viewHolder.getAdapterPosition());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后在Adapter中实现这个接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onItemMove(int fromPosition, int toPosition) &#123;</div><div class="line">    String prev = mItems.remove(fromPosition);</div><div class="line">    mItems.add(toPosition &gt; fromPosition ? toPosition - 1 : toPosition, prev);</div><div class="line">    notifyItemMoved(fromPosition, toPosition);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onItemDismiss(int position) &#123;</div><div class="line">    mItems.remove(position);</div><div class="line">    notifyItemRemoved(position);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来就是真正的见证奇迹的时刻了</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-afc243c39c75de19.gif?imageMogr2/auto-orient/strip" alt="图3 RecycleView"><br></div>
+
+<p>拖动不知道为什么在模拟器上太难操作了，OMG</p>
+<h4 id="源码简析"><a href="#源码简析" class="headerlink" title="源码简析"></a>源码简析</h4><h5 id="ItemTouchHelper-CallBack分析"><a href="#ItemTouchHelper-CallBack分析" class="headerlink" title="ItemTouchHelper.CallBack分析"></a>ItemTouchHelper.CallBack分析</h5><p></p><p><br>分析ItemTouchHelper之前，我们先看下CallBack的定义了那些方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div></pre></td><td class="code"><pre><div class="line">//声明不同状态下可以移动的方向（idle, swiping, dragging）</div><div class="line">@Override</div><div class="line">public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) &#123;</div><div class="line">    final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;</div><div class="line">    final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;</div><div class="line">    return makeMovementFlags(dragFlags, swipeFlags);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//拖动的项目从旧位置移动到新位置时调用</div><div class="line">@Override</div><div class="line">public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) &#123;</div><div class="line">    return false;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//滑动到消失后的调用</div><div class="line">@Override</div><div class="line">public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) &#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//是否可以把拖动的ViewHolder拖动到目标ViewHolder之上</div><div class="line">@Override</div><div class="line">public boolean canDropOver(RecyclerView recyclerView, RecyclerView.ViewHolder current, RecyclerView.ViewHolder target) &#123;</div><div class="line">    return true;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//获取拖动</div><div class="line">@Override</div><div class="line">public RecyclerView.ViewHolder chooseDropTarget(RecyclerView.ViewHolder selected, List&lt;RecyclerView.ViewHolder&gt; dropTargets, int curX, int curY) &#123;</div><div class="line">    return dropTargets.get(0);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//调用时与元素的用户交互已经结束，也就是它也完成了它的动画时候</div><div class="line">@Override</div><div class="line">public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) &#123;</div><div class="line">    super.clearView(recyclerView, viewHolder);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public int convertToAbsoluteDirection(int flags, int layoutDirection) &#123;</div><div class="line">    return super.convertToAbsoluteDirection(flags, layoutDirection);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//设置手指离开后ViewHolder的动画时间</div><div class="line">@Override</div><div class="line">public long getAnimationDuration(RecyclerView recyclerView, int animationType, float animateDx, float animateDy) &#123;</div><div class="line">    return super.getAnimationDuration(recyclerView, animationType, animateDx, animateDy);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">@Override</div><div class="line">public int getBoundingBoxMargin() &#123;</div><div class="line">    return super.getBoundingBoxMargin();</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//返回值作为用户视为拖动的距离</div><div class="line">@Override</div><div class="line">public float getMoveThreshold(RecyclerView.ViewHolder viewHolder) &#123;</div><div class="line">    return super.getMoveThreshold(viewHolder);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//返回值滑动消失的距离，滑动小于这个值不消失，大于消失</div><div class="line">@Override</div><div class="line">public float getSwipeEscapeVelocity(float defaultValue) &#123;</div><div class="line">    return super.getSwipeEscapeVelocity(defaultValue);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//返回值滑动消失的距离, 这里是相对于RecycleView的宽度，0.5f表示为RecycleView的宽度的一半，取值为0~1f之间</div><div class="line">@Override</div><div class="line">public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) &#123;</div><div class="line">    return super.getSwipeThreshold(viewHolder);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//返回值作为滑动的流程程度，越小越难滑动，越大越好滑动</div><div class="line">@Override</div><div class="line">public float getSwipeVelocityThreshold(float defaultValue) &#123;</div><div class="line">    return 1f;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//当用户拖动一个视图出界的ItemTouchHelper调用</div><div class="line">@Override</div><div class="line">public int interpolateOutOfBoundsScroll(RecyclerView recyclerView, int viewSize, int viewSizeOutOfBounds, int totalSize, long msSinceStartScroll) &#123;</div><div class="line">    return super.interpolateOutOfBoundsScroll(recyclerView, viewSize, viewSizeOutOfBounds, totalSize, msSinceStartScroll);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//返回值决定是否有滑动操作</div><div class="line">@Override</div><div class="line">public boolean isItemViewSwipeEnabled() &#123;</div><div class="line">    return super.isItemViewSwipeEnabled();</div><div class="line">&#125;</div><div class="line"></div><div class="line">//返回值决定是否有拖动操作</div><div class="line">@Override</div><div class="line">public boolean isLongPressDragEnabled() &#123;</div><div class="line">    return super.isLongPressDragEnabled();</div><div class="line">&#125;</div><div class="line"></div><div class="line">//自定义拖动与滑动交互</div><div class="line">@Override</div><div class="line">public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) &#123;</div><div class="line">    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//自定义拖动与滑动交互</div><div class="line">@Override</div><div class="line">public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) &#123;</div><div class="line">    super.onChildDrawOver(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">//当onMove return ture的时候调用</div><div class="line">@Override</div><div class="line">public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) &#123;</div><div class="line">    super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//当拖动或者滑动的ViewHolder改变时调用</div><div class="line">@Override</div><div class="line">public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) &#123;</div><div class="line">    super.onSelectedChanged(viewHolder, actionState);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结合这些分析注释就明白了上面一篇文章里面CallBack为什么写那些方法了，还有部分的方法还是没有理解到底是干嘛的所有就没有注释了。</p>
+<h5 id="ItemTouchHelper相关分析"><a href="#ItemTouchHelper相关分析" class="headerlink" title="ItemTouchHelper相关分析"></a>ItemTouchHelper相关分析</h5><p></p><p><br>上一篇文章中把ItemTouchHelper与RecycleView以及CallBack建立连接的方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback());</div><div class="line">mItemTouchHelper.attachToRecyclerView(mRecyclerView);</div></pre></td></tr></table></figure>
+<p>那么从这个将ItemTouchHelper与RecycleView建立的方法进行分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public void attachToRecyclerView(@Nullable RecyclerView recyclerView) &#123;</div><div class="line">    if (mRecyclerView == recyclerView) &#123;</div><div class="line">        return; // nothing to do</div><div class="line">    &#125;</div><div class="line">    if (mRecyclerView != null) &#123;</div><div class="line">        destroyCallbacks();</div><div class="line">    &#125;</div><div class="line">    mRecyclerView = recyclerView;</div><div class="line">    if (mRecyclerView != null) &#123;</div><div class="line">        final Resources resources = recyclerView.getResources();</div><div class="line">        mSwipeEscapeVelocity = resources</div><div class="line">                .getDimension(R.dimen.item_touch_helper_swipe_escape_velocity);</div><div class="line">        mMaxSwipeVelocity = resources</div><div class="line">                .getDimension(R.dimen.item_touch_helper_swipe_escape_max_velocity);</div><div class="line">        setupCallbacks();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这部分的代码其实没有做太多的事情，无非是获取一些默认值，setupCallbacks()与destroyCallbacks()两个方法，这两个方法从名称看就是相对立的，所以分析一个就好了</p>
+<p>destroyCallbacks()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">private void destroyCallbacks() &#123;</div><div class="line">    mRecyclerView.removeItemDecoration(this);</div><div class="line">    mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);</div><div class="line">    mRecyclerView.removeOnChildAttachStateChangeListener(this);</div><div class="line">    // clean all attached</div><div class="line">    final int recoverAnimSize = mRecoverAnimations.size();</div><div class="line">    for (int i = recoverAnimSize - 1; i &gt;= 0; i--) &#123;</div><div class="line">        final RecoverAnimation recoverAnimation = mRecoverAnimations.get(0);</div><div class="line">        mCallback.clearView(mRecyclerView, recoverAnimation.mViewHolder);</div><div class="line">    &#125;</div><div class="line">    mRecoverAnimations.clear();</div><div class="line">    mOverdrawChild = null;</div><div class="line">    mOverdrawChildPosition = -1;</div><div class="line">    releaseVelocityTracker();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>setupCallbacks()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">private void setupCallbacks() &#123;</div><div class="line">    ViewConfiguration vc = ViewConfiguration.get(mRecyclerView.getContext());</div><div class="line">    mSlop = vc.getScaledTouchSlop();</div><div class="line">    mRecyclerView.addItemDecoration(this);</div><div class="line">    mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);</div><div class="line">    mRecyclerView.addOnChildAttachStateChangeListener(this);</div><div class="line">    initGestureDetector();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里的步骤有点多了</p>
+<p>分布来说明</p>
+<p><strong>1.addItemDecoration(this)</strong></p>
+<p>这个方法其实是调用了ItemDecoration的接口.从ItemTouchHelper方法声明部分也可以看到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public class ItemTouchHelper extends RecyclerView.ItemDecoration</div><div class="line">        implements RecyclerView.OnChildAttachStateChangeListener &#123;&#125;</div></pre></td></tr></table></figure>
+<p>在ItemTouchHelper中重写了ItemDecoration接口的两个方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) &#123;</div><div class="line">    float dx = 0, dy = 0;</div><div class="line">    if (mSelected != null) &#123;</div><div class="line">        getSelectedDxDy(mTmpPosition);</div><div class="line">        dx = mTmpPosition[0];</div><div class="line">        dy = mTmpPosition[1];</div><div class="line">    &#125;</div><div class="line">    mCallback.onDrawOver(c, parent, mSelected,</div><div class="line">            mRecoverAnimations, mActionState, dx, dy);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) &#123;</div><div class="line">    // we don&apos;t know if RV changed something so we should invalidate this index.</div><div class="line">    mOverdrawChildPosition = -1;</div><div class="line">    float dx = 0, dy = 0;</div><div class="line">    if (mSelected != null) &#123;</div><div class="line">        getSelectedDxDy(mTmpPosition);</div><div class="line">        dx = mTmpPosition[0];</div><div class="line">        dy = mTmpPosition[1];</div><div class="line">    &#125;</div><div class="line">    mCallback.onDraw(c, parent, mSelected,</div><div class="line">            mRecoverAnimations, mActionState, dx, dy);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从方法可以看到这里其实没有做什么特别的工作，只是回调了Callback的两个回调方法onDrawOver()与onDraw()而这两个方法是Callback的private方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">private void onDraw(Canvas c, RecyclerView parent, ViewHolder selected,</div><div class="line">        List&lt;ItemTouchHelper.RecoverAnimation&gt; recoverAnimationList,</div><div class="line">        int actionState, float dX, float dY) &#123;</div><div class="line">    final int recoverAnimSize = recoverAnimationList.size();</div><div class="line">    for (int i = 0; i &lt; recoverAnimSize; i++) &#123;</div><div class="line">        final ItemTouchHelper.RecoverAnimation anim = recoverAnimationList.get(i);</div><div class="line">        anim.update();</div><div class="line">        final int count = c.save();</div><div class="line">        onChildDraw(c, parent, anim.mViewHolder, anim.mX, anim.mY, anim.mActionState,</div><div class="line">                false);</div><div class="line">        c.restoreToCount(count);</div><div class="line">    &#125;</div><div class="line">    if (selected != null) &#123;</div><div class="line">        final int count = c.save();</div><div class="line">        onChildDraw(c, parent, selected, dX, dY, actionState, true);</div><div class="line">        c.restoreToCount(count);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void onDrawOver(Canvas c, RecyclerView parent, ViewHolder selected,</div><div class="line">        List&lt;ItemTouchHelper.RecoverAnimation&gt; recoverAnimationList,</div><div class="line">        int actionState, float dX, float dY) &#123;</div><div class="line">    final int recoverAnimSize = recoverAnimationList.size();</div><div class="line">    for (int i = 0; i &lt; recoverAnimSize; i++) &#123;</div><div class="line">        final ItemTouchHelper.RecoverAnimation anim = recoverAnimationList.get(i);</div><div class="line">        final int count = c.save();</div><div class="line">        onChildDrawOver(c, parent, anim.mViewHolder, anim.mX, anim.mY, anim.mActionState,</div><div class="line">                false);</div><div class="line">        c.restoreToCount(count);</div><div class="line">    &#125;</div><div class="line">    if (selected != null) &#123;</div><div class="line">        final int count = c.save();</div><div class="line">        onChildDrawOver(c, parent, selected, dX, dY, actionState, true);</div><div class="line">        c.restoreToCount(count);</div><div class="line">    &#125;</div><div class="line">    boolean hasRunningAnimation = false;</div><div class="line">    for (int i = recoverAnimSize - 1; i &gt;= 0; i--) &#123;</div><div class="line">        final RecoverAnimation anim = recoverAnimationList.get(i);</div><div class="line">        if (anim.mEnded &amp;&amp; !anim.mIsPendingCleanup) &#123;</div><div class="line">            recoverAnimationList.remove(i);</div><div class="line">        &#125; else if (!anim.mEnded) &#123;</div><div class="line">            hasRunningAnimation = true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    if (hasRunningAnimation) &#123;</div><div class="line">        parent.invalidate();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里牵扯的东西比较多，暂时不分析，我们可以看到有两个方法分别为onChildDrawOver()与onChildDraw()</p>
+<p>调用了这两个方法，接下来看下这两个方法里面有什么？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public void onChildDraw(Canvas c, RecyclerView recyclerView,</div><div class="line">        ViewHolder viewHolder,</div><div class="line">        float dX, float dY, int actionState, boolean isCurrentlyActive) &#123;</div><div class="line">    sUICallback.onDraw(c, recyclerView, viewHolder.itemView, dX, dY, actionState,</div><div class="line">            isCurrentlyActive);</div><div class="line">&#125;</div><div class="line"></div><div class="line">public void onChildDrawOver(Canvas c, RecyclerView recyclerView,</div><div class="line">        ViewHolder viewHolder,</div><div class="line">        float dX, float dY, int actionState, boolean isCurrentlyActive) &#123;</div><div class="line">    sUICallback.onDrawOver(c, recyclerView, viewHolder.itemView, dX, dY, actionState,</div><div class="line">            isCurrentlyActive);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里面其实是sUICallback的回调方法</p>
+<p>这里的sUICallback是一个接口，根据不同的版本执行不同的onDraw与onDrawOver方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">static &#123;</div><div class="line">    if (Build.VERSION.SDK_INT &gt;= 21) &#123;</div><div class="line">        sUICallback = new ItemTouchUIUtilImpl.Lollipop();</div><div class="line">    &#125; else if (Build.VERSION.SDK_INT &gt;= 11) &#123;</div><div class="line">        sUICallback = new ItemTouchUIUtilImpl.Honeycomb();</div><div class="line">    &#125; else &#123;</div><div class="line">        sUICallback = new ItemTouchUIUtilImpl.Gingerbread();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以在我们自定义的CallBack中可以取重写<strong>onChildDraw()</strong>与<strong>onChildDrawOver()</strong>方法来实现自定义的拖动与滑动交互</p>
+<p><strong>2.addOnChildAttachStateChangeListener(this)</strong></p>
+<p>这里调用了OnChildAttachStateChangeListener这个接口，这个接口里有两个方法，分别是在RecycleView添加一个View与删除一个View的时候回调</p>
+<p>那看看我们在ItemTouchHelper中重写的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onChildViewAttachedToWindow(View view) &#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public void onChildViewDetachedFromWindow(View view) &#123;</div><div class="line">    removeChildDrawingOrderCallbackIfNecessary(view);</div><div class="line">    final ViewHolder holder = mRecyclerView.getChildViewHolder(view);</div><div class="line">    if (holder == null) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    if (mSelected != null &amp;&amp; holder == mSelected) &#123;</div><div class="line">        select(null, ACTION_STATE_IDLE);</div><div class="line">    &#125; else &#123;</div><div class="line">        endRecoverAnimation(holder, false); // this may push it into pending cleanup list.</div><div class="line">        if (mPendingCleanup.remove(holder.itemView)) &#123;</div><div class="line">            mCallback.clearView(mRecyclerView, holder);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>因为ItemTouchHelper中只用考虑移除的情况，</p>
+<p>这里面的方法暂时不介绍，可以看到回调了<strong>clearView()</strong>的方法，所以在元素的用户交互已经结束的时候，可以通过这个方法监听到</p>
+<p><strong>3.initGestureDetector()</strong></p>
+<p>这里主要是初始化GestureDetector</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">private class ItemTouchHelperGestureListener extends GestureDetector.SimpleOnGestureListener &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean onDown(MotionEvent e) &#123;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onLongPress(MotionEvent e) &#123;</div><div class="line">        View child = findChildView(e);</div><div class="line">        if (child != null) &#123;</div><div class="line">            ViewHolder vh = mRecyclerView.getChildViewHolder(child);</div><div class="line">            if (vh != null) &#123;</div><div class="line">                if (!mCallback.hasDragFlag(mRecyclerView, vh)) &#123;</div><div class="line">                    return;</div><div class="line">                &#125;</div><div class="line">                int pointerId = MotionEventCompat.getPointerId(e, 0);</div><div class="line">                // Long press is deferred.</div><div class="line">                // Check w/ active pointer id to avoid selecting after motion</div><div class="line">                // event is canceled.</div><div class="line">                if (pointerId == mActivePointerId) &#123;</div><div class="line">                    final int index = MotionEventCompat</div><div class="line">                            .findPointerIndex(e, mActivePointerId);</div><div class="line">                    final float x = MotionEventCompat.getX(e, index);</div><div class="line">                    final float y = MotionEventCompat.getY(e, index);</div><div class="line">                    mInitialTouchX = x;</div><div class="line">                    mInitialTouchY = y;</div><div class="line">                    mDx = mDy = 0f;</div><div class="line">                    if (DEBUG) &#123;</div><div class="line">                        Log.d(TAG,</div><div class="line">                                &quot;onlong press: x:&quot; + mInitialTouchX + &quot;,y:&quot; + mInitialTouchY);</div><div class="line">                    &#125;</div><div class="line">                    if (mCallback.isLongPressDragEnabled()) &#123;</div><div class="line">                        select(vh, ACTION_STATE_DRAG);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先看下Callback调用了hasDragFlag这个方法，那我们看下这个方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">private boolean hasDragFlag(RecyclerView recyclerView, ViewHolder viewHolder) &#123;</div><div class="line">    final int flags = getAbsoluteMovementFlags(recyclerView, viewHolder);</div><div class="line">    return (flags &amp; ACTION_MODE_DRAG_MASK) != 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">final int getAbsoluteMovementFlags(RecyclerView recyclerView,</div><div class="line">        ViewHolder viewHolder) &#123;</div><div class="line">    final int flags = getMovementFlags(recyclerView, viewHolder);</div><div class="line">    return convertToAbsoluteDirection(flags, ViewCompat.getLayoutDirection(recyclerView));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>经过调用发现最后调用了<strong>getMovementFlags</strong>这个方法，所以我们重写方法如果是没有声明的在onLongPress中就直接return了，不会触发下面的方法了</p>
+<p>再往下看，会调用Callback的<strong>isLongPressDragEnabled()</strong>方法，当return为true的时候会执行select()方法</p>
+<p><strong>4. addOnItemTouchListener</strong></p>
+<p>这里则是调用了RecycleView的addOnItemTouchListener方法，ItemTouchHelper重写了OnItemTouchListener接口的方法，OnItemTouchListener有三个方法，我们一个个来进行分析</p>
+<p><strong>(1).onInterceptTouchEvent</strong></p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent event) &#123;</div><div class="line">    //给前面注册的GestureDetector添加监听</div><div class="line">    mGestureDetector.onTouchEvent(event);</div><div class="line">    if (DEBUG) &#123;</div><div class="line">        Log.d(TAG, &quot;intercept: x:&quot; + event.getX() + &quot;,y:&quot; + event.getY() + &quot;, &quot; + event);</div><div class="line">    &#125;</div><div class="line">    final int action = MotionEventCompat.getActionMasked(event);</div><div class="line">    if (action == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">        //获取这个事件对应的pointerId,ViewDragerHelper中也有说明</div><div class="line">        mActivePointerId = MotionEventCompat.getPointerId(event, 0);</div><div class="line">        mInitialTouchX = event.getX();</div><div class="line">        mInitialTouchY = event.getY();</div><div class="line">        //初始化跟踪触摸屏类VelocityTracker</div><div class="line">        obtainVelocityTracker();</div><div class="line">        if (mSelected == null) &#123;</div><div class="line">            //根据当前的MotionEvent查找RecoverAnimation对象</div><div class="line">            final RecoverAnimation animation = findAnimation(event);</div><div class="line">            //如果animation存在则更新animation</div><div class="line">            if (animation != null) &#123;</div><div class="line">                mInitialTouchX -= animation.mX;</div><div class="line">                mInitialTouchY -= animation.mY;</div><div class="line">                //删除RecoverAnimation</div><div class="line">                endRecoverAnimation(animation.mViewHolder, true);</div><div class="line">                if (mPendingCleanup.remove(animation.mViewHolder.itemView)) &#123;</div><div class="line">                    mCallback.clearView(mRecyclerView, animation.mViewHolder);</div><div class="line">                &#125;</div><div class="line">                //select方法</div><div class="line">                select(animation.mViewHolder, animation.mActionState);</div><div class="line">                //更新Dx与Dy</div><div class="line">                updateDxDy(event, mSelectedFlags, 0);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125; else if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) &#123;</div><div class="line">        mActivePointerId = ACTIVE_POINTER_ID_NONE;</div><div class="line">        //select方法</div><div class="line">        select(null, ACTION_STATE_IDLE);</div><div class="line">    &#125; else if (mActivePointerId != ACTIVE_POINTER_ID_NONE) &#123;</div><div class="line">        // in a non scroll orientation, if distance change is above threshold, we</div><div class="line">        // can select the item</div><div class="line">        final int index = MotionEventCompat.findPointerIndex(event, mActivePointerId);</div><div class="line">        if (DEBUG) &#123;</div><div class="line">            Log.d(TAG, &quot;pointer index &quot; + index);</div><div class="line">        &#125;</div><div class="line">        //index &gt;= 0 表示最少有一个触控点存在</div><div class="line">        if (index &gt;= 0) &#123;</div><div class="line">            checkSelectForSwipe(action, event, index);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    if (mVelocityTracker != null) &#123;</div><div class="line">        mVelocityTracker.addMovement(event);</div><div class="line">    &#125;</div><div class="line">    return mSelected != null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>大部分注释都已经说明了，主要把他们调用的方法来进行说明</p>
+<p>首先来看下RecoverAnimation这个类，这个类中有ValueAnimatorCompat主要是根据起始点及ActionState等做动画的。</p>
+<p>接下来就贴出这个类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div></pre></td><td class="code"><pre><div class="line">private class RecoverAnimation implements AnimatorListenerCompat &#123;</div><div class="line"></div><div class="line">    final float mStartDx;</div><div class="line"></div><div class="line">    final float mStartDy;</div><div class="line"></div><div class="line">    final float mTargetX;</div><div class="line"></div><div class="line">    final float mTargetY;</div><div class="line"></div><div class="line">    final ViewHolder mViewHolder;</div><div class="line"></div><div class="line">    final int mActionState;</div><div class="line"></div><div class="line">    private final ValueAnimatorCompat mValueAnimator;</div><div class="line"></div><div class="line">    private final int mAnimationType;</div><div class="line"></div><div class="line">    public boolean mIsPendingCleanup;</div><div class="line"></div><div class="line">    float mX;</div><div class="line"></div><div class="line">    float mY;</div><div class="line"></div><div class="line">    // if user starts touching a recovering view, we put it into interaction mode again,</div><div class="line">    // instantly.</div><div class="line">    boolean mOverridden = false;</div><div class="line"></div><div class="line">    private boolean mEnded = false;</div><div class="line"></div><div class="line">    private float mFraction;</div><div class="line"></div><div class="line">    public RecoverAnimation(ViewHolder viewHolder, int animationType,</div><div class="line">            int actionState, float startDx, float startDy, float targetX, float targetY) &#123;</div><div class="line">        mActionState = actionState;</div><div class="line">        mAnimationType = animationType;</div><div class="line">        mViewHolder = viewHolder;</div><div class="line">        mStartDx = startDx;</div><div class="line">        mStartDy = startDy;</div><div class="line">        mTargetX = targetX;</div><div class="line">        mTargetY = targetY;</div><div class="line">        mValueAnimator = AnimatorCompatHelper.emptyValueAnimator();</div><div class="line">        mValueAnimator.addUpdateListener(</div><div class="line">                new AnimatorUpdateListenerCompat() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onAnimationUpdate(ValueAnimatorCompat animation) &#123;</div><div class="line">                        setFraction(animation.getAnimatedFraction());</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">        mValueAnimator.setTarget(viewHolder.itemView);</div><div class="line">        mValueAnimator.addListener(this);</div><div class="line">        setFraction(0f);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setDuration(long duration) &#123;</div><div class="line">        mValueAnimator.setDuration(duration);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void start() &#123;</div><div class="line">        mViewHolder.setIsRecyclable(false);</div><div class="line">        mValueAnimator.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void cancel() &#123;</div><div class="line">        mValueAnimator.cancel();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setFraction(float fraction) &#123;</div><div class="line">        mFraction = fraction;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * We run updates on onDraw method but use the fraction from animator callback.</div><div class="line">     * This way, we can sync translate x/y values w/ the animators to avoid one-off frames.</div><div class="line">     */</div><div class="line">    public void update() &#123;</div><div class="line">        if (mStartDx == mTargetX) &#123;</div><div class="line">            mX = ViewCompat.getTranslationX(mViewHolder.itemView);</div><div class="line">        &#125; else &#123;</div><div class="line">            mX = mStartDx + mFraction * (mTargetX - mStartDx);</div><div class="line">        &#125;</div><div class="line">        if (mStartDy == mTargetY) &#123;</div><div class="line">            mY = ViewCompat.getTranslationY(mViewHolder.itemView);</div><div class="line">        &#125; else &#123;</div><div class="line">            mY = mStartDy + mFraction * (mTargetY - mStartDy);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onAnimationStart(ValueAnimatorCompat animation) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onAnimationEnd(ValueAnimatorCompat animation) &#123;</div><div class="line">        if (!mEnded) &#123;</div><div class="line">            mViewHolder.setIsRecyclable(true);</div><div class="line">        &#125;</div><div class="line">        mEnded = true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onAnimationCancel(ValueAnimatorCompat animation) &#123;</div><div class="line">        setFraction(1f); //make sure we recover the view&apos;s state.</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onAnimationRepeat(ValueAnimatorCompat animation) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>里面的成员变量大家看名称应该大部分就可以理解了，不做更多的说明了</p>
+<p>那么来看看findAnimation()这个方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">//根据查找的View从mRecoverAnimations集合中查找相同View的RecoverAnimation</div><div class="line">private RecoverAnimation findAnimation(MotionEvent event) &#123;</div><div class="line">    if (mRecoverAnimations.isEmpty()) &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">    View target = findChildView(event);</div><div class="line">    for (int i = mRecoverAnimations.size() - 1; i &gt;= 0; i--) &#123;</div><div class="line">        final RecoverAnimation anim = mRecoverAnimations.get(i);</div><div class="line">        if (anim.mViewHolder.itemView == target) &#123;</div><div class="line">            return anim;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//根据event查找View</div><div class="line">private View findChildView(MotionEvent event) &#123;</div><div class="line">    // first check elevated views, if none, then call RV</div><div class="line">    final float x = event.getX();</div><div class="line">    final float y = event.getY();</div><div class="line">    //mSelected不为空则拿mSelected.itemView</div><div class="line">    if (mSelected != null) &#123;</div><div class="line">        final View selectedView = mSelected.itemView;</div><div class="line">        if (hitTest(selectedView, x, y, mSelectedStartX + mDx, mSelectedStartY + mDy)) &#123;</div><div class="line">            return selectedView;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //从mRecoverAnimations这个RecoverAnimation类集合中查找是否存在View</div><div class="line">    for (int i = mRecoverAnimations.size() - 1; i &gt;= 0; i--) &#123;</div><div class="line">        final RecoverAnimation anim = mRecoverAnimations.get(i);</div><div class="line">        final View view = anim.mViewHolder.itemView;</div><div class="line">        if (hitTest(view, x, y, anim.mX, anim.mY)) &#123;</div><div class="line">            return view;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //通过RecyclerView的findChildViewUnder方法查找View</div><div class="line">    return mRecyclerView.findChildViewUnder(x, y);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//计算是否点击在当前View的区域内</div><div class="line">private static boolean hitTest(View child, float x, float y, float left, float top) &#123;</div><div class="line">    return x &gt;= left &amp;&amp;</div><div class="line">            x &lt;= left + child.getWidth() &amp;&amp;</div><div class="line">            y &gt;= top &amp;&amp;</div><div class="line">            y &lt;= top + child.getHeight();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>往下看就可以看到endRecoverAnimation方法，这个方法主要就是从mRecoverAnimations集合中删除某个RecoverAnimation对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">private int endRecoverAnimation(ViewHolder viewHolder, boolean override) &#123;</div><div class="line">    final int recoverAnimSize = mRecoverAnimations.size();</div><div class="line">    for (int i = recoverAnimSize - 1; i &gt;= 0; i--) &#123;</div><div class="line">        final RecoverAnimation anim = mRecoverAnimations.get(i);</div><div class="line">        if (anim.mViewHolder == viewHolder) &#123;</div><div class="line">            anim.mOverridden |= override;</div><div class="line">            if (!anim.mEnded) &#123;</div><div class="line">                anim.cancel();</div><div class="line">            &#125;</div><div class="line">            mRecoverAnimations.remove(i);</div><div class="line">            return anim.mAnimationType;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来看下select()方法，这个方法作用是开始拖动或者滑动指定的View</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div></pre></td><td class="code"><pre><div class="line">private void select(ViewHolder selected, int actionState) &#123;</div><div class="line">    //当ViewHolder一致且State状态一致时候直接返回，不做处理</div><div class="line">    if (selected == mSelected &amp;&amp; actionState == mActionState) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    mDragScrollStartTimeInMs = Long.MIN_VALUE;</div><div class="line">    final int prevActionState = mActionState;</div><div class="line">    // prevent duplicate animations</div><div class="line">    endRecoverAnimation(selected, true);</div><div class="line">    mActionState = actionState;</div><div class="line">    if (actionState == ACTION_STATE_DRAG) &#123;</div><div class="line">        // we remove after animation is complete. this means we only elevate the last drag</div><div class="line">        // child but that should perform good enough as it is very hard to start dragging a</div><div class="line">        // new child before the previous one settles.</div><div class="line">        mOverdrawChild = selected.itemView;</div><div class="line">        addChildDrawingOrderCallback();</div><div class="line">    &#125;</div><div class="line">    int actionStateMask = (1 &lt;&lt; (DIRECTION_FLAG_COUNT + DIRECTION_FLAG_COUNT * actionState))</div><div class="line">            - 1;</div><div class="line">    boolean preventLayout = false;</div><div class="line">    //当mSelected不为null的时候，新建RecoverAnimation对象，并且start这个ValueAnimator</div><div class="line">    if (mSelected != null) &#123;</div><div class="line">        final ViewHolder prevSelected = mSelected;</div><div class="line">        if (prevSelected.itemView.getParent() != null) &#123;</div><div class="line">            //当为DRAG状态时候swipeDir为0</div><div class="line">            final int swipeDir = prevActionState == ACTION_STATE_DRAG ? 0</div><div class="line">                    : swipeIfNecessary(prevSelected);</div><div class="line">            releaseVelocityTracker();</div><div class="line">            // find where we should animate to</div><div class="line">            final float targetTranslateX, targetTranslateY;</div><div class="line">            int animationType;</div><div class="line">            switch (swipeDir) &#123;</div><div class="line">                case LEFT:</div><div class="line">                case RIGHT:</div><div class="line">                case START:</div><div class="line">                case END:</div><div class="line">                    targetTranslateY = 0;</div><div class="line">                    targetTranslateX = Math.signum(mDx) * mRecyclerView.getWidth();</div><div class="line">                    break;</div><div class="line">                case UP:</div><div class="line">                case DOWN:</div><div class="line">                    targetTranslateX = 0;</div><div class="line">                    targetTranslateY = Math.signum(mDy) * mRecyclerView.getHeight();</div><div class="line">                    break;</div><div class="line">                default:</div><div class="line">                    targetTranslateX = 0;</div><div class="line">                    targetTranslateY = 0;</div><div class="line">            &#125;</div><div class="line">            if (prevActionState == ACTION_STATE_DRAG) &#123;</div><div class="line">                animationType = ANIMATION_TYPE_DRAG;</div><div class="line">            &#125; else if (swipeDir &gt; 0) &#123;</div><div class="line">                animationType = ANIMATION_TYPE_SWIPE_SUCCESS;</div><div class="line">            &#125; else &#123;</div><div class="line">                animationType = ANIMATION_TYPE_SWIPE_CANCEL;</div><div class="line">            &#125;</div><div class="line">            getSelectedDxDy(mTmpPosition);</div><div class="line">            final float currentTranslateX = mTmpPosition[0];</div><div class="line">            final float currentTranslateY = mTmpPosition[1];</div><div class="line">            final RecoverAnimation rv = new RecoverAnimation(prevSelected, animationType,</div><div class="line">                    prevActionState, currentTranslateX, currentTranslateY,</div><div class="line">                    targetTranslateX, targetTranslateY) &#123;</div><div class="line">                @Override</div><div class="line">                public void onAnimationEnd(ValueAnimatorCompat animation) &#123;</div><div class="line">                    super.onAnimationEnd(animation);</div><div class="line">                    if (this.mOverridden) &#123;</div><div class="line">                        return;</div><div class="line">                    &#125;</div><div class="line">                    //动画结束如果swipeDir&lt;=0则drag与swipe失败，Callback会调用clearView方法</div><div class="line">                    //swipeDir &gt;0则表示成功，会调用postDispatchSwipe方法</div><div class="line">                    //当为DRAG状态时候因为swipeDir为0，所以只走clearView方法</div><div class="line">                    if (swipeDir &lt;= 0) &#123;</div><div class="line">                        // this is a drag or failed swipe. recover immediately</div><div class="line">                        mCallback.clearView(mRecyclerView, prevSelected);</div><div class="line">                        // full cleanup will happen on onDrawOver</div><div class="line">                    &#125; else &#123;</div><div class="line">                        // wait until remove animation is complete.</div><div class="line">                        mPendingCleanup.add(prevSelected.itemView);</div><div class="line">                        mIsPendingCleanup = true;</div><div class="line">                        if (swipeDir &gt; 0) &#123;</div><div class="line">                            // Animation might be ended by other animators during a layout.</div><div class="line">                            // We defer callback to avoid editing adapter during a layout.</div><div class="line">                            postDispatchSwipe(this, swipeDir);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                    // removed from the list after it is drawn for the last time</div><div class="line">                    if (mOverdrawChild == prevSelected.itemView) &#123;</div><div class="line">                        removeChildDrawingOrderCallbackIfNecessary(prevSelected.itemView);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;;</div><div class="line">            //获取AnimationDuration,我们可以通过重写这个方法来设定动画的时间</div><div class="line">            final long duration = mCallback.getAnimationDuration(mRecyclerView, animationType,</div><div class="line">                    targetTranslateX - currentTranslateX, targetTranslateY - currentTranslateY);</div><div class="line">            rv.setDuration(duration);</div><div class="line">            mRecoverAnimations.add(rv);</div><div class="line">            rv.start();</div><div class="line">            preventLayout = true;</div><div class="line">        &#125; else &#123;</div><div class="line">            removeChildDrawingOrderCallbackIfNecessary(prevSelected.itemView);</div><div class="line">            mCallback.clearView(mRecyclerView, prevSelected);</div><div class="line">        &#125;</div><div class="line">        mSelected = null;</div><div class="line">    &#125;</div><div class="line">    //当传进来的selected不为空的时候将selected赋给mSelected</div><div class="line">    if (selected != null) &#123;</div><div class="line">        mSelectedFlags =</div><div class="line">                (mCallback.getAbsoluteMovementFlags(mRecyclerView, selected) &amp; actionStateMask)</div><div class="line">                        &gt;&gt; (mActionState * DIRECTION_FLAG_COUNT);</div><div class="line">        mSelectedStartX = selected.itemView.getLeft();</div><div class="line">        mSelectedStartY = selected.itemView.getTop();</div><div class="line">        mSelected = selected;</div><div class="line"></div><div class="line">        if (actionState == ACTION_STATE_DRAG) &#123;</div><div class="line">            mSelected.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    final ViewParent rvParent = mRecyclerView.getParent();</div><div class="line">    if (rvParent != null) &#123;</div><div class="line">        rvParent.requestDisallowInterceptTouchEvent(mSelected != null);</div><div class="line">    &#125;</div><div class="line">    if (!preventLayout) &#123;</div><div class="line">        mRecyclerView.getLayoutManager().requestSimpleAnimationsInNextLayout();</div><div class="line">    &#125;</div><div class="line">    //每次select会带来拖动或者滑动的ViewHolder改变，所以这里会调用onSelectedChanged方法，我们可以通过回调接受到这些信息</div><div class="line">    mCallback.onSelectedChanged(mSelected, mActionState);</div><div class="line">    mRecyclerView.invalidate();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">private void postDispatchSwipe(final RecoverAnimation anim, final int swipeDir) &#123;</div><div class="line">    // wait until animations are complete.</div><div class="line">    mRecyclerView.post(new Runnable() &#123;</div><div class="line">        @Override</div><div class="line">        public void run() &#123;</div><div class="line">            if (mRecyclerView != null &amp;&amp; mRecyclerView.isAttachedToWindow() &amp;&amp;</div><div class="line">                    !anim.mOverridden &amp;&amp;</div><div class="line">                    anim.mViewHolder.getAdapterPosition() != RecyclerView.NO_POSITION) &#123;</div><div class="line">                final RecyclerView.ItemAnimator animator = mRecyclerView.getItemAnimator();</div><div class="line">                // if animator is running or we have other active recover animations, we try</div><div class="line">                // not to call onSwiped because DefaultItemAnimator is not good at merging</div><div class="line">                // animations. Instead, we wait and batch.</div><div class="line">                if ((animator == null || !animator.isRunning(null))</div><div class="line">                        &amp;&amp; !hasRunningRecoverAnim()) &#123;</div><div class="line">                    //当滑动结束会调用onSwiped()方法，我们可以在</div><div class="line">                    mCallback.onSwiped(anim.mViewHolder, swipeDir);</div><div class="line">                &#125; else &#123;</div><div class="line">                    mRecyclerView.post(this);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过代码这部分代码我们可以大致知道了select这个方法的作用了，它主要是<strong>处理当手指拖动或者滑动结束后的动画</strong>，要通过两次调用，第一次在我们选中的时候，作用是确定我们手指选择的View，第二次在我们手指放开的时候，作用是给这个View设置动画，并且执行。</p>
+<p>接下来看看checkSelectForSwipe() 方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line">private boolean checkSelectForSwipe(int action, MotionEvent motionEvent, int pointerIndex) &#123;</div><div class="line">     //这里调用了Callback的isItemViewSwipeEnabled()方法，我们通过重写这个方法可以控制是否可以Swipe</div><div class="line">    if (mSelected != null || action != MotionEvent.ACTION_MOVE</div><div class="line">            || mActionState == ACTION_STATE_DRAG || !mCallback.isItemViewSwipeEnabled()) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    if (mRecyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    final ViewHolder vh = findSwipedView(motionEvent);</div><div class="line">    if (vh == null) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    //这里的getAbsoluteMovementFlags（）前面有介绍过，</div><div class="line">    final int movementFlags = mCallback.getAbsoluteMovementFlags(mRecyclerView, vh);</div><div class="line"></div><div class="line">    final int swipeFlags = (movementFlags &amp; ACTION_MODE_SWIPE_MASK)</div><div class="line">            &gt;&gt; (DIRECTION_FLAG_COUNT * ACTION_STATE_SWIPE);</div><div class="line"></div><div class="line">    if (swipeFlags == 0) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // mDx and mDy are only set in allowed directions. We use custom x/y here instead of</div><div class="line">    // updateDxDy to avoid swiping if user moves more in the other direction</div><div class="line">    final float x = MotionEventCompat.getX(motionEvent, pointerIndex);</div><div class="line">    final float y = MotionEventCompat.getY(motionEvent, pointerIndex);</div><div class="line"></div><div class="line">    // Calculate the distance moved</div><div class="line">    final float dx = x - mInitialTouchX;</div><div class="line">    final float dy = y - mInitialTouchY;</div><div class="line">    // swipe target is chose w/o applying flags so it does not really check if swiping in that</div><div class="line">    // direction is allowed. This why here, we use mDx mDy to check slope value again.</div><div class="line">    final float absDx = Math.abs(dx);</div><div class="line">    final float absDy = Math.abs(dy);</div><div class="line"></div><div class="line">    if (absDx &lt; mSlop &amp;&amp; absDy &lt; mSlop) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    if (absDx &gt; absDy) &#123;</div><div class="line">        if (dx &lt; 0 &amp;&amp; (swipeFlags &amp; LEFT) == 0) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">        if (dx &gt; 0 &amp;&amp; (swipeFlags &amp; RIGHT) == 0) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">    &#125; else &#123;</div><div class="line">        if (dy &lt; 0 &amp;&amp; (swipeFlags &amp; UP) == 0) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">        if (dy &gt; 0 &amp;&amp; (swipeFlags &amp; DOWN) == 0) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    mDx = mDy = 0f;</div><div class="line">    mActivePointerId = MotionEventCompat.getPointerId(motionEvent, 0);</div><div class="line">    //select方法</div><div class="line">    select(vh, ACTION_STATE_SWIPE);</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法主要是确定当前的我们选择的View是否可以滑动，而前面说的select方法的第一次调用是在这里，这个主要是滑动的select第一个方法，拖动的第一个select方法则在GestureDetector的onLongPress中</p>
+<p>到这里基本就介绍结束onInterceptTouchEvent里面做的东西了</p>
+<p><strong>(2).onTouchEvent</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">public void onTouchEvent(RecyclerView recyclerView, MotionEvent event) &#123;</div><div class="line">    mGestureDetector.onTouchEvent(event);</div><div class="line">    if (DEBUG) &#123;</div><div class="line">        Log.d(TAG,</div><div class="line">                &quot;on touch: x:&quot; + mInitialTouchX + &quot;,y:&quot; + mInitialTouchY + &quot;, :&quot; + event);</div><div class="line">    &#125;</div><div class="line">    if (mVelocityTracker != null) &#123;</div><div class="line">        mVelocityTracker.addMovement(event);</div><div class="line">    &#125;</div><div class="line">    if (mActivePointerId == ACTIVE_POINTER_ID_NONE) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    final int action = MotionEventCompat.getActionMasked(event);</div><div class="line">    final int activePointerIndex = MotionEventCompat</div><div class="line">            .findPointerIndex(event, mActivePointerId);</div><div class="line">    if (activePointerIndex &gt;= 0) &#123;</div><div class="line">        checkSelectForSwipe(action, event, activePointerIndex);</div><div class="line">    &#125;</div><div class="line">    ViewHolder viewHolder = mSelected;</div><div class="line">    if (viewHolder == null) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    switch (action) &#123;</div><div class="line">        case MotionEvent.ACTION_MOVE: &#123;</div><div class="line">            // Find the index of the active pointer and fetch its position</div><div class="line">            if (activePointerIndex &gt;= 0) &#123;</div><div class="line">                updateDxDy(event, mSelectedFlags, activePointerIndex);</div><div class="line">                moveIfNecessary(viewHolder);</div><div class="line">                mRecyclerView.removeCallbacks(mScrollRunnable);</div><div class="line">                mScrollRunnable.run();</div><div class="line">                mRecyclerView.invalidate();</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">        case MotionEvent.ACTION_CANCEL:</div><div class="line">            if (mVelocityTracker != null) &#123;</div><div class="line">                mVelocityTracker.clear();</div><div class="line">            &#125;</div><div class="line">            // fall through</div><div class="line">        case MotionEvent.ACTION_UP:</div><div class="line">            // 第二次select，触发动画</div><div class="line">            select(null, ACTION_STATE_IDLE);</div><div class="line">            mActivePointerId = ACTIVE_POINTER_ID_NONE;</div><div class="line">            break;</div><div class="line">        case MotionEvent.ACTION_POINTER_UP: &#123;</div><div class="line">            final int pointerIndex = MotionEventCompat.getActionIndex(event);</div><div class="line">            final int pointerId = MotionEventCompat.getPointerId(event, pointerIndex);</div><div class="line">            if (pointerId == mActivePointerId) &#123;</div><div class="line">                // This was our active pointer going up. Choose a new</div><div class="line">                // active pointer and adjust accordingly.</div><div class="line">                final int newPointerIndex = pointerIndex == 0 ? 1 : 0;</div><div class="line">                mActivePointerId = MotionEventCompat.getPointerId(event, newPointerIndex);</div><div class="line">                updateDxDy(event, mSelectedFlags, pointerIndex);</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在ACTION_UP时候触发的第二次select()则会执行动画效果</p>
+<p>而ACTION_MOVE则是处理随着手指运动的效果，那我们看下里面的实现方法</p>
+<p>主要有两个一个是moveIfNecessary另外一个是mScrollRunnable</p>
+<p>我们看下mScrollRunnable</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">private final Runnable mScrollRunnable = new Runnable() &#123;</div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        if (mSelected != null &amp;&amp; scrollIfNecessary()) &#123;</div><div class="line">            if (mSelected != null) &#123; //it might be lost during scrolling</div><div class="line">                moveIfNecessary(mSelected);</div><div class="line">            &#125;</div><div class="line">            mRecyclerView.removeCallbacks(mScrollRunnable);</div><div class="line">            ViewCompat.postOnAnimation(mRecyclerView, this);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>那我们先来分析下scrollIfNecessary（）然后再分析moveIfNecessary（）方法</p>
+<p>scrollIfNecessary其实上面的注释解释的很清楚，它的作用是检测我们滑动是否到达RecycleView的边缘区域，如果到达边缘区域则将RecycleView移动（scrollBy）,这里也调用了callback的interpolateOutOfBoundsScroll方法，所以我们可以在这里监听到我们拖出视图边界的调用</p>
+<p>接下来看一下moveIfNecessary（）方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">private void moveIfNecessary(ViewHolder viewHolder) &#123;</div><div class="line">    if (mRecyclerView.isLayoutRequested()) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    if (mActionState != ACTION_STATE_DRAG) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">   //获取getMoveThreshold，可以通过重写来自定义用户视为拖动的距离</div><div class="line">    final float threshold = mCallback.getMoveThreshold(viewHolder);</div><div class="line">    final int x = (int) (mSelectedStartX + mDx);</div><div class="line">    final int y = (int) (mSelectedStartY + mDy);</div><div class="line">   //当移动距离小于拖动距离，return掉</div><div class="line">    if (Math.abs(y - viewHolder.itemView.getTop()) &lt; viewHolder.itemView.getHeight() * threshold</div><div class="line">            &amp;&amp; Math.abs(x - viewHolder.itemView.getLeft())</div><div class="line">            &lt; viewHolder.itemView.getWidth() * threshold) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    List&lt;ViewHolder&gt; swapTargets = findSwapTargets(viewHolder);</div><div class="line">    if (swapTargets.size() == 0) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    ViewHolder target = mCallback.chooseDropTarget(viewHolder, swapTargets, x, y);</div><div class="line">    if (target == null) &#123;</div><div class="line">        mSwapTargets.clear();</div><div class="line">        mDistances.clear();</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    final int toPosition = target.getAdapterPosition();</div><div class="line">    final int fromPosition = viewHolder.getAdapterPosition();</div><div class="line">    //调用onMove，可以重写来让RecycleView改变，也可以让callback的onMoved方法是否重调</div><div class="line">    if (mCallback.onMove(mRecyclerView, viewHolder, target)) &#123;</div><div class="line">        // keep target visible</div><div class="line">        mCallback.onMoved(mRecyclerView, viewHolder, fromPosition,</div><div class="line">                target, toPosition, x, y);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以这里其实是用来判断是否move的带来RecycleView的变化</p>
+<p>最后 调用了mRecyclerView.invalidate()方法，而这个方法呢则调用了前面所提到的ItemDecoration里的方法，而那里面的方法处理的是当运动带来的拖动与滑动的交互，前面有提到就不做过多的介绍了</p>
+<p>所以总结一下，拖动时通过mRecyclerView.invalidate让onDraw不断重绘带来手指与点击ViewHolder的变化，当手指离开时候则通过select方法启动RecoverAnimation让ViewHolder执行后面的动画，基本的流程就是这样，当然中间有很多Callback方法带来不同的变化，感觉整个流程我还是讲的比较乱的，大家理解大致流程就好了。。到这里就基本分析结束了，当然还有一些方法可能没有介绍了，大家可以通过前面的Callback注释的方法去理解大致的功能就好了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/12/ViewDragerHelper使用与源码简析/" rel="next" title="ViewDragerHelper使用与源码简析">
+                <i class="fa fa-chevron-left"></i> ViewDragerHelper使用与源码简析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/12/Android性能优化(一)-布局优化/" rel="prev" title="Android性能优化(一)-布局优化">
+                Android性能优化(一)-布局优化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单实现"><span class="nav-number">1.</span> <span class="nav-text">简单实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码简析"><span class="nav-number">2.</span> <span class="nav-text">源码简析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ItemTouchHelper-CallBack分析"><span class="nav-number">2.1.</span> <span class="nav-text">ItemTouchHelper.CallBack分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ItemTouchHelper相关分析"><span class="nav-number">2.2.</span> <span class="nav-text">ItemTouchHelper相关分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,935 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="性能优化," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前面两篇主要是说到对于渲染相关问题的优化工作，那么这篇呢主要正对于运算相关的优化工作，说到运算相关的优化其实就是提高我们代码运行的速度，这里的优化工作其实相对来说是比较多也比较杂的，而且随着每个人的代码习惯不同，其实这里面出现的性能问题不是很好发现。
+那么对于运行的代码和方法我们如何判断它的性能问题？
+这里首先介绍下TraceView
+TraceViewTraceView是什么，TraceView">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android性能优化(三)-运算优化">
+<meta property="og:url" content="http://yoursite.com/2016/10/28/Android性能优化(三)-运算优化/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="前面两篇主要是说到对于渲染相关问题的优化工作，那么这篇呢主要正对于运算相关的优化工作，说到运算相关的优化其实就是提高我们代码运行的速度，这里的优化工作其实相对来说是比较多也比较杂的，而且随着每个人的代码习惯不同，其实这里面出现的性能问题不是很好发现。
+那么对于运行的代码和方法我们如何判断它的性能问题？
+这里首先介绍下TraceView
+TraceViewTraceView是什么，TraceView">
+<meta property="og:image" content="http://p1.bpimg.com/567571/4a57f3fbfce9ab72.png">
+<meta property="og:image" content="http://i1.piimg.com/567571/685c332d6db95991.png">
+<meta property="og:image" content="http://p1.bpimg.com/567571/feadfd463b92b517.png">
+<meta property="og:image" content="http://p1.bpimg.com/567571/aafc07de57d4f498.png">
+<meta property="og:image" content="http://p1.bqimg.com/567571/586e71d062d672bf.png">
+<meta property="og:image" content="http://p1.bpimg.com/567571/d697d653a49f1c21.png">
+<meta property="og:image" content="http://i1.piimg.com/567571/bb0d248c7982a7a3.jpg">
+<meta property="og:image" content="http://p1.bpimg.com/567571/5ebad2eb1e7b5ef3.jpg">
+<meta property="og:image" content="http://i1.piimg.com/567571/bba3eef204d532f5.jpg">
+<meta property="og:image" content="http://i1.piimg.com/567571/656344a89f8009b1.jpg">
+<meta property="og:image" content="http://i1.piimg.com/567571/0afaf79afb29bc68.jpg">
+<meta property="og:updated_time" content="2017-03-18T09:04:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android性能优化(三)-运算优化">
+<meta name="twitter:description" content="前面两篇主要是说到对于渲染相关问题的优化工作，那么这篇呢主要正对于运算相关的优化工作，说到运算相关的优化其实就是提高我们代码运行的速度，这里的优化工作其实相对来说是比较多也比较杂的，而且随着每个人的代码习惯不同，其实这里面出现的性能问题不是很好发现。
+那么对于运行的代码和方法我们如何判断它的性能问题？
+这里首先介绍下TraceView
+TraceViewTraceView是什么，TraceView">
+<meta name="twitter:image" content="http://p1.bpimg.com/567571/4a57f3fbfce9ab72.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/28/Android性能优化(三)-运算优化/"/>
+
+
+
+
+
+  <title> Android性能优化(三)-运算优化 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/28/Android性能优化(三)-运算优化/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android性能优化(三)-运算优化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-28T19:47:53+08:00">
+                2016-10-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/28/Android性能优化(三)-运算优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/28/Android性能优化(三)-运算优化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面两篇主要是说到对于渲染相关问题的优化工作，那么这篇呢主要正对于运算相关的优化工作，说到运算相关的优化其实就是提高我们代码运行的速度，这里的优化工作其实相对来说是比较多也比较杂的，而且随着每个人的代码习惯不同，其实这里面出现的性能问题不是很好发现。</p>
+<p>那么对于运行的代码和方法我们如何判断它的性能问题？</p>
+<p>这里首先介绍下TraceView</p>
+<h4 id="TraceView"><a href="#TraceView" class="headerlink" title="TraceView"></a>TraceView</h4><p>TraceView是什么，TraceView 是 Android 平台特有的数据采集和分析工具，主要用做热点分析，找出最需要优化的点。TraceView 从代码层面分析性能问题，针对每个方法来分析，比如当我们发现我们的应用出现卡顿的时候，我们可以来分析出现卡顿时在方法的调用上有没有很耗时的操作，通过TraceView，可以得到两种数据。</p>
+<ul>
+<li>单次执行最耗时的方法</li>
+<li>执行次数最多的方法</li>
+</ul>
+<h5 id="TraceView启动方式"><a href="#TraceView启动方式" class="headerlink" title="TraceView启动方式"></a>TraceView启动方式</h5><p>打开TraceView一般有两种方法</p>
+<a id="more"></a>
+<p>1.代码方式</p>
+<p>首先选择跟踪范围，在想要根据的代码片段之间使用以下两句代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Debug.startMethodTracing(“trace”);</div><div class="line"></div><div class="line">Debug.stopMethodTracing();</div></pre></td></tr></table></figure>
+<p>生成的traceview文件会自动放在SDCARD上，没有SDCARD卡会出现异常，所以使用这种方式需要确保应用的AndroidMainfest.xml中的SD卡的读写权限是打开的，其中hello是traceview文件的名字，然后可以通过启动Android Device Monitor,找到sd卡根目录下的trace.trace，打开这个traceview文件即可。</p>
+<p>2.自动方式</p>
+<p>首先打开Android Device Monitor，如下</p>
+<div align="center"><br><img src="http://p1.bpimg.com/567571/4a57f3fbfce9ab72.png" alt=""><br></div>
+
+<p>首先选择需要分析的app进程，然后点击上面三个箭头并带红色的按钮即Start Method Profiling（开启方法分析，这时候按钮会变为三个箭头并带黑色即Stop Method Profiling（停止方法分析）,开启方法分析后，对应用的目标页面进行测试操作，测试完毕后停止方法分析，界面会自动跳转到 DDMS 的 trace 分析界面。</p>
+<p>两种方式的对比：第一种方式更精确到方法，起点和终点都是自己定，不方便的地方是自己需要添加方法并且要找相关的traceview文件，第二种方式的优缺点刚好相反。</p>
+<h5 id="TraceView界面分析"><a href="#TraceView界面分析" class="headerlink" title="TraceView界面分析"></a>TraceView界面分析</h5><p>trace分析界面，如下图所示：</p>
+<div align="center"><br><img src="http://i1.piimg.com/567571/685c332d6db95991.png" alt=""><br></div>
+
+<p>TraceView 界面比较复杂，其 UI 划分为上下两个面板，即 Timeline Panel（时间线面板）和 Profile Panel（分析面板）。</p>
+<p><strong>Timeline Panel</strong> 又可细分为左右两个 Pane：</p>
+<ul>
+<li><p>左边 Pane 显示的是测试数据中所采集的线程信息。由图可知，本次测试数据采集了 main 线程，传感器线程和其它系统辅助线程的信息。</p>
+</li>
+<li><p>右边 Pane 所示为时间线，时间线上是每个线程测试时间段内所涉及的函数调用信息。这些信息包括函数名、函数执行时间等。</p>
+</li>
+</ul>
+<p>开发者可以在时间线 Pane 中移动时间线纵轴。纵轴上边将显示当前时间点中某线程正在执行的函数信息,并且可以按住CTRL键加鼠标滚轮进行放大</p>
+<p><strong>Profile Panel</strong> 是 TraceView 的核心界面，其内涵非常丰富。它主要展示了某个线程（先在 Timeline Panel 中选择线程）中各个函数调用的情况，包括 CPU 使用时间、调用次数等信息。而这些信息正是查找 hotspot 的关键依据。所以，对开发者而言，一定要了解 Profile Panel 中各列的含义。下表列出了 Profile Panel 中各个字段的列名及其描述。</p>
+<div align="center"><br><img src="http://p1.bpimg.com/567571/feadfd463b92b517.png" alt=""><br></div>
+
+<p>上面也有说到，TraceView主要作用是获取单次执行最耗时的方法与执行次数最多的方法，这两个数据的获取可以根据上述的字段获取</p>
+<ul>
+<li><p>Cpu Time / Call可以反应单次执行最耗时的方法</p>
+</li>
+<li><p>Calls + Recur Calls / Total 可以反应执行次数最多</p>
+</li>
+</ul>
+<p>接下来就用一个简单例子来说明TraceView的使用与分析</p>
+<h5 id="TraceView例子分析"><a href="#TraceView例子分析" class="headerlink" title="TraceView例子分析"></a>TraceView例子分析</h5><p>上面也说到TraceView可以检测单次执行最耗时的方法与执行次数最多的方法，那么我们这个例子就分别来模拟这两种情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">new Thread(new Runnable() &#123;</div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        traceTest();</div><div class="line">    &#125;</div><div class="line">&#125;,&quot;trace_thread&quot;).start();</div><div class="line"></div><div class="line">int count = 0;</div><div class="line"></div><div class="line">private void traceTest() &#123;</div><div class="line">    for (int i = 0; i &lt; 2000; i++) &#123;</div><div class="line">        trace();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void trace()&#123;</div><div class="line">    count=++count;</div><div class="line">    System.out.println(&quot;-----&gt;print&quot; + count);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里其实是开启了一个线程，执行了traceTest方法，traceTest方法里面循环执行trace方法，所以trace方法模拟了执行次数最多的方法，而traceTest方法则模拟了单次执行最耗时的方法</p>
+<p>接下来看TraceView分析的数据</p>
+<div align="center"><br><img src="http://p1.bpimg.com/567571/aafc07de57d4f498.png" alt=""><br></div>
+
+<p>点击Calls + Recur Calls这一栏，可以按照方法调用次数排序，如下图，可以看出trace方法执行了2000次。</p>
+<div align="center"><br><img src="http://p1.bqimg.com/567571/586e71d062d672bf.png" alt=""><br></div>
+
+<p>点击Cpu Time / Call这一栏，可以按照方法调用时间排序，可以看到traceTest方法执行了6s多，非常的耗时。如下图，</p>
+<div align="center"><br><img src="http://p1.bpimg.com/567571/d697d653a49f1c21.png" alt=""><br></div>
+
+<p>这是模拟的两个极端的情况，实际情况下，分析的难度比较大，但是当体验卡顿的时候，我们可以借助TraceView来定位问题。所以TraceView虽说不常用，但是还是很有意义的！</p>
+<h4 id="运算优化（代码优化）"><a href="#运算优化（代码优化）" class="headerlink" title="运算优化（代码优化）"></a>运算优化（代码优化）</h4><p>运算相关的优化其实就是提高我们代码运行的速度，那么对于提升代码运算的速度，其实就是对于代码的各种优化工作，包括数据选择，算法优化等等，接下来会关于部分的代码优化做讲解</p>
+<h5 id="1-数据优化"><a href="#1-数据优化" class="headerlink" title="(1).数据优化"></a>(1).数据优化</h5><p><strong>数据类型选择</strong></p>
+<p>1.避免使用浮点数</p>
+<p>浮点型数据如long double是64位类型，而整型数据如int则是32位类型，通常的经验是，在Android设备中，浮点数会比整型慢两倍，对于早期没有FPU(浮点运算单元)的机器与有FPU机器之间的这之间的差距会更加明显</p>
+<p>2.避免使用枚举</p>
+<p>Android官方的Training课程里面有下面这样一句话：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Enums often require more than twice as much memory as static constants. You should strictly avoid using enums on Android.</div></pre></td></tr></table></figure>
+<p>即对于Android来说使用枚举会占用内存更多，所以并不推荐使用枚举</p>
+<p>Enums代码使用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static enum Value&#123;</div><div class="line">	VALUE1,VALUE2,VALUE3</div><div class="line">&#125;</div><div class="line">int func(value value)&#123;</div><div class="line">	switch(value)&#123;</div><div class="line">		case VALUE1:</div><div class="line">			return -1;</div><div class="line">		case VALUE2:</div><div class="line">			return -2;</div><div class="line">		case VALUE3:</div><div class="line">			return -3;		</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在使用Enums代码后我们会发现dex大小比之前增加了1632 bytes</p>
+<p>接下来看一下使用静态常量方式，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public static final int VALUE1 = 1;</div><div class="line">public static final int VALUE1 = 2;</div><div class="line">public static final int VALUE1 = 3;</div><div class="line"></div><div class="line">int func(value value)&#123;</div><div class="line">	switch(value)&#123;</div><div class="line">		case VALUE1:</div><div class="line">			return -1;</div><div class="line">		case VALUE2:</div><div class="line">			return -2;</div><div class="line">		case VALUE3:</div><div class="line">			return -3;		</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在使用静态常量代码后我们会发现dex大小比之前增加了124 bytes</p>
+<p>我们可以发现使用Enums，dex大小增加是静态常量方式的13倍之多，同时使用enum，运行时还会产生额外的内存占用。</p>
+<p>所以Android官方强烈建议不要在Android程序里面使用到enum。</p>
+<p>3.String,StringBuffer,StringBuilder的选择</p>
+<ul>
+<li>String 字符串常量</li>
+<li>StringBuffer 字符串变量（线程安全）</li>
+<li>StringBuilder 字符串变量（非线程安全）</li>
+</ul>
+<p>String 类型和 StringBuffer 类型的主要性能区别其实在于 String 是不可变的对象, 因此在每次对 String 类型进行改变的时候其实都等同于生成了一个新的 String 对象，然后将指针指向新的 String 对象，所以经常改变内容的字符串最好不要用 String ，因为每次生成对象都会对系统性能产生消耗的。 而StringBuffer 类则结果就不一样了，每次结果都会对 StringBuffer 对象本身进行操作，而不是生成新的对象，再改变对象引用。</p>
+<p>StringBuilder一个可变的字符序列。此类提供一个与StringBuffer兼容的API，但不保证同步。该类被设计用作StringBuffer的一个简易替换，用在字符串缓冲区被单个线程使用的时候（这种情况很普遍）。如果可能，建议优先采用该类，因为在大多数实现中，它比StringBuffer要快。</p>
+<p>将StringBuilder的实例用于多个线程是不安全的。如果需要这样的同步，则建议使用StringBuffer。</p>
+<p>4.巧用final关键字</p>
+<p>final关键字一般在定义常量和方法用的比较多，而大多数人对final的理解往往是在不可变性上，而final对性能优化也有很大的作用。</p>
+<p>比如：static int AGE = 10;当10在后面被引用时，这时会有一个字段查找的过程，对于int类型也就是查找方法区中的整型常量池，而对于final的常量，则省去了这个过程，比如：static final int AGE = 10;在使用到AGE的地方将直接用10代替。（不过对于上面这种优化技巧，仅对基本类型和String类型有效，对于其它的引用类型则无效，但是我们在声明常量的时候加上 static final 依然是个好习惯）</p>
+<p>对与final关键字，还有一个强大的作用，就是对那些使用频繁、已经确定为终态的方法定义final，这样有什么好处呢？</p>
+<p>说这个前先来说说Java中方法的执行过程吧，当调用某个方法时，首先这个方法会入栈，执行完毕后，这个方法出栈，资源释放，而这个过程内部其实是内存地址的转移过程，当执行入栈的方法时，其实就是把程序的执行地址转移到该方法存放的内存地址中，而做此操作前，还有必须进行原先程序执行的内存地址保存过程，当方法执行完出栈后则继续按保存的地址继续执行程序，而这个过程，就是方法的调用过程。</p>
+<p>所以，方法的调用过程实际上是需要空间和时间的，而对于同一个方法的频繁调用的优化实际上就是使用内联的办法。</p>
+<p>又说到内联函数，内联函数实际上是在编译期做的优化，编译器会将标为为内联的函数在其调用的地方直接用整个函数体进行替换掉，这就省去了函数调用所耗去的时间资源了，而换来的却是目标代码量的增加，所以内联这种优化策略实际上是采取了以空间换时间的策略，对于移动端来说，巧用内联函数实则非常有益。</p>
+<p>而要是一个函数成为内联函数，就是将它定义为final，这样在程序编译时，编译器会自动将final函数进行内联优化，那么在调用该函数时则直接展开该函数体进行使用。</p>
+<p>总结，并不是内联函数越多越好，一方面它对我们程序的运行效率上确实有提升，而另一方面，对于过多的使用内联函数，则会弄巧成拙，有可能会把某个方法的方法体越搞越大，而且对于某些方法体比较大的方法，内联展开的时间有可能超过方法调用的时间，所以这不仅不会提供性能，反而是降低了本该有的性能。</p>
+<p><strong>数据结构选择</strong></p>
+<p>1.ArrayMap与HashMap的选择</p>
+<p>HashMap内部有一个HashMapEntry[]对象，每一个键值对都存储在这个对象里，当使用put方法添加键值对时，就会new一个HashMapEntry对象</p>
+<p>ArrayMap的存储中没有Entry这个东西，他是由两个数组来维护的,其中一个数组中保存的是每一项的HashCode值，另外一个数组中就是键值对，每两个元素代表一个键值对，前面保存key，后面的保存value</p>
+<p>HashMap与ArrayMap之间的内存占用效率对比图如下：</p>
+<div align="center"><br><img src="http://i1.piimg.com/567571/bb0d248c7982a7a3.jpg" alt=""><br></div>
+
+<p>但是这个对比也是在一定的条件下的，由于ArrayMap是查找是采用二分法的，所以对于大数据的数据结构，ArrayMap的使用速度会比HashMap要更慢</p>
+<p>所以在满足下面2个条件的时候才考虑使用ArrayMap：</p>
+<ul>
+<li>对象个数的数量级最好是千以内</li>
+<li>数据组织形式包含Map结构</li>
+</ul>
+<p>2.避免自动装箱（Autoboxing）</p>
+<p>我们知道基础数据类型的大小：boolean(8 bits), int(32 bits), float(32 bits)，long(64 bits)，为了能够让这些基础数据类型在大多数Java容器中运作，会需要做一个autoboxing的操作，转换成Boolean，Integer，Float等对象<br>以int为例子，Autoboxing会做如下操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">int i=10;</div><div class="line">Integer a = Integer.valueOf(i);//自动装箱操作</div><div class="line"></div><div class="line">Integer a=new Integer(i);//手动装箱的操作</div></pre></td></tr></table></figure>
+<p>Autoboxing是会带来内存消耗的，所以我们要避免自动装箱的问题</p>
+<p>Autoboxing的行为还经常发生在类似HashMap这样的容器里面，对HashMap的增删改查操作都会发生了大量的autoboxing的行为。为了避免这些autoboxing带来的效率问题，Android特地提供了SparseBoolMap，SparseIntMap，SparseLongMap，LongSparseMap等容器来解决这些问题</p>
+<p>SparseArray与上述的ArrayMap的结构一致，同时SparseArray不需要对key和value进行auto- boxing，所以对于内存和性能的损耗会降低很多，同时由于与ArrayMap结构结构一致，所以使用SparseArray的条件与ArrayMap一样</p>
+<h5 id="2-方法优化"><a href="#2-方法优化" class="headerlink" title="(2)方法优化"></a>(2)方法优化</h5><p>1.遍历方法的选择</p>
+<p>遍历容器是编程里面一个经常遇到的场景。在Java语言中，使用Iterate是一个比较常见的方法。可是在Android开发团队中，大家却尽量避免使用Iterator来执行遍历操作。下面我们看下在Android上可能用到的三种不同的遍历方法：</p>
+<p>List(Iterator)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">for(Iterator it = list.iterator; it.hasNext())&#123;</div><div class="line">	Object obj = it.next();</div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>List(For-Index)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">for(int index = 0; index &lt; list.size(); index++)&#123;</div><div class="line">	Object obj = list.get(index);</div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>List(Simplified)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">for(Object obj : list)&#123;</div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用上面三种方式在同一台手机上，使用相同的数据集做测试，他们的表现性能如下所示：</p>
+<div align="center"><br><img src="http://p1.bpimg.com/567571/5ebad2eb1e7b5ef3.jpg" alt=""><br></div>
+
+<p>从上面可以看到for index的方式有更好的效率，但是因为不同平台编译器优化各有差异，我们最好还是针对实际的方法做一下简单的测量比较好，拿到数据之后，再选择效率最高的那个方式。</p>
+<p>2.算法的处理</p>
+<p>对于移动端开发来说，其实算法相对来说都是比较简单的，但是也会出现复杂的算法的存在，对于这些算法具体问题具体分析，尽量不用O(n*n)时间复杂度以上的算法，必要时候可用空间换时间。查询考虑hash和二分，尽量不用递归。</p>
+<p>算法如果确实比较复杂的情况也可以考虑用C或者C++完成，然后用JNI调用。但是如果是算法比较单间，不必这么麻烦，毕竟JNI调用也会花一定的时间。需要权衡好这之间的关系</p>
+<h5 id="3-图片优化"><a href="#3-图片优化" class="headerlink" title="(3)图片优化"></a>(3)图片优化</h5><p>对于现在的开发来说使用图片加载框架会解决很多对于图片不正确处理带来的性能问题，虽然现在使用第三方图片加载框架已经很频繁了，但是在实际的开发难免还是会出现我们要处理图片相关的问题。</p>
+<p>1.解码率的权衡</p>
+<p>常见的png,jpeg,webp等格式的图片在设置到UI上之前需要经过解码的过程，而解压时可以选择不同的解码率，不同的解码率对内存的占用是有很大差别的。在不影响到画质的前提下尽量减少内存的占用，这能够显著提升应用程序的性能。</p>
+<p>Android为图片提供了4种解码格式，他们分别占用的内存大小如下图所示：</p>
+<div align="center"><br><img src="http://i1.piimg.com/567571/bba3eef204d532f5.jpg" alt=""><br></div>
+
+<p>在Android里面可以通过下面的代码来设置解码率：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BitmapFactory.Options mBitmapOptions = new BitmapFactory.Options();</div><div class="line">mBitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;</div><div class="line">BitmapFactory.decodeResource(getResources(),R.drawable.xxx,mBitmapOptions);</div></pre></td></tr></table></figure>
+<p>随着解码占用内存大小的降低，清晰度也会有损失。我们需要针对不同的应用场景做不同的处理，大图和小图可以采用不同的解码率。所以要权衡好图片的解码率。</p>
+<p>2.缩放处理</p>
+<p>对于图片缩放在平时开发中是很常见的问题，对bitmap做缩放的意义很明显，提示显示性能，避免分配不必要的内存。Android提供了现成的bitmap缩放的API，叫做createScaledBitmap()，使用这个方法可以获取到一张经过缩放的图片。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Bitmap.createScaledBitmap(sourseBitmap,newWidth,newHeight);</div></pre></td></tr></table></figure>
+<p>上面的方法能够快速的得到一张经过缩放的图片，可是这个方法能够执行的前提是，原图片需要事先加载到内存中，如果原图片过大，很可能导致OOM。</p>
+<p>所以需要更好的方式来进行缩放处理</p>
+<p>首先我们看下BitmapFactory.Options相关的属性</p>
+<ul>
+<li><p>inJustDecodeBounds 如果将这个值置为true，那么在解码的时候将不会返回bitmap，只会返回这个bitmap的尺寸。这个属性的目的是，如果你只想知道一个bitmap的尺寸，但又不想将其加载到内存时。这是一个非常有用的属性。</p>
+</li>
+<li><p>inSampleSize 这个值是一个int，当它小于1的时候，将会被当做1处理，如果大于1，那么就会按照比例（1 / inSampleSize）缩小bitmap的宽和高、降低分辨率，大于1时这个值将会被处置为2的倍数。例如，width=100，height=100，inSampleSize=2，那么就会将bitmap处理为，width=50，height=50，宽高降为1 / 2，像素数降为1 / 4。</p>
+</li>
+<li><p>inDensity 表示这个bitmap的像素密度（对应的是DisplayMetrics中的densityDpi，不是density）。</p>
+</li>
+<li><p>inTargetDensity 表示要被画出来时的目标像素密度（对应的是DisplayMetrics中的densityDpi，不是density）。</p>
+</li>
+<li><p>inScaled 设置这个Bitmap是否可以被缩放，默认值是true，表示可以被缩放。</p>
+</li>
+</ul>
+<p>通过设置BitmapFactory.Options的inJustDecodeBounds可以在不加载bitmap内存下获取bitmap的尺寸</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">BitmapFactory.Options mBitmapOptions = new BitmapFactory.Options();</div><div class="line">mBitmapOptions.inJustDecodeBounds = true;</div><div class="line">BitmapFactory.decodeFile(fileName, mBitmapOptions);</div><div class="line"></div><div class="line">srcWidth = mBitmapOptions.outWidth;</div><div class="line">srcHeight = mBitmapOptions.outHeight;</div></pre></td></tr></table></figure>
+<p>通过设置BitmapFactory.Option的inSampleSize能够等比的缩放显示图片，同时还避免了需要先把原图加载进内存的缺点。</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BitmapFactory.Options mBitmapOptions = new BitmapFactory.Options();</div><div class="line">mBitmapOptions.inSampleSize = 2;</div><div class="line">BitmapFactory.decodeFile(fileName, mBitmapOptions);</div></pre></td></tr></table></figure>
+<p>通过设置BitmapFactory.Option的inScaled，inDensity，inTargetDensity的属性来对解码图片做处理</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">BitmapFactory.Options mBitmapOptions = new BitmapFactory.Options();</div><div class="line">mBitmapOptions.inScaled = true;</div><div class="line">mBitmapOptions.inDensity = mDensity;</div><div class="line">mBitmapOptions.inTargetDensity = mTargetDensity;</div><div class="line">BitmapFactory.decodeResource(getResources(),R.drawable.xxx,mBitmapOptions);</div></pre></td></tr></table></figure>
+<p>3.使用inbitmap</p>
+<p>在android3.0开始，系统在BitmapFactory.Options里引入了inBitmap机制来配合缓存机制。如果在载入图片时传入了inBitmap那么载入的图片就是inBitmap里的值。这样可以统一有缓存和无缓存的载入方式。</p>
+<p>实际上总结起来就是，如果你使用了这个属性，那么使用这个属性的decode过程中，会直接参考inBitmap所引用的那块内存，不需要在重新给这个bitmap申请一块新的内存,避免了一次内存的分配和回收，大家都知道很多时候ui卡顿是因为gc操作过多而造成的。使用这个属性能避免大内存块的申请和释放。带来的好处就是gc操作的数量减少。这样cpu会有更多的时间做ui线程，界面会流畅很多，同时还能节省大量内存！</p>
+<p>使用此方法需要设置BitmapFactory.Options中inMutable=true，inSampleSize=1</p>
+<p>代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">BitmapFactory.Options options = new BitmapFactory.Options();</div><div class="line">options.inSampleSize = 1;</div><div class="line">options.inMutable = true;</div><div class="line">Bitmap inBitmap = BitmapFactory.decodeFile(fileName,options);</div><div class="line">options.inBitmap = inBitmap;</div></pre></td></tr></table></figure>
+<p>使用inBitmap，在4.4之前，只能重用相同大小的bitmap的内存区域，而4.4之后你可以重用任何bitmap的内存区域，只要这块内存比将要分配内存的bitmap大就可以。</p>
+<p>但是这个属性在使用的时候一定要当心：</p>
+<p>如果你不同的imageview 使用的scaletype 不同，但是你这些不同的imageview的bitmap 在decode时候 如果都是引用的同一个inBitmap的话，<br>这些图片会相互影响，所以大家一定要注意，使用inBitmap这个属性的时候一定要注意这个方面的问题。</p>
+<h5 id="4-序列化优化"><a href="#4-序列化优化" class="headerlink" title="(4)序列化优化"></a>(4)序列化优化</h5><p>1.序列化选择</p>
+<p>当我们想把的内存中的对象保存到一个文件中或者数据库中时候，将对象数据在进程之间进行传递时候，通过序列化操作将对象数据在网络上进行传输都需要序列化对象。</p>
+<p>序列化一般在Android中以使用Serializable与Parcelable两种方式</p>
+<p>对于Serializable，类只需要实现Serializable接口，并提供一个序列化版本id(serialVersionUID)即可。而Parcelable则需要实现writeToParcel、describeContents函数以及静态的CREATOR变量，实际上就是将如何打包和解包的工作自己来定义，而序列化的这些操作完全由底层实现。</p>
+<p>Serializable实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class MySerializable implements Serializable&#123;</div><div class="line"> private static final long serialVersionUID = -7060210544600464481L;</div><div class="line"> private String mString;</div><div class="line">  </div><div class="line"> public String getString()&#123;</div><div class="line">  return mString;</div><div class="line"> &#125;</div><div class="line">  </div><div class="line"> public void setString(String mString)&#123;</div><div class="line">  this.mString = mString;</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Parcelable实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public class MyParcelable implements Parcelable &#123;</div><div class="line"> private String mStr;</div><div class="line"></div><div class="line"> public int describeContents() &#123;</div><div class="line">     return 0;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> public void writeToParcel(Parcel out, int flags) &#123;</div><div class="line">     out.writeString(mStr);</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> public static final Parcelable.Creator&lt;MyParcelable&gt; CREATOR</div><div class="line">         = new Parcelable.Creator&lt;MyParcelable&gt;() &#123;</div><div class="line">     public MyParcelable createFromParcel(Parcel in) &#123;</div><div class="line">         return new MyParcelable(in);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     public MyParcelable[] newArray(int size) &#123;</div><div class="line">         return new MyParcelable[size];</div><div class="line">     &#125;</div><div class="line"> &#125;;</div><div class="line"> </div><div class="line"> private MyParcelable(Parcel in) &#123;</div><div class="line">     mStr = in.readString();</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Serializable的作用是为了保存对象的属性到本地文件、数据库、网络流、rmi以方便数据传输，当然这种传输可以是程序内的也可以是两个程序间的。而Android的Parcelable的设计初衷是因为Serializable效率过慢，为了在程序内不同组件间以及不同Android程序间(AIDL)高效的传输数据而设计，这些数据仅在内存中存在，Parcelable是通过IBinder通信的消息的载体。</p>
+<p>通过上面可以得知Parcelable的性能比Serializable好，在内存开销方面较小，所以在内存间数据传输时推荐使用Parcelable，如activity间传输数据，而Serializable可将数据持久化方便保存，所以在需要保存或网络传输数据时选择Serializable，因为android不同版本Parcelable可能不同，所以其实是需要根据不同适用场景来使用。</p>
+<p>当然除了Serializable与Parcelable这两种以外还有其他的序列化方式，比如GSON就提供了序列化，还有FlatBuffers等等</p>
+<p>2.序列化数据优化</p>
+<p>数据呈现的顺序以及结构会对序列化之后的空间产生不小的影响。通常来说，一般的数据序列化的过程如下图所示：</p>
+<div align="center"><br><img src="http://i1.piimg.com/567571/656344a89f8009b1.jpg" alt=""><br></div>
+
+<p>上面的过程，存在两个弊端，第一个是重复的属性名称，另外一个是GZIP没有办法对上面的数据进行更加有效的压缩，假如相似数据间隔了32k的数据量，这样GZIP就无法进行更加有效的压缩。</p>
+<p>但是我们稍微改变下数据的记录方式，就可以得到占用空间更小的数据，如下图所示：</p>
+<div align="center"><br><img src="http://i1.piimg.com/567571/0afaf79afb29bc68.jpg" alt=""><br></div>
+
+<p>通过优化，至少有三方面的性能提升</p>
+<ul>
+<li>减少了重复的属性名</li>
+<li>使得GZIP的压缩效率更高</li>
+<li>同样的数据类型可以批量优化</li>
+</ul>
+<h5 id="5-多线程并发优化"><a href="#5-多线程并发优化" class="headerlink" title="(5)多线程并发优化"></a>(5)多线程并发优化</h5><p>在程序开发的实践当中，为了让程序表现得更加流畅，我们肯定会需要使用到多线程来提升程序的并发执行性能，虽然使用多线程可以提高程序的并发量，但是我们需要特别注意因为引入多线程而可能伴随而来的内存问题。</p>
+<p>所以说，多线程是提升程序性能的有效手段之一，但是使用多线程却需要十分谨慎小心，如果不了解背后的执行机制以及使用的注意事项，很可能引起严重的问题。</p>
+<p>系统为我们提供了几种多线程方式，为AsyncTask,HandlerThread,IntentService,ThreadPool</p>
+<p>简单看下这些多线程方式的使用场景</p>
+<ul>
+<li><p>AsyncTask</p>
+<p>为UI线程与工作线程之间进行快速的切换提供一种简单便捷的机制。适用于当下立即需要启动，但是异步执行的生命周期短暂的使用场景。</p>
+</li>
+<li><p>HandlerThread</p>
+<p>为某些回调方法或者等待某些任务的执行设置一个专属的线程，并提供线程任务的调度机制。</p>
+<p>  大多数情况下，AsyncTask 都能够满足多线程并发的场景需要（在工作线程执行任务并返回结果到主线程），但是它并不是万能的。例如打开相机之后的预览帧数据是通过 onPreviewFrame()的方法进行回调的，onPreviewFrame()和 open()相机的方法是执行在同一个线程的。如果使用 AsyncTask，会因为 AsyncTask 默认的线性执行的特性(即使换成并发执行)会导致因为无法把任务及时传递给工作线程而导致任务在主线程中被延迟，直到工作线程空闲，才可以把任务切换到工作线程中进行执行。所以我们需要的是一个执行在工作线程，同时又能够处理队列中的复杂任务的功能，而 HandlerThread 的出现就是为了实现这个功能的，它组合了 Handler，MessageQueue，Looper 实现了一个长时间运行的线程，不断的从队列中获取任务进行执行的功能。</p>
+</li>
+<li><p>IntentSerice</p>
+<p>默认的 Service 是执行在主线程的，可是通常情况下，这很容易影响到程序的绘制性能(抢占了主线程的资源)。除了前面介绍过的 AsyncTask 与 HandlerThread，我们还可以选择使用 IntentService 来实现异步操作。IntentService 继承自普通 Service 同时又在内部创建了一个 HandlerThread，在 onHandlerIntent()的回调里面处理扔到 IntentService 的任务，在执行完任务后会自动停止。所以 IntentService 就不仅仅具备了异步线程的特性，还同时保留了 Service 不受主页面生命周期影响，优先级比较高，适合执行高优先级的后台任务,不容易被杀死的特点。</p>
+</li>
+<li><p>ThreadPool</p>
+<p>系统为我们提供了 ThreadPoolExecutor 来实现多线程并发执行任务，把任务分解成不同的单元，分发到各个不同的线程上，进行同时并发处理。</p>
+</li>
+</ul>
+<p>我们通过这几种多线程的使用场景对比，来根据实际情况选择不同的方式</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/性能优化/" rel="tag"># 性能优化</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/20/Android性能优化(二)-自定义View优化/" rel="next" title="Android性能优化(二)-自定义View优化">
+                <i class="fa fa-chevron-left"></i> Android性能优化(二)-自定义View优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/05/Android性能优化(四)-内存优化/" rel="prev" title="Android性能优化(四)-内存优化">
+                Android性能优化(四)-内存优化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#TraceView"><span class="nav-number">1.</span> <span class="nav-text">TraceView</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TraceView启动方式"><span class="nav-number">1.1.</span> <span class="nav-text">TraceView启动方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TraceView界面分析"><span class="nav-number">1.2.</span> <span class="nav-text">TraceView界面分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#TraceView例子分析"><span class="nav-number">1.3.</span> <span class="nav-text">TraceView例子分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运算优化（代码优化）"><span class="nav-number">2.</span> <span class="nav-text">运算优化（代码优化）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-数据优化"><span class="nav-number">2.1.</span> <span class="nav-text">(1).数据优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-方法优化"><span class="nav-number">2.2.</span> <span class="nav-text">(2)方法优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-图片优化"><span class="nav-number">2.3.</span> <span class="nav-text">(3)图片优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-序列化优化"><span class="nav-number">2.4.</span> <span class="nav-text">(4)序列化优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-多线程并发优化"><span class="nav-number">2.5.</span> <span class="nav-text">(5)多线程并发优化</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="ViewDrager是什么呢？
+看看官方的解释其实就明白了
+12345/** * ViewDragHelper is a utility class for writing custom ViewGroups. It offers a number * of useful operations and state tracking for allowing a user to drag and r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ViewDragerHelper使用与源码简析">
+<meta property="og:url" content="http://yoursite.com/2016/05/12/ViewDragerHelper使用与源码简析/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="ViewDrager是什么呢？
+看看官方的解释其实就明白了
+12345/** * ViewDragHelper is a utility class for writing custom ViewGroups. It offers a number * of useful operations and state tracking for allowing a user to drag and r">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-ecd9fbba99a110ab.gif?imageMogr2/auto-orient/strip">
+<meta property="og:updated_time" content="2017-03-18T09:29:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ViewDragerHelper使用与源码简析">
+<meta name="twitter:description" content="ViewDrager是什么呢？
+看看官方的解释其实就明白了
+12345/** * ViewDragHelper is a utility class for writing custom ViewGroups. It offers a number * of useful operations and state tracking for allowing a user to drag and r">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-ecd9fbba99a110ab.gif?imageMogr2/auto-orient/strip">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/05/12/ViewDragerHelper使用与源码简析/"/>
+
+
+
+
+
+  <title> ViewDragerHelper使用与源码简析 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/12/ViewDragerHelper使用与源码简析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ViewDragerHelper使用与源码简析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-12T19:47:53+08:00">
+                2016-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/05/12/ViewDragerHelper使用与源码简析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/12/ViewDragerHelper使用与源码简析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>ViewDrager是什么呢？</strong></p>
+<p>看看官方的解释其实就明白了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * ViewDragHelper is a utility class for writing custom ViewGroups. It offers a number</div><div class="line"> * of useful operations and state tracking for allowing a user to drag and reposition</div><div class="line"> * views within their parent ViewGroup.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p>从这段解释呢我们可以看到ViewDrager是简化view拖拽操作的帮助类，ViewDragHelper解决了android中手势处理过于复杂的问题。</p>
+<p>ViewDragHelper是作用在一个ViewGroup上，也就是说他不能直接作用到被拖拽的view， 其实这也很好理解，因为view在布局中的位置是父ViewGroup决定的。</p>
+<h4 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h4><p></p><p><br>接下来就实现一个内部View随意拖动的demo</p>
+<p>分步来完成</p>
+<p><strong>1.自定义一个ViewGroup</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class VDHLayout extends LinearLayout&#123;</div><div class="line">	</div><div class="line">	 public VDHLayout(Context context) &#123;</div><div class="line">        this(context, null);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public VDHLayout(Context context, AttributeSet attrs) &#123;</div><div class="line">        this(context, attrs, 0);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public VDHLayout(Context context, AttributeSet attrs, int defStyleAttr) &#123;</div><div class="line">        super(context, attrs, defStyleAttr);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><strong>2.创建ViewDragerHelper实例以及实现ViewDragHelper.CallCack相关方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"> private ViewDragHelper viewDragHelper;</div><div class="line"></div><div class="line"> private void initViewDragHelper()&#123;</div><div class="line">        viewDragHelper = ViewDragHelper.create(this,myCallBack);</div><div class="line">        viewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_ALL);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">ViewDragHelper.Callback myCallBack = new ViewDragHelper.Callback() &#123;</div><div class="line">    @Override</div><div class="line">    public boolean tryCaptureView(View child, int pointerId)</div><div class="line">    &#123;</div><div class="line">      return true;</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public int clampViewPositionHorizontal(View child, int left, int dx)</div><div class="line">    &#123;</div><div class="line">      return left;</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public int clampViewPositionVertical(View child, int top, int dy)</div><div class="line">    &#123;</div><div class="line">      return top;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p><strong>3.触摸相关方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onInterceptTouchEvent(MotionEvent ev) &#123;</div><div class="line">    return viewDragHelper.shouldInterceptTouchEvent(ev);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public boolean onTouchEvent(MotionEvent event) &#123;</div><div class="line">    viewDragHelper.processTouchEvent(event);</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>布局内容就不贴上来了</p>
+<p>最后实现的效果如下</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-ecd9fbba99a110ab.gif?imageMogr2/auto-orient/strip" alt="图1 ViewDragerHelper简单demo"><br></div>
+
+<p>是不是很神奇，简单的几行代码就实现了这样的效果了，至于为什么会实现呢？</p>
+<p>这个到下一篇再从源码角度进行说明</p>
+<p>接下来我们看看ViewDragHelper.CallCack里的方法，这里面的方法则是ViewDragHelper实现不同效果和功能的主要地方</p>
+<h5 id="ViewDragHelper-CallCack"><a href="#ViewDragHelper-CallCack" class="headerlink" title="ViewDragHelper.CallCack"></a>ViewDragHelper.CallCack</h5><p></p><p><br>ViewDragHelper.CallCack里面的方法很多，分别介绍</p>
+<ul>
+<li><p>onViewDragStateChanged(int state)</p>
+<p>当View的拖拽状态改变时的回调<br>STATE_IDLE:　当前未被拖拽<br>STATE_DRAGGING：正在被拖拽<br>STATE_SETTLING:　被拖拽后需要被安放到一个位置中的状态</p>
+</li>
+<li><p>onViewPositionChanged(View changedView, int left, int top, int dx, int dy)</p>
+<p>当View拖拽位置发生变化时的回调<br>changedView ：被拖拽的View<br>left : 被拖拽后View的left边缘坐标<br>top : 被拖拽后View的top边缘坐标<br>dx : 拖动的x偏移量<br>dy : 拖动的y偏移量</p>
+</li>
+<li><p>onViewCaptured(View capturedChild, int activePointerId)</p>
+<p>当一个View捕获到准备拖拽时的回调<br>capturedChild : 捕获的View<br>activePointerId: 对应的PointerId</p>
+</li>
+<li><p>onViewReleased(View releasedChild, float xvel, float yvel)</p>
+<p>当被捕获拖拽View释放的回调<br>releasedChild：被释放的View<br>xvel: 释放View的x方向上的加速度<br>yvel: 释放View的y方向上的加速度</p>
+</li>
+<li><p>onEdgeTouched(int edgeFlags, int pointerId)</p>
+<p>边缘触摸的回调<br>edgeFlags : 当前触摸的flag 有: EDGE_LEFT,EDGE_TOP,EDGE_RIGHT,EDGE_BOTTOM<br>pointerId : 用来描述边缘触摸操作的id</p>
+</li>
+<li><p>onEdgeLock(int edgeFlags)</p>
+<p>是否锁定该边缘的触摸,默认返回false,返回true表示锁定</p>
+</li>
+<li><p>onEdgeDragStarted(int edgeFlags, int pointerId)</p>
+<p>边缘触摸开始时的回调<br>edgeFlags : 当前触摸的flag 有: EDGE_LEFT,EDGE_TOP,EDGE_RIGHT,EDGE_BOTTOM<br>pointerId : 用来描述边缘触摸操作的id</p>
+</li>
+<li><p>getOrderedChildIndex(int index)</p>
+<p> 如果需要改变子View的遍历查询顺序可改写此方法，例如让下层的View优先于上层的View被选中。</p>
+</li>
+<li><p>tryCaptureView(View child, int pointerId)</p>
+<p>尝试捕获被拖拽的View<br> child : 尝试捕获的View<br> pointerId: 对应的PointerId</p>
+</li>
+<li><p>getViewHorizontalDragRange(View child)</p>
+<p>获取被拖拽View child 的水平拖拽范围,返回0表示无法被水平拖拽</p>
+</li>
+<li><p>getViewVerticalDragRange(View child)</p>
+<p>获取被拖拽View child 的垂直拖拽范围,返回0表示无法被垂直拖拽</p>
+</li>
+<li><p>clampViewPositionHorizontal(View child, int left, int dx)</p>
+<p>决定拖拽View在水平方向上应该移动到的位置<br>child : 被拖拽的View<br>left : 期望移动到位置的View的left值<br>dx : 移动的水平距离<br>返回值 : 直接决定View在水平方向的位置</p>
+</li>
+<li><p>clampViewPositionVertical(View child, int top, int dy)</p>
+<p>决定拖拽View在垂直方向上应该移动到的位置<br>child : 被拖拽的View<br>top : 期望移动到位置的View的top值<br>dy : 移动的垂直距离<br>返回值 : 直接决定View在垂直方向的位置</p>
+</li>
+</ul>
+<h4 id="源码简析"><a href="#源码简析" class="headerlink" title="源码简析"></a>源码简析</h4><p>看前面的代码我们可以看到在ViewGroup的onInterceptTouchEvent与onTouchEvent中的方法分别调用了ViewDragerHelper的方法，onInterceptTouchEvent与onTouchEvent这里大家应该都清楚了解吧，就不对这个进行更多的介绍了，所以其实ViewDragerHelper之所以能够实现上面的效果是与在onInterceptTouchEvent与onTouchEvent调用的方法有关的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public boolean onInterceptTouchEvent(MotionEvent ev) &#123;</div><div class="line">    return viewDragHelper.shouldInterceptTouchEvent(ev);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">public boolean onTouchEvent(MotionEvent event) &#123;</div><div class="line">    viewDragHelper.processTouchEvent(event);</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>那么接下来我们看看这两个方法里面到底是做了什么</p>
+<h5 id="一-shouldInterceptTouchEvent"><a href="#一-shouldInterceptTouchEvent" class="headerlink" title="一.shouldInterceptTouchEvent"></a>一.shouldInterceptTouchEvent</h5><p></p><p><br>直接上源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div></pre></td><td class="code"><pre><div class="line">public boolean shouldInterceptTouchEvent(MotionEvent ev) &#123;</div><div class="line">       final int action = MotionEventCompat.getActionMasked(ev);</div><div class="line">       final int actionIndex = MotionEventCompat.getActionIndex(ev);</div><div class="line"></div><div class="line">       if (action == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">           // Reset things for a new event stream, just in case we didn&apos;t get</div><div class="line">           // the whole previous stream.</div><div class="line">           cancel();</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       if (mVelocityTracker == null) &#123;</div><div class="line">           mVelocityTracker = VelocityTracker.obtain();</div><div class="line">       &#125;</div><div class="line">       mVelocityTracker.addMovement(ev);</div><div class="line"></div><div class="line">       switch (action) &#123;</div><div class="line">           case MotionEvent.ACTION_DOWN: &#123;</div><div class="line">               final float x = ev.getX();</div><div class="line">               final float y = ev.getY();</div><div class="line">               final int pointerId = MotionEventCompat.getPointerId(ev, 0);</div><div class="line">               saveInitialMotion(x, y, pointerId);</div><div class="line"></div><div class="line">               final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line"></div><div class="line">               // Catch a settling view if possible.</div><div class="line">               if (toCapture == mCapturedView &amp;&amp; mDragState == STATE_SETTLING) &#123;</div><div class="line">                   tryCaptureViewForDrag(toCapture, pointerId);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               final int edgesTouched = mInitialEdgesTouched[pointerId];</div><div class="line">               if ((edgesTouched &amp; mTrackingEdges) != 0) &#123;</div><div class="line">                   mCallback.onEdgeTouched(edgesTouched &amp; mTrackingEdges, pointerId);</div><div class="line">               &#125;</div><div class="line">               break;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           case MotionEventCompat.ACTION_POINTER_DOWN: &#123;</div><div class="line">               final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">               final float x = MotionEventCompat.getX(ev, actionIndex);</div><div class="line">               final float y = MotionEventCompat.getY(ev, actionIndex);</div><div class="line"></div><div class="line">               saveInitialMotion(x, y, pointerId);</div><div class="line"></div><div class="line">               // A ViewDragHelper can only manipulate one view at a time.</div><div class="line">               if (mDragState == STATE_IDLE) &#123;</div><div class="line">                   final int edgesTouched = mInitialEdgesTouched[pointerId];</div><div class="line">                   if ((edgesTouched &amp; mTrackingEdges) != 0) &#123;</div><div class="line">                       mCallback.onEdgeTouched(edgesTouched &amp; mTrackingEdges, pointerId);</div><div class="line">                   &#125;</div><div class="line">               &#125; else if (mDragState == STATE_SETTLING) &#123;</div><div class="line">                   // Catch a settling view if possible.</div><div class="line">                   final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">                   if (toCapture == mCapturedView) &#123;</div><div class="line">                       tryCaptureViewForDrag(toCapture, pointerId);</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">               break;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           case MotionEvent.ACTION_MOVE: &#123;</div><div class="line">               if (mInitialMotionX == null || mInitialMotionY == null) break;</div><div class="line"></div><div class="line">               // First to cross a touch slop over a draggable view wins. Also report edge drags.</div><div class="line">               final int pointerCount = MotionEventCompat.getPointerCount(ev);</div><div class="line">               for (int i = 0; i &lt; pointerCount; i++) &#123;</div><div class="line">                   final int pointerId = MotionEventCompat.getPointerId(ev, i);</div><div class="line"></div><div class="line">                   // If pointer is invalid then skip the ACTION_MOVE.</div><div class="line">                   if (!isValidPointerForActionMove(pointerId)) continue;</div><div class="line"></div><div class="line">                   final float x = MotionEventCompat.getX(ev, i);</div><div class="line">                   final float y = MotionEventCompat.getY(ev, i);</div><div class="line">                   final float dx = x - mInitialMotionX[pointerId];</div><div class="line">                   final float dy = y - mInitialMotionY[pointerId];</div><div class="line"></div><div class="line">                   final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">                   final boolean pastSlop = toCapture != null &amp;&amp; checkTouchSlop(toCapture, dx, dy);</div><div class="line">                   if (pastSlop) &#123;</div><div class="line">                       // check the callback&apos;s</div><div class="line">                       // getView[Horizontal|Vertical]DragRange methods to know</div><div class="line">                       // if you can move at all along an axis, then see if it</div><div class="line">                       // would clamp to the same value. If you can&apos;t move at</div><div class="line">                       // all in every dimension with a nonzero range, bail.</div><div class="line">                       final int oldLeft = toCapture.getLeft();</div><div class="line">                       final int targetLeft = oldLeft + (int) dx;</div><div class="line">                       final int newLeft = mCallback.clampViewPositionHorizontal(toCapture,</div><div class="line">                               targetLeft, (int) dx);</div><div class="line">                       final int oldTop = toCapture.getTop();</div><div class="line">                       final int targetTop = oldTop + (int) dy;</div><div class="line">                       final int newTop = mCallback.clampViewPositionVertical(toCapture, targetTop,</div><div class="line">                               (int) dy);</div><div class="line">                       final int horizontalDragRange = mCallback.getViewHorizontalDragRange(</div><div class="line">                               toCapture);</div><div class="line">                       final int verticalDragRange = mCallback.getViewVerticalDragRange(toCapture);</div><div class="line">                       if ((horizontalDragRange == 0 || horizontalDragRange &gt; 0</div><div class="line">                               &amp;&amp; newLeft == oldLeft) &amp;&amp; (verticalDragRange == 0</div><div class="line">                               || verticalDragRange &gt; 0 &amp;&amp; newTop == oldTop)) &#123;</div><div class="line">                           break;</div><div class="line">                       &#125;</div><div class="line">                   &#125;</div><div class="line">                   reportNewEdgeDrags(dx, dy, pointerId);</div><div class="line">                   if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">                       // Callback might have started an edge drag</div><div class="line">                       break;</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   if (pastSlop &amp;&amp; tryCaptureViewForDrag(toCapture, pointerId)) &#123;</div><div class="line">                       break;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">               saveLastMotion(ev);</div><div class="line">               break;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           case MotionEventCompat.ACTION_POINTER_UP: &#123;</div><div class="line">               final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">               clearMotionHistory(pointerId);</div><div class="line">               break;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           case MotionEvent.ACTION_UP:</div><div class="line">           case MotionEvent.ACTION_CANCEL: &#123;</div><div class="line">               cancel();</div><div class="line">               break;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       return mDragState == STATE_DRAGGING;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>分成几个部分分析</p>
+<p><strong>1.准备工作</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">final int action = MotionEventCompat.getActionMasked(ev);</div><div class="line">final int actionIndex = MotionEventCompat.getActionIndex(ev);</div><div class="line"></div><div class="line">if (action == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">    // Reset things for a new event stream, just in case we didn&apos;t get</div><div class="line">    // the whole previous stream.</div><div class="line">    cancel();</div><div class="line">&#125;</div><div class="line"></div><div class="line">if (mVelocityTracker == null) &#123;</div><div class="line">    mVelocityTracker = VelocityTracker.obtain();</div><div class="line">&#125;</div><div class="line">mVelocityTracker.addMovement(ev);</div></pre></td></tr></table></figure>
+<p>那这里主要做一些准备工作，</p>
+<ul>
+<li>获取action</li>
+<li>获取action对应的index</li>
+<li>如果是按下的action则重置一些信息</li>
+<li>初始化VelocityTracker，VelocityTracker（用于追踪滑动速度）是什么不做介绍，前面的文章有介绍</li>
+</ul>
+<p><strong>2.ACTION_DOWN相关解析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">case MotionEvent.ACTION_DOWN: &#123;</div><div class="line">    final float x = ev.getX();</div><div class="line">    final float y = ev.getY();</div><div class="line">    final int pointerId = MotionEventCompat.getPointerId(ev, 0);</div><div class="line">    saveInitialMotion(x, y, pointerId);</div><div class="line"></div><div class="line">    final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line"></div><div class="line">    // Catch a settling view if possible.</div><div class="line">    if (toCapture == mCapturedView &amp;&amp; mDragState == STATE_SETTLING) &#123;</div><div class="line">        tryCaptureViewForDrag(toCapture, pointerId);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    final int edgesTouched = mInitialEdgesTouched[pointerId];</div><div class="line">    if ((edgesTouched &amp; mTrackingEdges) != 0) &#123;</div><div class="line">        mCallback.onEdgeTouched(edgesTouched &amp; mTrackingEdges, pointerId);</div><div class="line">    &#125;</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>依次介绍里面的做了什么</p>
+<ul>
+<li><p>(1).获取按下的x,y位置与获取这个事件对应的pointerId，然后保存(saveInitialMotion)这些信息</p>
+<p>注意pointerId一般情况下只有一个手指触摸时为0，两个手指触摸时第二个手指触摸返回的pointerId为1，以此类推</p>
+<p>看下保存信息这里的方法</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">private void saveInitialMotion(float x, float y, int pointerId) &#123;</div><div class="line">    //确保各个数组的大小足够存放数据</div><div class="line">    ensureMotionHistorySizeForId(pointerId);</div><div class="line">    //保存x坐标</div><div class="line">    mInitialMotionX[pointerId] = mLastMotionX[pointerId] = x;</div><div class="line">    //保存y坐标</div><div class="line">    mInitialMotionY[pointerId] = mLastMotionY[pointerId] = y;</div><div class="line">    //保存是否触摸到边缘</div><div class="line">    mInitialEdgesTouched[pointerId] = getEdgesTouched((int) x, (int) y);</div><div class="line">    //保存当前id是否在触摸,用于后续验证</div><div class="line">    mPointersDown |= 1 &lt;&lt; pointerId;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>(2).获取当前触摸点下最顶层的子View(findTopChildUnder)，并捕获(tryCaptureViewForDrag)</p>
+<p>  先看下findTopChildUnder方法</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public View findTopChildUnder(int x, int y) &#123;</div><div class="line">    final int childCount = mParentView.getChildCount();</div><div class="line">    for (int i = childCount - 1; i &gt;= 0; i--) &#123;</div><div class="line">        final View child = mParentView.getChildAt(mCallback.getOrderedChildIndex(i));</div><div class="line">        if (x &gt;= child.getLeft() &amp;&amp; x &lt; child.getRight() &amp;&amp;</div><div class="line">                y &gt;= child.getTop() &amp;&amp; y &lt; child.getBottom()) &#123;</div><div class="line">            return child;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里做的就是遍历整个整个ViewGroup的子View通过位置来查找指定的View,这里有个<strong>mCallback.getOrderedChildIndex(i)</strong>，大家应该通过上面一篇文章，对这个方法有点眼熟吧，（如果需要改变子View的遍历查询顺序可改写此方法，例如让下层的View优先于上层的View被选中。）所以我们可以在这里返回指定的View的index</p>
+<p>接下来看一下tryCaptureViewForDrag方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">  boolean tryCaptureViewForDrag(View toCapture, int pointerId) &#123;</div><div class="line">  //如果已经捕获该View 直接返回true</div><div class="line">    if (toCapture == mCapturedView &amp;&amp; mActivePointerId == pointerId) &#123;</div><div class="line">        // Already done!</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    //根据mCallback.tryCaptureView()方法来最终决定是否可以捕获View</div><div class="line">    if (toCapture != null &amp;&amp; mCallback.tryCaptureView(toCapture, pointerId)) &#123;</div><div class="line">        mActivePointerId = pointerId;</div><div class="line">        captureChildView(toCapture, pointerId);</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> public void captureChildView(View childView, int activePointerId) &#123;</div><div class="line">    if (childView.getParent() != mParentView) &#123;</div><div class="line">        throw new IllegalArgumentException(&quot;captureChildView: parameter must be a descendant &quot; +</div><div class="line">                &quot;of the ViewDragHelper&apos;s tracked parent view (&quot; + mParentView + &quot;)&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    mCapturedView = childView;</div><div class="line">    mActivePointerId = activePointerId;</div><div class="line">    mCallback.onViewCaptured(childView, activePointerId);</div><div class="line">    setDragState(STATE_DRAGGING);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码的注释其实大家大致可以理解是什么意思了吧，主要这里有一个<strong>mCallback.tryCaptureView()</strong>的方法，而这个tryCaptureView()方法，其实我们可以自己去定义的，所以是否捕获某个子View，其实是我们可以控制的，当可以捕获这个View后就会把这个View赋值给mCapturedView，同时会回调方法<strong>mCallback.onViewCaptured()</strong>并且设定mDragState的状态为STATE_DRAGGING</p>
+</li>
+</ul>
+<p>*(3). 如果触摸了边缘,回调callback的onEdgeTouched()方法</p>
+<p>  在第一步保存(saveInitialMotion)信息的时候，保存是否触摸到边缘，这里就直接拿出来判断是否触摸到了边缘，还有一个参数为mTrackingEdges，这个参数其实是我们来设置的</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">viewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_ALL);</div></pre></td></tr></table></figure>
+<p>  除了EDGE_ALL，还有EDGE_LEFT,EDGE_TOP,EDGE_RIGHT,EDGE_BOTTOM，具体表示什么大家应该一眼明了，</p>
+<p>  所以当我们设置了这个mTrackingEdges并且触摸到了边缘会回调<strong>mCallback.onEdgeTouched()</strong>这个方法</p>
+<p><strong>3.ACTION_POINTER_DOWN（又有一个手指触摸时）相关解析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">case MotionEventCompat.ACTION_POINTER_DOWN: &#123;</div><div class="line">    final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">    final float x = MotionEventCompat.getX(ev, actionIndex);</div><div class="line">    final float y = MotionEventCompat.getY(ev, actionIndex);</div><div class="line"></div><div class="line">    saveInitialMotion(x, y, pointerId);</div><div class="line"></div><div class="line">    //因为同一时间ViewDragHelper只能操控一个View,所以当有新的手指触摸时 </div><div class="line">    //只讨论当无触摸发生时,回调边缘触摸的callback</div><div class="line">    //或者正在处于释放状态时重新捕获View</div><div class="line">    // A ViewDragHelper can only manipulate one view at a time.</div><div class="line">    if (mDragState == STATE_IDLE) &#123;</div><div class="line">        final int edgesTouched = mInitialEdgesTouched[pointerId];</div><div class="line">        if ((edgesTouched &amp; mTrackingEdges) != 0) &#123;</div><div class="line">            mCallback.onEdgeTouched(edgesTouched &amp; mTrackingEdges, pointerId);</div><div class="line">        &#125;</div><div class="line">    &#125; else if (mDragState == STATE_SETTLING) &#123;</div><div class="line">        // Catch a settling view if possible.</div><div class="line">        final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">        if (toCapture == mCapturedView) &#123;</div><div class="line">            tryCaptureViewForDrag(toCapture, pointerId);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里面的方法在ACTION_DOWN中基本都已经说明过了，就不做过多的解释了</p>
+<p><strong>4.ACTION_MOVE相关解析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">case MotionEvent.ACTION_MOVE: &#123;</div><div class="line">    if (mInitialMotionX == null || mInitialMotionY == null) break;</div><div class="line">    //得到触摸点的数量,并循环处理,只处理第一个发生了拖拽的事件</div><div class="line">    // First to cross a touch slop over a draggable view wins. Also report edge drags.</div><div class="line">    final int pointerCount = MotionEventCompat.getPointerCount(ev);</div><div class="line">    for (int i = 0; i &lt; pointerCount; i++) &#123;</div><div class="line">        final int pointerId = MotionEventCompat.getPointerId(ev, i);</div><div class="line"></div><div class="line">        // If pointer is invalid then skip the ACTION_MOVE.</div><div class="line">        if (!isValidPointerForActionMove(pointerId)) continue;</div><div class="line"></div><div class="line">        final float x = MotionEventCompat.getX(ev, i);</div><div class="line">        final float y = MotionEventCompat.getY(ev, i);</div><div class="line">        final float dx = x - mInitialMotionX[pointerId];</div><div class="line">        final float dy = y - mInitialMotionY[pointerId];</div><div class="line"></div><div class="line">        final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">        final boolean pastSlop = toCapture != null &amp;&amp; checkTouchSlop(toCapture, dx, dy);</div><div class="line">        if (pastSlop) &#123;</div><div class="line">            // check the callback&apos;s</div><div class="line">            // getView[Horizontal|Vertical]DragRange methods to know</div><div class="line">            // if you can move at all along an axis, then see if it</div><div class="line">            // would clamp to the same value. If you can&apos;t move at</div><div class="line">            // all in every dimension with a nonzero range, bail.</div><div class="line">            final int oldLeft = toCapture.getLeft();</div><div class="line">            final int targetLeft = oldLeft + (int) dx;</div><div class="line">            final int newLeft = mCallback.clampViewPositionHorizontal(toCapture,</div><div class="line">                    targetLeft, (int) dx);</div><div class="line">            final int oldTop = toCapture.getTop();</div><div class="line">            final int targetTop = oldTop + (int) dy;</div><div class="line">            final int newTop = mCallback.clampViewPositionVertical(toCapture, targetTop,</div><div class="line">                    (int) dy);</div><div class="line">            final int horizontalDragRange = mCallback.getViewHorizontalDragRange(</div><div class="line">                    toCapture);</div><div class="line">            final int verticalDragRange = mCallback.getViewVerticalDragRange(toCapture);</div><div class="line">            if ((horizontalDragRange == 0 || horizontalDragRange &gt; 0</div><div class="line">                    &amp;&amp; newLeft == oldLeft) &amp;&amp; (verticalDragRange == 0</div><div class="line">                    || verticalDragRange &gt; 0 &amp;&amp; newTop == oldTop)) &#123;</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        reportNewEdgeDrags(dx, dy, pointerId);</div><div class="line">        if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">            // Callback might have started an edge drag</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (pastSlop &amp;&amp; tryCaptureViewForDrag(toCapture, pointerId)) &#123;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    saveLastMotion(ev);</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>依次介绍里面的做了什么</p>
+<ul>
+<li><p>(1). 获取当前触摸点下最顶层的子View（findTopChildUnder），判断是否产生拖动（checkTouchSlop）</p>
+<p>findTopChildUnder上面已经做过介绍了，那对checkTouchSlop进行分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">private boolean checkTouchSlop(View child, float dx, float dy) &#123;</div><div class="line">    if (child == null) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    final boolean checkHorizontal = mCallback.getViewHorizontalDragRange(child) &gt; 0;</div><div class="line">    final boolean checkVertical = mCallback.getViewVerticalDragRange(child) &gt; 0;</div><div class="line"></div><div class="line">    if (checkHorizontal &amp;&amp; checkVertical) &#123;</div><div class="line">        return dx * dx + dy * dy &gt; mTouchSlop * mTouchSlop;</div><div class="line">    &#125; else if (checkHorizontal) &#123;</div><div class="line">        return Math.abs(dx) &gt; mTouchSlop;</div><div class="line">    &#125; else if (checkVertical) &#123;</div><div class="line">        return Math.abs(dy) &gt; mTouchSlop;</div><div class="line">    &#125;</div><div class="line">    return false;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>根据mTouchSlop最小拖动的距离来判断是否属于拖动,mTouchSlop根据我们设定的灵敏度决定,同时我们可以看到这里有获取<strong>mCallback.getViewHorizontalDragRange(child)</strong>与<strong>mCallback.getViewVerticalDragRange(child)</strong>的值，而这个值则是我们通过Callback设置的</p>
+</li>
+<li><p>(2).根据callback的四个方法<br><strong>getView[Horizontal|Vertical]DragRange和clampViewPosition[Horizontal|Vertical]</strong>来检查是否可以拖动</p>
+</li>
+<li><p>(3).记录并回调是否有边缘触摸(reportNewEdgeDrags)</p>
+</li>
+<li><p>(4).保存触摸点的信息</p>
+</li>
+</ul>
+<p><strong>5.剩余部分</strong></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">//当有一个手指抬起时,清除这个手指的触摸数据</div><div class="line">case MotionEventCompat.ACTION_POINTER_UP: &#123;</div><div class="line">    final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">    clearMotionHistory(pointerId);</div><div class="line">    break;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//清除所有触摸数据</div><div class="line">case MotionEvent.ACTION_UP:</div><div class="line">case MotionEvent.ACTION_CANCEL: &#123;</div><div class="line">    cancel();</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里不做解释了</p>
+<p><strong>6.注意</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">return mDragState == STATE_DRAGGING;</div></pre></td></tr></table></figure>
+<p>最后的这个则是说明当在STATE_DRAGGING状态下将事件消费掉，不像子View传递了</p>
+<h5 id="二-processTouchEvent"><a href="#二-processTouchEvent" class="headerlink" title="二. processTouchEvent"></a>二. processTouchEvent</h5><p></p><p><br>先直接上源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div></pre></td><td class="code"><pre><div class="line">public void processTouchEvent(MotionEvent ev) &#123;</div><div class="line">    final int action = MotionEventCompat.getActionMasked(ev);</div><div class="line">    final int actionIndex = MotionEventCompat.getActionIndex(ev);</div><div class="line"></div><div class="line">    if (action == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">        // Reset things for a new event stream, just in case we didn&apos;t get</div><div class="line">        // the whole previous stream.</div><div class="line">        cancel();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (mVelocityTracker == null) &#123;</div><div class="line">        mVelocityTracker = VelocityTracker.obtain();</div><div class="line">    &#125;</div><div class="line">    mVelocityTracker.addMovement(ev);</div><div class="line"></div><div class="line">    switch (action) &#123;</div><div class="line">        case MotionEvent.ACTION_DOWN: &#123;</div><div class="line">            final float x = ev.getX();</div><div class="line">            final float y = ev.getY();</div><div class="line">            final int pointerId = MotionEventCompat.getPointerId(ev, 0);</div><div class="line">            final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line"></div><div class="line">            saveInitialMotion(x, y, pointerId);</div><div class="line"></div><div class="line">            // Since the parent is already directly processing this touch event,</div><div class="line">            // there is no reason to delay for a slop before dragging.</div><div class="line">            // Start immediately if possible.</div><div class="line">            tryCaptureViewForDrag(toCapture, pointerId);</div><div class="line"></div><div class="line">            final int edgesTouched = mInitialEdgesTouched[pointerId];</div><div class="line">            if ((edgesTouched &amp; mTrackingEdges) != 0) &#123;</div><div class="line">                mCallback.onEdgeTouched(edgesTouched &amp; mTrackingEdges, pointerId);</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        case MotionEventCompat.ACTION_POINTER_DOWN: &#123;</div><div class="line">            final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">            final float x = MotionEventCompat.getX(ev, actionIndex);</div><div class="line">            final float y = MotionEventCompat.getY(ev, actionIndex);</div><div class="line"></div><div class="line">            saveInitialMotion(x, y, pointerId);</div><div class="line"></div><div class="line">            // A ViewDragHelper can only manipulate one view at a time.</div><div class="line">            if (mDragState == STATE_IDLE) &#123;</div><div class="line">                // If we&apos;re idle we can do anything! Treat it like a normal down event.</div><div class="line"></div><div class="line">                final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">                tryCaptureViewForDrag(toCapture, pointerId);</div><div class="line"></div><div class="line">                final int edgesTouched = mInitialEdgesTouched[pointerId];</div><div class="line">                if ((edgesTouched &amp; mTrackingEdges) != 0) &#123;</div><div class="line">                    mCallback.onEdgeTouched(edgesTouched &amp; mTrackingEdges, pointerId);</div><div class="line">                &#125;</div><div class="line">            &#125; else if (isCapturedViewUnder((int) x, (int) y)) &#123;</div><div class="line">                // We&apos;re still tracking a captured view. If the same view is under this</div><div class="line">                // point, we&apos;ll swap to controlling it with this pointer instead.</div><div class="line">                // (This will still work if we&apos;re &quot;catching&quot; a settling view.)</div><div class="line"></div><div class="line">                tryCaptureViewForDrag(mCapturedView, pointerId);</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        case MotionEvent.ACTION_MOVE: &#123;</div><div class="line">            if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">                // If pointer is invalid then skip the ACTION_MOVE.</div><div class="line">                if (!isValidPointerForActionMove(mActivePointerId)) break;</div><div class="line"></div><div class="line">                final int index = MotionEventCompat.findPointerIndex(ev, mActivePointerId);</div><div class="line">                final float x = MotionEventCompat.getX(ev, index);</div><div class="line">                final float y = MotionEventCompat.getY(ev, index);</div><div class="line">                final int idx = (int) (x - mLastMotionX[mActivePointerId]);</div><div class="line">                final int idy = (int) (y - mLastMotionY[mActivePointerId]);</div><div class="line"></div><div class="line">                dragTo(mCapturedView.getLeft() + idx, mCapturedView.getTop() + idy, idx, idy);</div><div class="line"></div><div class="line">                saveLastMotion(ev);</div><div class="line">            &#125; else &#123;</div><div class="line">                // Check to see if any pointer is now over a draggable view.</div><div class="line">                final int pointerCount = MotionEventCompat.getPointerCount(ev);</div><div class="line">                for (int i = 0; i &lt; pointerCount; i++) &#123;</div><div class="line">                    final int pointerId = MotionEventCompat.getPointerId(ev, i);</div><div class="line"></div><div class="line">                    // If pointer is invalid then skip the ACTION_MOVE.</div><div class="line">                    if (!isValidPointerForActionMove(pointerId)) continue;</div><div class="line"></div><div class="line">                    final float x = MotionEventCompat.getX(ev, i);</div><div class="line">                    final float y = MotionEventCompat.getY(ev, i);</div><div class="line">                    final float dx = x - mInitialMotionX[pointerId];</div><div class="line">                    final float dy = y - mInitialMotionY[pointerId];</div><div class="line"></div><div class="line">                    reportNewEdgeDrags(dx, dy, pointerId);</div><div class="line">                    if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">                        // Callback might have started an edge drag.</div><div class="line">                        break;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">                    if (checkTouchSlop(toCapture, dx, dy) &amp;&amp;</div><div class="line">                            tryCaptureViewForDrag(toCapture, pointerId)) &#123;</div><div class="line">                        break;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                saveLastMotion(ev);</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        case MotionEventCompat.ACTION_POINTER_UP: &#123;</div><div class="line">            final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">            if (mDragState == STATE_DRAGGING &amp;&amp; pointerId == mActivePointerId) &#123;</div><div class="line">                // Try to find another pointer that&apos;s still holding on to the captured view.</div><div class="line">                int newActivePointer = INVALID_POINTER;</div><div class="line">                final int pointerCount = MotionEventCompat.getPointerCount(ev);</div><div class="line">                for (int i = 0; i &lt; pointerCount; i++) &#123;</div><div class="line">                    final int id = MotionEventCompat.getPointerId(ev, i);</div><div class="line">                    if (id == mActivePointerId) &#123;</div><div class="line">                        // This one&apos;s going away, skip.</div><div class="line">                        continue;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    final float x = MotionEventCompat.getX(ev, i);</div><div class="line">                    final float y = MotionEventCompat.getY(ev, i);</div><div class="line">                    if (findTopChildUnder((int) x, (int) y) == mCapturedView &amp;&amp;</div><div class="line">                            tryCaptureViewForDrag(mCapturedView, id)) &#123;</div><div class="line">                        newActivePointer = mActivePointerId;</div><div class="line">                        break;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                if (newActivePointer == INVALID_POINTER) &#123;</div><div class="line">                    // We didn&apos;t find another pointer still touching the view, release it.</div><div class="line">                    releaseViewForPointerUp();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            clearMotionHistory(pointerId);</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        case MotionEvent.ACTION_UP: &#123;</div><div class="line">            if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">                releaseViewForPointerUp();</div><div class="line">            &#125;</div><div class="line">            cancel();</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        case MotionEvent.ACTION_CANCEL: &#123;</div><div class="line">            if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">                dispatchViewReleased(0, 0);</div><div class="line">            &#125;</div><div class="line">            cancel();</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>分成几个部分分析</p>
+<p><strong>1.准备工作</strong></p>
+<p><strong>2.ACTION_DOWN相关解析</strong></p>
+<p><strong>3.ACTION_POINTER_DOWN（又有一个手指触摸时）相关解析</strong></p>
+<p>与上面shouldInterceptTouchEvent部分类似不做更多的分析了</p>
+<p><strong>4. ACTION_MOVE相关解析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">case MotionEvent.ACTION_MOVE: &#123;</div><div class="line">    if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">        // If pointer is invalid then skip the ACTION_MOVE.</div><div class="line">        if (!isValidPointerForActionMove(mActivePointerId)) break;</div><div class="line"></div><div class="line">        final int index = MotionEventCompat.findPointerIndex(ev, mActivePointerId);</div><div class="line">        final float x = MotionEventCompat.getX(ev, index);</div><div class="line">        final float y = MotionEventCompat.getY(ev, index);</div><div class="line">        final int idx = (int) (x - mLastMotionX[mActivePointerId]);</div><div class="line">        final int idy = (int) (y - mLastMotionY[mActivePointerId]);</div><div class="line"></div><div class="line">        dragTo(mCapturedView.getLeft() + idx, mCapturedView.getTop() + idy, idx, idy);</div><div class="line"></div><div class="line">        saveLastMotion(ev);</div><div class="line">    &#125; else &#123;</div><div class="line">        // Check to see if any pointer is now over a draggable view.</div><div class="line">        final int pointerCount = MotionEventCompat.getPointerCount(ev);</div><div class="line">        for (int i = 0; i &lt; pointerCount; i++) &#123;</div><div class="line">            final int pointerId = MotionEventCompat.getPointerId(ev, i);</div><div class="line"></div><div class="line">            // If pointer is invalid then skip the ACTION_MOVE.</div><div class="line">            if (!isValidPointerForActionMove(pointerId)) continue;</div><div class="line"></div><div class="line">            final float x = MotionEventCompat.getX(ev, i);</div><div class="line">            final float y = MotionEventCompat.getY(ev, i);</div><div class="line">            final float dx = x - mInitialMotionX[pointerId];</div><div class="line">            final float dy = y - mInitialMotionY[pointerId];</div><div class="line"></div><div class="line">            reportNewEdgeDrags(dx, dy, pointerId);</div><div class="line">            if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">                // Callback might have started an edge drag.</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            final View toCapture = findTopChildUnder((int) x, (int) y);</div><div class="line">            if (checkTouchSlop(toCapture, dx, dy) &amp;&amp;</div><div class="line">                    tryCaptureViewForDrag(toCapture, pointerId)) &#123;</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        saveLastMotion(ev);</div><div class="line">    &#125;</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里其实很好很好理解，因为其实本身自带的英文解释也解释的很清楚了</p>
+<ul>
+<li><p>1.当mDragState为STATE_DRAGGING状态时，拖拽至指定位置（dragTo）</p>
+<p>看下dragTo方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">  private void dragTo(int left, int top, int dx, int dy) &#123;</div><div class="line">    int clampedX = left;</div><div class="line">    int clampedY = top;</div><div class="line">    final int oldLeft = mCapturedView.getLeft();</div><div class="line">    final int oldTop = mCapturedView.getTop();</div><div class="line">    if (dx != 0) &#123;</div><div class="line">      //回调callback来决定View最终被拖拽的x方向上的偏移量</div><div class="line">        clampedX = mCallback.clampViewPositionHorizontal(mCapturedView, left, dx);</div><div class="line">        ViewCompat.offsetLeftAndRight(mCapturedView, clampedX - oldLeft);</div><div class="line">    &#125;</div><div class="line">    if (dy != 0) &#123;</div><div class="line">        //回调callback来决定View最终被拖拽的y方向上的偏移量</div><div class="line">        clampedY = mCallback.clampViewPositionVertical(mCapturedView, top, dy);</div><div class="line">        ViewCompat.offsetTopAndBottom(mCapturedView, clampedY - oldTop);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (dx != 0 || dy != 0) &#123;</div><div class="line">        final int clampedDx = clampedX - oldLeft;</div><div class="line">        final int clampedDy = clampedY - oldTop;</div><div class="line">        //回调callback</div><div class="line">        mCallback.onViewPositionChanged(mCapturedView, clampedX, clampedY,</div><div class="line">                clampedDx, clampedDy);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这里主要回调了callback的三个方法</p>
+<ul>
+<li><p>2.当mDragStat不为STATE_DRAGGING状态时,就检测当前的位置是否经在一个View上，进行重新捕获View</p>
+<p>方法内部与shouldInterceptTouchEvent的ACTION_MOVE类似，大家理解就好了</p>
+</li>
+</ul>
+<p><strong>5.ACTION_POINTER_UP(当多个手指中的一个手机松开时)相关解析</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">case MotionEventCompat.ACTION_POINTER_UP: &#123;</div><div class="line">        final int pointerId = MotionEventCompat.getPointerId(ev, actionIndex);</div><div class="line">        if (mDragState == STATE_DRAGGING &amp;&amp; pointerId == mActivePointerId) &#123;</div><div class="line">            // Try to find another pointer that&apos;s still holding on to the captured view.</div><div class="line">            int newActivePointer = INVALID_POINTER;</div><div class="line">            final int pointerCount = MotionEventCompat.getPointerCount(ev);</div><div class="line">            for (int i = 0; i &lt; pointerCount; i++) &#123;</div><div class="line">                final int id = MotionEventCompat.getPointerId(ev, i);</div><div class="line">                if (id == mActivePointerId) &#123;</div><div class="line">                    // This one&apos;s going away, skip.</div><div class="line">                    continue;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                final float x = MotionEventCompat.getX(ev, i);</div><div class="line">                final float y = MotionEventCompat.getY(ev, i);</div><div class="line">                if (findTopChildUnder((int) x, (int) y) == mCapturedView &amp;&amp;</div><div class="line">                        tryCaptureViewForDrag(mCapturedView, id)) &#123;</div><div class="line">                    newActivePointer = mActivePointerId;</div><div class="line">                    break;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            if (newActivePointer == INVALID_POINTER) &#123;</div><div class="line">                // We didn&apos;t find another pointer still touching the view, release it.</div><div class="line">                releaseViewForPointerUp();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        clearMotionHistory(pointerId);</div><div class="line">        break;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这里主要做的工作是，当正在STATE_DRAGGING状态时多个手指中的一个松开，则再剩余还在触摸的点钟寻找是否正在View上（findTopChildUnder((int) x, (int) y) == mCapturedView &amp;&amp; tryCaptureViewForDrag(mCapturedView, id)）如果没找到则释放View（releaseViewForPointerUp()）</p>
+<p><strong>6.剩余部分</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">case MotionEvent.ACTION_UP: &#123;</div><div class="line">    //如果是拖拽状态的释放则调用</div><div class="line">    //releaseViewForPointerUp()</div><div class="line">    if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">        releaseViewForPointerUp();</div><div class="line">    &#125;</div><div class="line">    cancel();</div><div class="line">    break;</div><div class="line">&#125;</div><div class="line"></div><div class="line">case MotionEvent.ACTION_CANCEL: &#123;</div><div class="line">    if (mDragState == STATE_DRAGGING) &#123;</div><div class="line">        dispatchViewReleased(0, 0);</div><div class="line">    &#125;</div><div class="line">    cancel();</div><div class="line">    break;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里注释也已经写的很清楚了</p>
+<h4 id="写在后面的几句话"><a href="#写在后面的几句话" class="headerlink" title="写在后面的几句话"></a>写在后面的几句话</h4><p></p><p><br>好了到这里ViewDragerHelper源码部分基本介绍完毕了，当然并不是特别详细，但是大家对照看下就可以理解了，后面会介绍下ViewDragerHelper更多的使用方式了，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/21/ItemTouchHelper使用与源码简析/" rel="prev" title="ItemTouchHelper使用与源码简析">
+                ItemTouchHelper使用与源码简析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单实现"><span class="nav-number">1.</span> <span class="nav-text">简单实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ViewDragHelper-CallCack"><span class="nav-number">1.1.</span> <span class="nav-text">ViewDragHelper.CallCack</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#源码简析"><span class="nav-number">2.</span> <span class="nav-text">源码简析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#一-shouldInterceptTouchEvent"><span class="nav-number">2.1.</span> <span class="nav-text">一.shouldInterceptTouchEvent</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二-processTouchEvent"><span class="nav-number">2.2.</span> <span class="nav-text">二. processTouchEvent</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的几句话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的几句话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
