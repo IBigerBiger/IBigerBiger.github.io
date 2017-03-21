@@ -1,0 +1,765 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="插件," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在前一篇文章中，对于Activity的启动原理与对应的插件化方案做了相关介绍，相信大家对于插件化现在会有更多的认识，同时对于Hook相关的知识一定也有更深刻的认识。本文将探讨Android四大组件之一Service组件的插件化方式。
+根据上一篇的文章，我们可以知道要实现Service插件化，首先是要知道Service相关的启动原理，所以首先我们对于Service相关的启动原理源码分析，而在分析的过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="插件化实现（四）Service插件化">
+<meta property="og:url" content="http://yoursite.com/2017/03/21/插件化实现（四）Service插件化/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="在前一篇文章中，对于Activity的启动原理与对应的插件化方案做了相关介绍，相信大家对于插件化现在会有更多的认识，同时对于Hook相关的知识一定也有更深刻的认识。本文将探讨Android四大组件之一Service组件的插件化方式。
+根据上一篇的文章，我们可以知道要实现Service插件化，首先是要知道Service相关的启动原理，所以首先我们对于Service相关的启动原理源码分析，而在分析的过">
+<meta property="og:updated_time" content="2017-03-21T11:46:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="插件化实现（四）Service插件化">
+<meta name="twitter:description" content="在前一篇文章中，对于Activity的启动原理与对应的插件化方案做了相关介绍，相信大家对于插件化现在会有更多的认识，同时对于Hook相关的知识一定也有更深刻的认识。本文将探讨Android四大组件之一Service组件的插件化方式。
+根据上一篇的文章，我们可以知道要实现Service插件化，首先是要知道Service相关的启动原理，所以首先我们对于Service相关的启动原理源码分析，而在分析的过">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/21/插件化实现（四）Service插件化/"/>
+
+
+
+
+
+  <title> 插件化实现（四）Service插件化 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/21/插件化实现（四）Service插件化/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                插件化实现（四）Service插件化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-21T20:12:53+08:00">
+                2017-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/21/插件化实现（四）Service插件化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/21/插件化实现（四）Service插件化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在前一篇文章中，对于Activity的启动原理与对应的插件化方案做了相关介绍，相信大家对于插件化现在会有更多的认识，同时对于Hook相关的知识一定也有更深刻的认识。本文将探讨Android四大组件之一Service组件的插件化方式。</p>
+<p>根据上一篇的文章，我们可以知道要实现Service插件化，首先是要知道Service相关的启动原理，所以首先我们对于Service相关的启动原理源码分析，而在分析的过程中，可以思考下与Activity相比，Service组件的不同点在哪里呢？我们能否用与之相同的方式实现Service的插件化？如果不行，它们的差别在哪里，应该如何实现Service的插件化？</p>
+<h4 id="Service启动原理"><a href="#Service启动原理" class="headerlink" title="Service启动原理"></a>Service启动原理</h4><p>关于Service启动分为两种方式如下</p>
+<ul>
+<li><p>Started：其他组件调用startService()方法启动一个Service。一旦启动，Service将一直运行在后台（run in the background indefinitely）即便启动Service的组件已被destroy。通常，一个被start的Service会在后台执行单独的操作，也并不给启动它的组件返回结果。比如说，一个start的Service执行在后台下载或上传一个文件的操作，完成之后，Service应自己停止。</p>
+</li>
+<li><p>Bound：其他组件调用bindService()方法绑定一个Service。通过绑定方式启动的Service是一个client-server结构，该Service可以与绑定它的组件进行交互。一个bound service仅在有组件与其绑定时才会运行（A bound service runs only as long as another application component is bound to it），多个组件可与一个service绑定，service不再与任何组件绑定时，该service会被destroy。</p>
+</li>
+</ul>
+<a id="more"></a>
+<p>由于bindService会比startService稍微复杂一点，所以这里我们选择Bound方式来解析。</p>
+<p>绑定一个Service通过Context类的bindService完成的，这个方法需要三个参数：第一个参数代表想要绑定的Service的Intent，第二个参数是一个ServiceConnetion，我们可以通过这个对象接收到Service绑定成功或者失败的回调；第三个参数则是绑定时候的一些FLAG。</p>
+<p>Context的具体实现则在ContextImpl类，ContextImpl中的bindService方法调用了bindServiceCommon方法，此方法源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">private boolean bindServiceCommon(Intent service, ServiceConnection conn, int flags,</div><div class="line">        UserHandle user) &#123;</div><div class="line">    IServiceConnection sd;</div><div class="line">    if (conn == null) &#123;</div><div class="line">        throw new IllegalArgumentException(&quot;connection is null&quot;);</div><div class="line">    &#125;</div><div class="line">    if (mPackageInfo != null) &#123;</div><div class="line">        sd = mPackageInfo.getServiceDispatcher(conn, getOuterContext(),</div><div class="line">                mMainThread.getHandler(), flags);</div><div class="line">    &#125; else &#123;</div><div class="line">        throw new RuntimeException(&quot;Not supported in system context&quot;);</div><div class="line">    &#125;</div><div class="line">    validateServiceIntent(service);</div><div class="line">    try &#123;</div><div class="line">        IBinder token = getActivityToken();</div><div class="line">        if (token == null &amp;&amp; (flags&amp;BIND_AUTO_CREATE) == 0 &amp;&amp; mPackageInfo != null</div><div class="line">                &amp;&amp; mPackageInfo.getApplicationInfo().targetSdkVersion</div><div class="line">                &lt; android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) &#123;</div><div class="line">            flags |= BIND_WAIVE_PRIORITY;</div><div class="line">        &#125;</div><div class="line">        service.prepareToLeaveProcess();</div><div class="line">        int res = ActivityManagerNative.getDefault().bindService(</div><div class="line">            mMainThread.getApplicationThread(), getActivityToken(), service,</div><div class="line">            service.resolveTypeIfNeeded(getContentResolver()),</div><div class="line">            sd, flags, getOpPackageName(), user.getIdentifier());</div><div class="line">        if (res &lt; 0) &#123;</div><div class="line">            throw new SecurityException(</div><div class="line">                    &quot;Not allowed to bind to service &quot; + service);</div><div class="line">        &#125;</div><div class="line">        return res != 0;</div><div class="line">    &#125; catch (RemoteException e) &#123;</div><div class="line">        throw new RuntimeException(&quot;Failure from system&quot;, e);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们有看到熟悉的东西了，可以看到这里的调用了ActivityManagerNative类的bindService方法，而ActivityManagerNative实际上就是ActivityManagerService这个远程对象的Binder代理对象；每次需要与AMS打交道的时候，需要借助这个代理对象通过驱动进而完成IPC调用。</p>
+<p>所以我们可以去ActivityManagerService中寻找bindService方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public int bindService(IApplicationThread caller, IBinder token, Intent service,</div><div class="line">        String resolvedType, IServiceConnection connection, int flags, String callingPackage,</div><div class="line">        int userId) throws TransactionTooLargeException &#123;</div><div class="line">    enforceNotIsolatedCaller(&quot;bindService&quot;);</div><div class="line"></div><div class="line">    // Refuse possible leaked file descriptors</div><div class="line">    if (service != null &amp;&amp; service.hasFileDescriptors() == true) &#123;</div><div class="line">        throw new IllegalArgumentException(&quot;File descriptors passed in Intent&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (callingPackage == null) &#123;</div><div class="line">        throw new IllegalArgumentException(&quot;callingPackage cannot be null&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    synchronized(this) &#123;</div><div class="line">        return mServices.bindServiceLocked(caller, token, service,</div><div class="line">                resolvedType, connection, flags, callingPackage, userId);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>bindService方法只是做了一些参数校检之后直接调用了ActivityServices类的bindServiceLocked方法,如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">int bindServiceLocked(IApplicationThread caller, IBinder token, Intent service,</div><div class="line">        String resolvedType, IServiceConnection connection, int flags,</div><div class="line">        String callingPackage, int userId) throws TransactionTooLargeException &#123;</div><div class="line">    final ProcessRecord callerApp = mAm.getRecordForAppLocked(caller);</div><div class="line">    ...</div><div class="line">    ActivityRecord activity = null;  </div><div class="line">    if (token != null) &#123;  </div><div class="line">        int aindex = mMainStack.indexOfTokenLocked(token);  </div><div class="line">        ......  </div><div class="line">        activity = (ActivityRecord)mMainStack.mHistory.get(aindex);  </div><div class="line">    &#125;  </div><div class="line">    ...</div><div class="line">    ServiceLookupResult res =</div><div class="line">        retrieveServiceLocked(service, resolvedType, callingPackage,</div><div class="line">                Binder.getCallingPid(), Binder.getCallingUid(), userId, true, callerFg);</div><div class="line">    ...</div><div class="line">    ServiceRecord s = res.record;</div><div class="line">    final long origId = Binder.clearCallingIdentity();</div><div class="line">    try &#123;</div><div class="line">        ...</div><div class="line">        mAm.startAssociationLocked(callerApp.uid, callerApp.processName,</div><div class="line">                s.appInfo.uid, s.name, s.processName);</div><div class="line"></div><div class="line">        AppBindRecord b = s.retrieveAppBindingLocked(service, callerApp);</div><div class="line">        ConnectionRecord c = new ConnectionRecord(b, activity,</div><div class="line">                connection, flags, clientLabel, clientIntent);</div><div class="line">        IBinder binder = connection.asBinder();</div><div class="line">        ArrayList&lt;ConnectionRecord&gt; clist = s.connections.get(binder);</div><div class="line">        ...</div><div class="line">        clist.add(c);</div><div class="line"></div><div class="line">        if ((flags&amp;Context.BIND_AUTO_CREATE) != 0) &#123;</div><div class="line">            s.lastActivity = SystemClock.uptimeMillis();</div><div class="line">            if (bringUpServiceLocked(s, service.getFlags(), callerFg, false) != null) &#123;</div><div class="line">                return 0;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        ...</div><div class="line">    &#125; finally &#123;</div><div class="line">        Binder.restoreCallingIdentity(origId);</div><div class="line">    &#125;</div><div class="line">    return 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>bindServiceLocked方法较长，将不必要地方省略了，主要做了几件事情：</p>
+<p>1.根据传进来的参数token是MainActivity在ActivityManagerService里面的一个令牌，通过这个令牌就可以将这个代表MainActivity的ActivityRecord取回来</p>
+<p>2.通过retrieveServiceLocked函数，得到一个ServiceRecord，这个ServiceReocrd描述的是一个Service对象，这里就是CounterService了，这是根据传进来的参数service的内容获得的。</p>
+<p>3.传进来的参数connection封装成一个ConnectionRecord对象。</p>
+<p>4.最后如果启动的FLAG为BIND_AUTO_CREATE，那么调用bringUpServiceLocked开始创建Service，</p>
+<p>接下来看一下bringUpServiceLocked方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">private final boolean bringUpServiceLocked(ServiceRecord r,  </div><div class="line">        int intentFlags, boolean whileRestarting) &#123;  </div><div class="line">    ... </div><div class="line">    final String appName = r.processName;  </div><div class="line">    ProcessRecord app = getProcessRecordLocked(appName, r.appInfo.uid);  </div><div class="line"></div><div class="line">    if (app != null &amp;&amp; app.thread != null) &#123;  </div><div class="line">        try &#123;  </div><div class="line">            realStartServiceLocked(r, app);  </div><div class="line">            return true;  </div><div class="line">        &#125; catch (RemoteException e) &#123;  </div><div class="line">            ...  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    // Not running -- get it started, and enqueue this service record  </div><div class="line">    // to be executed when the app comes up.  </div><div class="line">    if (startProcessLocked(appName, r.appInfo, true, intentFlags,  </div><div class="line">        &quot;service&quot;, r.name, false) == null) &#123;  </div><div class="line">        ...</div><div class="line">    &#125;  </div><div class="line">    ... </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里如果Service所在的进程已经启动，那么直接调用realStartServiceLocked方法来真正启动Service组件；如果Service所在的进程还没有启动，那么先在AMS中记下这个要启动的Service组件，然后通过startProcessLocked启动新的进程。</p>
+<p>首先看Service进程已经启动的情况，即realStartServiceLocked方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">private final void realStartServiceLocked(ServiceRecord r,  </div><div class="line">        ProcessRecord app) throws RemoteException &#123;  </div><div class="line">    ...  </div><div class="line">    r.app = app;  </div><div class="line">    ...  </div><div class="line">    app.services.add(r);  </div><div class="line">    ...  </div><div class="line">    try &#123;  </div><div class="line">        ...  </div><div class="line">        app.thread.scheduleCreateService(r, r.serviceInfo);  </div><div class="line">        ...  </div><div class="line">    &#125; finally &#123;  </div><div class="line">        ...  </div><div class="line">    &#125;  </div><div class="line">    requestServiceBindingsLocked(r);  </div><div class="line">    ...  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法首先调用了app.thread的scheduleCreateService方法，这个是不是很熟悉，在上一篇文章中也有说到，它的实现是在ActivityThread的scheduleCreateService里，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public final void scheduleCreateService(IBinder token,</div><div class="line">        ServiceInfo info, CompatibilityInfo compatInfo, int processState) &#123;</div><div class="line">    updateProcessState(processState, false);</div><div class="line">    CreateServiceData s = new CreateServiceData();</div><div class="line">    s.token = token;</div><div class="line">    s.info = info;</div><div class="line">    s.compatInfo = compatInfo;</div><div class="line"></div><div class="line">    sendMessage(H.CREATE_SERVICE, s);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ActivityThread中的Handler会对发送的CREATE_SERVICE消息进行处理，处理如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, &quot;serviceCreate&quot;);</div><div class="line">handleCreateService((CreateServiceData)msg.obj);</div><div class="line">Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</div></pre></td></tr></table></figure>
+<p>这里调用了ActivityThread类的handleCreateService方法，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">private void handleCreateService(CreateServiceData data) &#123;</div><div class="line">    // If we are getting ready to gc after going to the background, well</div><div class="line">    // we are back active so skip it.</div><div class="line">    unscheduleGcIdler();</div><div class="line">    LoadedApk packageInfo = getPackageInfoNoCheck(</div><div class="line">            data.info.applicationInfo, data.compatInfo);</div><div class="line">    Service service = null;</div><div class="line">    try &#123;</div><div class="line">        java.lang.ClassLoader cl = packageInfo.getClassLoader();</div><div class="line">        service = (Service) cl.loadClass(data.info.name).newInstance();</div><div class="line">    &#125; catch (Exception e) &#123;</div><div class="line">        if (!mInstrumentation.onException(service, e)) &#123;</div><div class="line">            throw new RuntimeException(</div><div class="line">                &quot;Unable to instantiate service &quot; + data.info.name</div><div class="line">                + &quot;: &quot; + e.toString(), e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    try &#123;</div><div class="line">        if (localLOGV) Slog.v(TAG, &quot;Creating service &quot; + data.info.name);</div><div class="line">        ContextImpl context = ContextImpl.createAppContext(this, packageInfo);</div><div class="line">        context.setOuterContext(service);</div><div class="line">        Application app = packageInfo.makeApplication(false, mInstrumentation);</div><div class="line">        service.attach(context, this, data.info.name, data.token, app,</div><div class="line">                ActivityManagerNative.getDefault());</div><div class="line">        service.onCreate();</div><div class="line">        mServices.put(data.token, service);</div><div class="line">        try &#123;</div><div class="line">            ActivityManagerNative.getDefault().serviceDoneExecuting(</div><div class="line">                    data.token, SERVICE_DONE_EXECUTING_ANON, 0, 0);</div><div class="line">        &#125; catch (RemoteException e) &#123;</div><div class="line">            // nothing to do.</div><div class="line">        &#125;</div><div class="line">    &#125; catch (Exception e) &#123;</div><div class="line">        if (!mInstrumentation.onException(service, e)) &#123;</div><div class="line">            throw new RuntimeException(</div><div class="line">                &quot;Unable to create service &quot; + data.info.name</div><div class="line">                + &quot;: &quot; + e.toString(), e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里应该也很熟悉，首先通过ClassLoader创建这个Service,然后创建Context对象，最后调用这个Service的onCreate方法，最后将这个Service与对应的token存储下来，作为缓存。</p>
+<p>scheduleCreateService这个Binder调用过程结束，代码又回到了AMS进程的realStartServiceLocked方法，从上面代码可以看到，会接下来执行了一个requestServiceBindingsLocked方法，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">private final boolean requestServiceBindingLocked(ServiceRecord r, IntentBindRecord i,</div><div class="line">        boolean execInFg, boolean rebind) throws TransactionTooLargeException &#123;</div><div class="line">    if (r.app == null || r.app.thread == null) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    if ((!i.requested || rebind) &amp;&amp; i.apps.size() &gt; 0) &#123;</div><div class="line">        try &#123;</div><div class="line">            bumpServiceExecutingLocked(r, execInFg, &quot;bind&quot;);</div><div class="line">            r.app.forceProcessStateUpTo(ActivityManager.PROCESS_STATE_SERVICE);</div><div class="line">            r.app.thread.scheduleBindService(r, i.intent.getIntent(), rebind,</div><div class="line">                    r.app.repProcState);</div><div class="line">           ...</div><div class="line">    &#125;</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里很熟悉，就不说了，后面调用ActivityThread的handleBindService方法，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">private void handleBindService(BindServiceData data) &#123;</div><div class="line">    Service s = mServices.get(data.token);</div><div class="line">    if (s != null) &#123;</div><div class="line">        try &#123;</div><div class="line">            data.intent.setExtrasClassLoader(s.getClassLoader());</div><div class="line">            data.intent.prepareToEnterProcess();</div><div class="line">            try &#123;</div><div class="line">                if (!data.rebind) &#123;</div><div class="line">                    IBinder binder = s.onBind(data.intent);</div><div class="line">                    ActivityManagerNative.getDefault().publishService(</div><div class="line">                            data.token, data.intent, binder);</div><div class="line">                &#125; else &#123;</div><div class="line">                    s.onRebind(data.intent);</div><div class="line">                    ActivityManagerNative.getDefault().serviceDoneExecuting(</div><div class="line">                            data.token, SERVICE_DONE_EXECUTING_ANON, 0, 0);</div><div class="line">                &#125;</div><div class="line">                ensureJitEnabled();</div><div class="line">            &#125; catch (RemoteException ex) &#123;</div><div class="line">            &#125;</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里则完成了Bind相关的绑定工作，就不做过多的介绍了</p>
+<h4 id="Service插件化"><a href="#Service插件化" class="headerlink" title="Service插件化"></a>Service插件化</h4><p>关于Service的插件化，其实通过上一篇关于Activity插件化的文章，可以发现他们的启动流程很像，那么是否可以通过Activity插件化一样通过占位Service来实现呢？</p>
+<p>答案是否定的，为什么？最主要的一个因素就是Service对象只能创建一个实例化对象，所以如果有多个要启动的Service的话，就会出问题，那么我们只能想别的问题去解决了。</p>
+<p>由于和前面Activity一样，Service也是有验证过程的，所以我们也还是需要占位Service的，由于Service是不需要生命周期的，所以我们其实可以自己去创建插件中的Service，那么就可以想到通过占位Service来创建插件中的Service,占位Service在onStartCommand等方法里面进行分发，而插件中的Service则通过占位Service的分发来执行onStartCommond等对应的方法，那么这就是『代理分发技术了』。</p>
+<p>那么现在需要做的事情就是如下了：</p>
+<p><strong>1.Hook住ActivityManagerService，监听到了它的startServie方法，然后替换为占位分发Service，并将启动插件Service相关的信息传递过去。</strong></p>
+<p>怎么hook住ActivityManagerService这个方法在前面一篇文章已经有提到过了，就不介绍了，我们来完成监听startServie方法，然后替换为占位分发Service。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">if (&quot;startService&quot;.equals(method.getName()))&#123;</div><div class="line"></div><div class="line">    Intent raw;</div><div class="line">    int index = 0;</div><div class="line"></div><div class="line">    for (int i = 0; i &lt; args.length; i++) &#123;</div><div class="line">        if (args[i] instanceof Intent) &#123;</div><div class="line">            index = i;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    raw = (Intent) args[index];</div><div class="line"></div><div class="line">    Intent newIntent = new Intent();</div><div class="line">    String stubPackage = HookApplication.getContext().getPackageName();</div><div class="line">    ComponentName componentName = new ComponentName(stubPackage, ProxyService.class.getName());</div><div class="line">    newIntent.setComponent(componentName);</div><div class="line">    newIntent.putExtra(AMSHookHelper.EXTRA_TARGET_INTENT, raw);</div><div class="line"></div><div class="line">    args[index] = newIntent;</div><div class="line"></div><div class="line">    Log.d(TAG, &quot;hook Service success&quot;);</div><div class="line">    return method.invoke(mBase, args);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>2.占位分发Service在onStartCommand分发，通过获取的插件Service相关信息创建插件中的Service对象，然后执行创建好的Service对象的onStart方法，创建并执行插件Service。</strong></p>
+<p>怎么在onStartCommand中分发就暂时不介绍</p>
+<p>我们来看下怎么自己创建一个Service，从前面关于Service分析的过程来看，可以通过handleCreateService方法来创建，这个方法有一个参数CreateServiceData，所以要是想自己创建一个Service的话需要我们来构建一个<br>CreateServiceData对象。</p>
+<p>CreateServiceData类如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">static final class CreateServiceData &#123;</div><div class="line">    IBinder token;</div><div class="line">    ServiceInfo info;</div><div class="line">    CompatibilityInfo compatInfo;</div><div class="line">    Intent intent;</div><div class="line">    public String toString() &#123;</div><div class="line">        return &quot;CreateServiceData&#123;token=&quot; + token + &quot; className=&quot;</div><div class="line">        + info.name + &quot; packageName=&quot; + info.packageName</div><div class="line">        + &quot; intent=&quot; + intent + &quot;&#125;&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个CreateServiceData类包含四个参数，其中intent就是我们传递的Service信息，这个我们可以直接获取到，token前面有提到过，主要是将这个token与对应创建的service存储下来，所以这个token我们可以自己创建即可，CompatibilityInfo我们使用默认即可，那么接下来就只差ServiceInfo这个参数了，这个ServiceInfo是指关于Service信息相关的类。</p>
+<p>那么我们怎么获取插件中的Service的ServiceInfo呢？</p>
+<p>前面有提到PackageParser这个类来获取ApplicationInfo的信息，同样这个类也有提供获取ServiceInfo的信息的方法，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public static final ServiceInfo generateServiceInfo(Service s, int flags,PackageUserState state, int userId)</div></pre></td></tr></table></figure>
+<p>使用这个方法需要四个参数，这里state我们可以直接新建一个PackageUserState，userId通过PackageParser代码发现可以通过UserHandle.getCallingUserId()获取，flags直接取0就好了，而第一个参数关于Service获取，通过PackageParser代码发现，可以通过parsePackage方法获取，代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">Class&lt;?&gt; packageParserClass = Class.forName(&quot;android.content.pm.PackageParser&quot;);</div><div class="line">Method parsePackageMethod = packageParserClass.getDeclaredMethod(&quot;parsePackage&quot;, File.class, int.class);</div><div class="line"></div><div class="line">Object packageParser = packageParserClass.newInstance();</div><div class="line"></div><div class="line">Object packageObj = parsePackageMethod.invoke(packageParser, apkFile, PackageManager.GET_SERVICES);</div><div class="line"></div><div class="line">Field servicesField = packageObj.getClass().getDeclaredField(&quot;services&quot;);</div><div class="line"></div><div class="line">//获取service</div><div class="line">List services = (List) servicesField.get(packageObj);</div><div class="line"></div><div class="line">Class&lt;?&gt; packageParser$ServiceClass = Class.forName(&quot;android.content.pm.PackageParser$Service&quot;);</div><div class="line">Class&lt;?&gt; packageUserStateClass = Class.forName(&quot;android.content.pm.PackageUserState&quot;);</div><div class="line">Class&lt;?&gt; userHandler = Class.forName(&quot;android.os.UserHandle&quot;);</div><div class="line"></div><div class="line">Method getCallingUserIdMethod = userHandler.getDeclaredMethod(&quot;getCallingUserId&quot;);</div><div class="line">int userId = (Integer) getCallingUserIdMethod.invoke(null);</div><div class="line">Object defaultUserState = packageUserStateClass.newInstance();</div><div class="line"></div><div class="line">Method generateReceiverInfo = packageParserClass.getDeclaredMethod(&quot;generateServiceInfo&quot;,</div><div class="line">        packageParser$ServiceClass, int.class, packageUserStateClass, int.class);</div><div class="line"></div><div class="line">ServiceInfo info = (ServiceInfo) generateReceiverInfo.invoke(packageParser, service, 0, defaultUserState, userId);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>获取到ServiceInfo，我们就可以去构建CreateServiceData，然后创建Service了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">IBinder token = new Binder();</div><div class="line"></div><div class="line">Class&lt;?&gt; createServiceDataClass = Class.forName(&quot;android.app.ActivityThread$CreateServiceData&quot;);</div><div class="line">Constructor&lt;?&gt; constructor  = createServiceDataClass.getDeclaredConstructor();</div><div class="line">constructor.setAccessible(true);</div><div class="line">//构建CreateServiceData对象</div><div class="line">Object createServiceData = constructor.newInstance();</div><div class="line"></div><div class="line">//添加CreateServiceData的IBinder信息</div><div class="line">Field tokenField = createServiceDataClass.getDeclaredField(&quot;token&quot;);</div><div class="line">tokenField.setAccessible(true);</div><div class="line">tokenField.set(createServiceData, token);</div><div class="line"></div><div class="line">//添加CreateServiceData的ServiceInfo信息</div><div class="line">Field infoField = createServiceDataClass.getDeclaredField(&quot;info&quot;);</div><div class="line">infoField.setAccessible(true);</div><div class="line">infoField.set(createServiceData, serviceInfo);</div><div class="line"></div><div class="line">Class&lt;?&gt; compatibilityClass = Class.forName(&quot;android.content.res.CompatibilityInfo&quot;);</div><div class="line">Field defaultCompatibilityField = compatibilityClass.getDeclaredField(&quot;DEFAULT_COMPATIBILITY_INFO&quot;);</div><div class="line">Object defaultCompatibility = defaultCompatibilityField.get(null);</div><div class="line">Field compatInfoField = createServiceDataClass.getDeclaredField(&quot;compatInfo&quot;);</div><div class="line">compatInfoField.setAccessible(true);</div><div class="line"></div><div class="line">//添加CreateServiceData的CompatibilityInfo信息</div><div class="line">compatInfoField.set(createServiceData, defaultCompatibility);</div><div class="line"></div><div class="line">Class&lt;?&gt; activityThreadClass = Class.forName(&quot;android.app.ActivityThread&quot;);</div><div class="line">Method currentActivityThreadMethod = activityThreadClass.getDeclaredMethod(&quot;currentActivityThread&quot;);</div><div class="line">Object currentActivityThread = currentActivityThreadMethod.invoke(null);</div><div class="line"></div><div class="line">Method handleCreateServiceMethod = activityThreadClass.getDeclaredMethod(&quot;handleCreateService&quot;, createServiceDataClass);</div><div class="line">handleCreateServiceMethod.setAccessible(true);</div><div class="line"></div><div class="line">//创建Service</div><div class="line">handleCreateServiceMethod.invoke(currentActivityThread, createServiceData);</div><div class="line"></div><div class="line">Field mServicesField = activityThreadClass.getDeclaredField(&quot;mServices&quot;);</div><div class="line">mServicesField.setAccessible(true);</div><div class="line"></div><div class="line">//获取创建的Service缓存集合</div><div class="line">Map mServices = (Map) mServicesField.get(currentActivityThread);</div><div class="line"></div><div class="line">//获取刚刚创建的Service对象</div><div class="line">Service service = (Service) mServices.get(token);</div><div class="line"></div><div class="line">//从系统的Service缓存集合移除我们创建的Service对象，自己管理</div><div class="line">mServices.remove(token);</div></pre></td></tr></table></figure>
+<p>创建好了Service怎么去启动的话，就不做说明了。</p>
+<p><strong>3.监听到了ActivityManagerService的stopServie方法，由于占位分发Service只有一个，所以我们调用上面创建的Service对象的onDestroy方法即可。</strong></p>
+<p>监听stopServie方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">if (&quot;stopService&quot;.equals(method.getName()))&#123;</div><div class="line">    Intent raw;</div><div class="line">    int index = 0;</div><div class="line"></div><div class="line">    for (int i = 0; i &lt; args.length; i++) &#123;</div><div class="line">        if (args[i] instanceof Intent) &#123;</div><div class="line">            index = i;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    raw = (Intent) args[index];</div><div class="line"></div><div class="line">    return ServiceManager.getInstance().stopService(raw);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的其实就调用上面创建的Service的onDestroy方法即可。</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>关于Service插件化到这里就结束了，其实我们通过Activity与Service插件化对比，就会发现Service其实更多是我们自己去创建的，而不走系统的流程，为什么？因为Service的生命周期没有额外的因素影响，因此我们选择了手动控制其生命周期的方式。对于Activity来说，由于他的生命周期受用户交互影响，只有系统本身才能对这种交互有全局掌控力，所以我们必须去完成一整套的Hook流程来欺骗系统。所以说到底就是要给予插件中组件的”生命”。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/插件/" rel="tag"># 插件</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/15/插件化实现（三）Activity插件化/" rel="next" title="插件化实现（三）Activity插件化">
+                <i class="fa fa-chevron-left"></i> 插件化实现（三）Activity插件化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Service启动原理"><span class="nav-number">1.</span> <span class="nav-text">Service启动原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Service插件化"><span class="nav-number">2.</span> <span class="nav-text">Service插件化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
