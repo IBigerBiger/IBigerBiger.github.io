@@ -964,6 +964,293 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/" itemprop="url">
+                  Android堆叠式布局实现（二）堆叠式布局进阶与优化
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-02T19:47:53+08:00">
+                2016-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>上面一篇介绍了下简单的堆叠式布局，但是实现上相对来说还是比较简单，而且效果也并没有特别好，那么这一篇呢，就对堆叠式布局进行更加深入的讲解，主要是通过对子控件的测量和布局，通过这篇的讲解，大家应该可以实现出各种不同风格的堆叠式的布局</p>
+<p>首先看一下最终实现的效果</p>
+<div align=center><br><img src="http://upload-images.jianshu.io/upload_images/1605450-d493ccf8178f1f31.gif?imageMogr2/auto-orient/strip" alt="图1 稍复杂的堆叠式布局"><br></div>
+
+<p>是不是看起来酷炫了很多，没错，揍是这么炫酷，</p>
+<p>那其实简单分析一下是怎么实现的，</p>
+<p>从静态到动态，首先将第一个初始的界面实现出来</p>
+<div align=center><br><img src="http://upload-images.jianshu.io/upload_images/1605450-574fc00420cf0330.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Snip20160412_2.png"><br></div>
+
+<p>通过这张图，我们可以看出来其实是5个item堆叠起来的，随着item的position越往后，那么他的宽和高会有一定的变化，最后一个item的透明度和其他4个的透明度不相同。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/01/Android 堆叠式布局实现（一）简单堆叠式布局/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/05/01/Android 堆叠式布局实现（一）简单堆叠式布局/" itemprop="url">
+                  Android 堆叠式布局实现（一）简单堆叠式布局
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-01T19:47:53+08:00">
+                2016-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/05/01/Android 堆叠式布局实现（一）简单堆叠式布局/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/01/Android 堆叠式布局实现（一）简单堆叠式布局/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h4 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h4><p>堆叠式布局，顾明思议，堆在一起的布局，我百度了一下好像还真没有太多关于这个方面的讲解，刚好最近学习的时候有看到这个方面的知识，那就把学习相关的东西记录下来，方便别人的学习，也对自己后面知识的巩固和温习有帮助。</p>
+<p>首先给大家看看使用到堆叠式布应用的场景，</p>
+<div align=center><br><img src="http://upload-images.jianshu.io/upload_images/1605450-b24d1d1e6a30504c.gif?imageMogr2/auto-orient/strip" alt="图1 大街App堆叠式布应用场景"><br></div>
+
+<div align=center><br><img src="http://upload-images.jianshu.io/upload_images/1605450-7364d6df411bee3b.gif?imageMogr2/auto-orient/strip" alt="图2 易信App堆叠式布应用场景"><br></div>
+
+<div align=center><br><img src="http://upload-images.jianshu.io/upload_images/1605450-816ba77c611a0076.gif?imageMogr2/auto-orient/strip" alt="图3 某个Gif设计图实现效果"><br></div>
+
+<p>看完以后大家是不是还是觉得蛮酷炫的，有的其实还蛮复杂的，但是其实实现一个简单的堆叠式的布局没有想象的复杂，实际上就是自定义的layout来实现的，从简单到复杂，这一篇文章呢就实现一个简单一点的堆叠式的布局，让大家对这个方面有一定的了解</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/01/Android 堆叠式布局实现（一）简单堆叠式布局/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
   </section>
 
   
@@ -1011,7 +1298,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>

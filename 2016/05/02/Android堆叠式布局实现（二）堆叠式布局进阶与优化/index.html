@@ -1,0 +1,808 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上面一篇介绍了下简单的堆叠式布局，但是实现上相对来说还是比较简单，而且效果也并没有特别好，那么这一篇呢，就对堆叠式布局进行更加深入的讲解，主要是通过对子控件的测量和布局，通过这篇的讲解，大家应该可以实现出各种不同风格的堆叠式的布局
+首先看一下最终实现的效果
+
+
+是不是看起来酷炫了很多，没错，揍是这么炫酷，
+那其实简单分析一下是怎么实现的，
+从静态到动态，首先将第一个初始的界面实现出来
+
+
+通过这张">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android堆叠式布局实现（二）堆叠式布局进阶与优化">
+<meta property="og:url" content="http://yoursite.com/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="上面一篇介绍了下简单的堆叠式布局，但是实现上相对来说还是比较简单，而且效果也并没有特别好，那么这一篇呢，就对堆叠式布局进行更加深入的讲解，主要是通过对子控件的测量和布局，通过这篇的讲解，大家应该可以实现出各种不同风格的堆叠式的布局
+首先看一下最终实现的效果
+
+
+是不是看起来酷炫了很多，没错，揍是这么炫酷，
+那其实简单分析一下是怎么实现的，
+从静态到动态，首先将第一个初始的界面实现出来
+
+
+通过这张">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-d493ccf8178f1f31.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-574fc00420cf0330.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-499f53fcd3b0fb3f.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-db3e3c35a3e4392f.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-35acb215d6e7bf8b.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1605450-49d4fe0f65f6e2ac.gif?imageMogr2/auto-orient/strip">
+<meta property="og:updated_time" content="2017-03-25T08:20:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android堆叠式布局实现（二）堆叠式布局进阶与优化">
+<meta name="twitter:description" content="上面一篇介绍了下简单的堆叠式布局，但是实现上相对来说还是比较简单，而且效果也并没有特别好，那么这一篇呢，就对堆叠式布局进行更加深入的讲解，主要是通过对子控件的测量和布局，通过这篇的讲解，大家应该可以实现出各种不同风格的堆叠式的布局
+首先看一下最终实现的效果
+
+
+是不是看起来酷炫了很多，没错，揍是这么炫酷，
+那其实简单分析一下是怎么实现的，
+从静态到动态，首先将第一个初始的界面实现出来
+
+
+通过这张">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1605450-d493ccf8178f1f31.gif?imageMogr2/auto-orient/strip">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/"/>
+
+
+
+
+
+  <title> Android堆叠式布局实现（二）堆叠式布局进阶与优化 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android堆叠式布局实现（二）堆叠式布局进阶与优化
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-02T19:47:53+08:00">
+                2016-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/02/Android堆叠式布局实现（二）堆叠式布局进阶与优化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上面一篇介绍了下简单的堆叠式布局，但是实现上相对来说还是比较简单，而且效果也并没有特别好，那么这一篇呢，就对堆叠式布局进行更加深入的讲解，主要是通过对子控件的测量和布局，通过这篇的讲解，大家应该可以实现出各种不同风格的堆叠式的布局</p>
+<p>首先看一下最终实现的效果</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-d493ccf8178f1f31.gif?imageMogr2/auto-orient/strip" alt="图1 稍复杂的堆叠式布局"><br></div>
+
+<p>是不是看起来酷炫了很多，没错，揍是这么炫酷，</p>
+<p>那其实简单分析一下是怎么实现的，</p>
+<p>从静态到动态，首先将第一个初始的界面实现出来</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-574fc00420cf0330.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Snip20160412_2.png"><br></div>
+
+<p>通过这张图，我们可以看出来其实是5个item堆叠起来的，随着item的position越往后，那么他的宽和高会有一定的变化，最后一个item的透明度和其他4个的透明度不相同。</p>
+<a id="more"></a>
+<h4 id="堆叠式布局进阶与优化"><a href="#堆叠式布局进阶与优化" class="headerlink" title="堆叠式布局进阶与优化"></a>堆叠式布局进阶与优化</h4><p>第一步呢就是修改之前的attachChildViews方法里面的添加子View个数的限制，修改为&lt;5</p>
+<p>由于在子View绘制之前需要将子View的相关宽高和位置进行修改，所以在重写onMeasure与onLayout的方法以满足我们的需要</p>
+<h5 id="Step1-重写onMeasure方法"><a href="#Step1-重写onMeasure方法" class="headerlink" title="Step1.重写onMeasure方法"></a>Step1.重写onMeasure方法</h5><p></p><p><br>首先通过onMeasure方法来看看，对宽高的修改</p>
+<p>通过截图我们可以分析一下在onMeasure中究竟需要做一些什么？</p>
+<ul>
+<li><p>父布局的高度需要调整</p>
+</li>
+<li><p>子View的宽度需要调整</p>
+</li>
+</ul>
+<p><strong>父布局的高度的调整</strong></p>
+<p>上代码通过代码分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">private int itemsMarginTop = dp2px(8);</div><div class="line">//获取父控件的高度</div><div class="line">private int calculateWrapContentHeight()&#123;</div><div class="line">    int maxChildHeight = 0;</div><div class="line">    for (int index = 0; index &lt; getChildCount(); index++)&#123;</div><div class="line">        final View childView = getChildAt(index);</div><div class="line">        measureChildView(childView);</div><div class="line">        if (childView.getVisibility() != View.GONE)&#123;</div><div class="line">            maxChildHeight = Math.max(childView.getMeasuredHeight(),maxChildHeight);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    int itemsElevationPadding = itemsMarginTop * getViewsCount();</div><div class="line">    int measuredHeight = maxChildHeight + getPaddingTop() + getPaddingBottom() + itemsElevationPadding;</div><div class="line">    return measuredHeight;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//</div><div class="line">private int getViewsCount() &#123;    </div><div class="line">     return (getChildCount() - 1);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过代码来看呢，主要是先遍历子View寻找出item高度最大的一个，虽然我使用的item高度都是一致的，但是也不排除会有高度不一致的需求，然后把这个子View最大的高度加上getPaddingTop()与getPaddingBottom()，最后加上每个item之间间隔的高度就好了，这样父控件的高度就计算出来了。</p>
+<p><strong>子View的宽度的调整</strong></p>
+<p>上代码通过代码分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">//测量子View的宽高</div><div class="line">private void configureChildViewsMeasureSpecs(int widthMeasureSpec)&#123;</div><div class="line">    int childWidthMeasureSpec;</div><div class="line">    int childHeightMeasureSpec;</div><div class="line">    final int parentWidth = MeasureSpec.getSize(widthMeasureSpec)</div><div class="line">            - getPaddingLeft()</div><div class="line">            - getPaddingRight();</div><div class="line">    int viewWidth;</div><div class="line">    int viewHeight;</div><div class="line">    for (int index = getViewsCount(); index &gt;= 0; index--)&#123;</div><div class="line">        final View childView = getChildAt(index);</div><div class="line">        measureChildView(childView);</div><div class="line">        viewWidth = caculateViewWidth(parentWidth, index);</div><div class="line">        viewHeight = childView.getMeasuredHeight();</div><div class="line">        childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY);</div><div class="line">        childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY);</div><div class="line">        childView.measure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private int itemsMarginLeftRight = dp2px(8);</div><div class="line"></div><div class="line">//测量子View的宽</div><div class="line">private int caculateViewWidth(float parentWidth,int index)&#123;</div><div class="line">    float viewWidth = calculateTheoreticalViewWidth(parentWidth,index);</div><div class="line">    return (int)viewWidth;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private float calculateTheoreticalViewWidth(float parentWidth,int index)&#123;</div><div class="line">    return (parentWidth - (itemsMarginLeftRight * (getViewsCount() - index)));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实上面分析过程中主要是宽度的调整，所以通过当前的index去算得子View的宽度，获取到子View的新的宽高后通过measure方法将子View的宽高设置</p>
+<p>所以onMeasure方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">    int viewWidth = MeasureSpec.getSize(widthMeasureSpec);</div><div class="line">    int viewHeight = calculateWrapContentHeight();</div><div class="line">    setMeasuredDimension(viewWidth, viewHeight);</div><div class="line">    configureChildViewsMeasureSpecs(widthMeasureSpec);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="Step2-重写onLayout方法"><a href="#Step2-重写onLayout方法" class="headerlink" title="Step2.重写onLayout方法"></a>Step2.重写onLayout方法</h5><p></p><p><br>在OnLayout方法中主要是对子控件的位置进行定位，在OnMeasure中我们其实已经对宽高进行了测量，高度不变，宽度是根据不同的index不一样，通过初始的静态图，我们可以发现需要对Top和Left的位置定位就好了。</p>
+<p>上代码通过代码分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">protected void onLayout(boolean changed, int left, int top, int right, int bottom) &#123;</div><div class="line">    int childLeft;</div><div class="line">    int childTop;</div><div class="line">    int childRight;</div><div class="line">    int childBottom;</div><div class="line">    for (int index = getViewsCount(); index &gt;= 0; index--)&#123;</div><div class="line">            final View childView = getChildAt(index);</div><div class="line">            childLeft = calculateViewLeft(left, right, childView.getMeasuredWidth(), index);</div><div class="line">            childRight = childLeft + childView.getMeasuredWidth();</div><div class="line">            childTop = calculateViewTop(bottom, childView.getMeasuredHeight(), index);</div><div class="line">            childBottom = childTop + childView.getMeasuredHeight();</div><div class="line">            childView.layout(childLeft, childTop, childRight, childBottom);</div><div class="line">    &#125;</div><div class="line">    if (getChildCount() &gt; 1)&#123;</div><div class="line">        getChildAt(0).setAlpha(0.2);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//计算子控件的left</div><div class="line">private int calculateViewLeft(int parentLeft, int parentRight, int childWith, int zIndex) &#123;</div><div class="line">    int center = parentLeft + ((parentRight - parentLeft) / 2);</div><div class="line">    int result = center - (childWith / 2);</div><div class="line">    return result;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//计算子控件的top</div><div class="line">private int calculateViewTop(int parentBottom, int viewHeight, int zIndex) &#123;</div><div class="line">    int viewTop = calculateTheoreticalViewTop(parentBottom, viewHeight, zIndex);</div><div class="line">    return viewTop;</div><div class="line">&#125;</div><div class="line"></div><div class="line">private int calculateTheoreticalViewTop(int parentBottom, int viewHeight, int zIndex)&#123;</div><div class="line">    int topMinimumOffset = itemsMarginTop;</div><div class="line">    int viewTop = parentBottom - getPaddingBottom() - viewHeight - (topMinimumOffset</div><div class="line">            * (getViewsCount() - zIndex));</div><div class="line">    return viewTop;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看看计算子控件的left的方法很简单，其实就是通过父View的宽度和子View的宽度确定</p>
+<p>而计算子控件的Top方法则需要把每个item之间间隔的高度给计算上</p>
+<p>这样其实每个View的位置就会有不同了，然后把最底层的View的透明度设置就可以了</p>
+<p>到这里呢，堆叠式的布局就实现了，那我们简单看下效果把</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-499f53fcd3b0fb3f.gif?imageMogr2/auto-orient/strip" alt="图3 堆叠式布局一"><br></div>
+
+<p>不过看起来是不是很生硬，效果也不好，确实是这样，后面呢主要是对效果的优化</p>
+<h5 id="Step3-动效优化"><a href="#Step3-动效优化" class="headerlink" title="Step3.动效优化"></a>Step3.动效优化</h5><p></p><p><br>通过最上面的图可以分析到，随着手指的运动，第一个子View会随着运动并且透明度有变化，这个其实上一篇文章已经实现了的，那么后面的View其实也随着手指的运动会发生变化，所以我们可以通过手指的运动的distance来进行后面View的动画，通过不断的requestLayout()让这个布局不停的重绘，</p>
+<p>首先把上一篇文章中的关于onTouchListener的方法贴上来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">private void initEvent(final View item)</div><div class="line">&#123;</div><div class="line">    //设置item的重心，主要是旋转的中心</div><div class="line">    item.setPivotX(getScreenWidth(getContext()) / 2);</div><div class="line">    item.setPivotY(getScreenHeight(getContext()) * 2);</div><div class="line">    item.setOnTouchListener(new View.OnTouchListener() &#123;</div><div class="line">        float touchX, distanceX;//手指按下时的坐标以及手指在屏幕移动的距离</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public boolean onTouch(View v, MotionEvent event) &#123;</div><div class="line">            switch (event.getAction()) &#123;</div><div class="line">                case MotionEvent.ACTION_DOWN:</div><div class="line">                    touchX = event.getRawX();</div><div class="line">                    break;</div><div class="line">                case MotionEvent.ACTION_MOVE:</div><div class="line">                    distanceX = event.getRawX() - touchX;</div><div class="line"></div><div class="line">                    item.setRotation(distanceX * mRotateFactor);</div><div class="line">                    //alpha scale 1~0.1</div><div class="line">                    //item的透明度为从1到0.1</div><div class="line">                    item.setAlpha(1 - (float) Math.abs(mItemAlphaFactor * distanceX));</div><div class="line">                    break;</div><div class="line">                case MotionEvent.ACTION_UP:</div><div class="line"></div><div class="line">                    if (Math.abs(distanceX) &gt; mLimitTranslateX) &#123;</div><div class="line">                        //移除view</div><div class="line">                        removeViewWithAnim(item, distanceX &lt; 0);</div><div class="line">                    &#125; else &#123;</div><div class="line">                        //复位</div><div class="line">                        item.setRotation(0);</div><div class="line">                        item.setAlpha(1);</div><div class="line">                    &#125;</div><div class="line">                    break;</div><div class="line">            &#125;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">public void removeViewWithAnim( final View view, boolean isLeft)</div><div class="line">&#123;</div><div class="line">    view.animate()</div><div class="line">            .alpha(0)</div><div class="line">            .rotation(isLeft ? -90 : 90)</div><div class="line">            .setDuration(400).setListener(new AnimatorListenerAdapter() &#123;</div><div class="line">        @Override</div><div class="line">        public void onAnimationEnd(Animator animation) &#123;</div><div class="line">            adapter.remove(view.getTag());</div><div class="line">            adapter.notifyDataSetChanged();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里有有一个distanceX，通过这个值来使全部的View运动起来</p>
+<p>首先通过这个dinstancX来计算在X轴分析运动对于整个宽度的比例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">private float calculateCurrentLeftRightOffsetFactor() &#123;</div><div class="line">    float offsetFactor = ((float)offsetLeftRight / getMeasuredHeight());</div><div class="line">    if (offsetFactor &gt; 1) &#123;</div><div class="line">        offsetFactor = 1f;</div><div class="line">    &#125;</div><div class="line">    return offsetFactor;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过这个比例我们就可以动态的取改变子控件的宽度，Top的值，以及透明度</p>
+<p><strong>改变子控件的宽度</strong></p>
+<p>那就要改变之前测量子View宽度的方法了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//测量子View的宽</div><div class="line">private int caculateViewWidth(float parentWidth,int index)&#123;</div><div class="line">    float viewWidth = calculateTheoreticalViewWidth(parentWidth,index);</div><div class="line">    if (index &lt; viewIndex)&#123;</div><div class="line">        int nextViewIndex = index + 1;</div><div class="line">        float nextViewWidth = calculateTheoreticalViewWidth(parentWidth, nextViewIndex);</div><div class="line">        float offsetFactor = calculateCurrentLeftRightOffsetFactor();</div><div class="line">        viewWidth += (nextViewWidth - viewWidth) * offsetFactor;</div><div class="line">    &#125;</div><div class="line">    return (int)viewWidth;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的viewIndex是我们选中的Item标志，所以当位于我们选中Item后面的子View的宽度会进行变化，变化主要通过View之间宽度的差值和前面的算得的比例进行计算得出，那么这样就得到了View宽度的变化</p>
+<p><strong>改变子控件Top的值</strong></p>
+<p>改变Top值的方法和上面一样的，所以就不做介绍了，也是要修改之前的测量Top值的方法了，直接贴上代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//计算子控件的top</div><div class="line">private int calculateViewTop(int parentBottom, int viewHeight, int zIndex) &#123;</div><div class="line">    int viewTop = calculateTheoreticalViewTop(parentBottom, viewHeight, zIndex);</div><div class="line">    if (offsetLeftRight &gt; 0 &amp;&amp; zIndex &lt; viewIndex) &#123;</div><div class="line">        int nextViewIndex = zIndex + 1;</div><div class="line">        final View nextView = getChildAt(nextViewIndex);</div><div class="line">        int nextViewTop = calculateTheoreticalViewTop(parentBottom,</div><div class="line">                nextView.getMeasuredHeight(),</div><div class="line">                nextViewIndex);</div><div class="line">        float offsetFactor = calculateCurrentLeftRightOffsetFactor();</div><div class="line">        viewTop += (nextViewTop - viewTop) * offsetFactor;</div><div class="line">    &#125;</div><div class="line">    return viewTop;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>改变子控件透明度</strong></p>
+<p>直接贴代码咯</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">if (getChildCount() &gt; 1) &#123;</div><div class="line">    float viewAlpha = 0.20f;</div><div class="line">    if (offsetLeftRight &gt; 0) &#123;</div><div class="line">        viewAlpha = calculateCurrentLeftRightOffsetFactor();</div><div class="line">    &#125;</div><div class="line">    if (viewAlpha &lt; 0.2f) &#123;</div><div class="line">        viewAlpha = 0.2f;</div><div class="line">    &#125;</div><div class="line">    getChildAt(0).setAlpha(viewAlpha);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后在removeViewWithAnim里面添加一些东西就好了如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public void removeViewWithAnim( final View view, boolean isLeft)</div><div class="line">&#123;</div><div class="line">    view.animate()</div><div class="line">            .alpha(0)</div><div class="line">            .rotation(isLeft ? -90 : 90)</div><div class="line">            .setDuration(400).setListener(new AnimatorListenerAdapter() &#123;</div><div class="line">        @Override</div><div class="line">        public void onAnimationEnd(Animator animation) &#123;</div><div class="line">            offsetLeftRight = 0;</div><div class="line">            viewIndex = 0;</div><div class="line">            adapter.remove(view.getTag());</div><div class="line">            adapter.notifyDataSetChanged();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里基本就实现了动态运动的效果咯，运行看一下</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-db3e3c35a3e4392f.gif?imageMogr2/auto-orient/strip" alt="图4 堆叠式布局二"><br></div>
+
+<p>动态是动态了，可是是不是没有那么顺滑呢？</p>
+<p>主要原因是在于随着手指运动后就戛然而止了，因为我们运动的距离肯定没有屏幕这么宽的，所以我们需要在removeViewWithAnim加一个Animator去延续这个动作</p>
+<p>OK贴上代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public void removeViewWithAnim( final View view, boolean isLeft,float rotation)</div><div class="line">&#123;</div><div class="line"></div><div class="line">    ValueAnimator animator = ValueAnimator.ofInt(offsetLeftRight, getMeasuredWidth());</div><div class="line">    animator.setInterpolator(new AccelerateInterpolator());</div><div class="line">    animator.setDuration(300/90 * (90 - (int)Math.abs(rotation)));</div><div class="line">    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() &#123;</div><div class="line">        @Override</div><div class="line">        public void onAnimationUpdate(ValueAnimator animation) &#123;</div><div class="line">            offsetLeftRight = (int) animation.getAnimatedValue();</div><div class="line">            requestLayout();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    animator.start();</div><div class="line"></div><div class="line">    view.animate()</div><div class="line">            .alpha(0)</div><div class="line">            .rotation(isLeft ? -90 : 90)</div><div class="line">            .setDuration(300/90 * (90 - (int)Math.abs(rotation))).setListener(new AnimatorListenerAdapter() &#123;</div><div class="line">        @Override</div><div class="line">        public void onAnimationEnd(Animator animation) &#123;</div><div class="line">            offsetLeftRight = 0;</div><div class="line">            viewIndex = 0;</div><div class="line">            adapter.remove(view.getTag());</div><div class="line">            adapter.notifyDataSetChanged();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为了更好的体验呢，相对的也修改了一下别的东西</p>
+<p>OK完毕，再看一下效果</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-35acb215d6e7bf8b.gif?imageMogr2/auto-orient/strip" alt="图5 堆叠式布局三"><br></div>
+
+<p>前几个体验还是很好的，但是后面的是不是就跑偏了，为什么呢，看一下，主要是整个高度的问题，和透明度的问题，所以在进行一下修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">private int calculateWrapContentHeight()&#123;</div><div class="line">    int maxChildHeight = 0;</div><div class="line">    for (int index = 0; index &lt; getChildCount(); index++)&#123;</div><div class="line">        final View childView = getChildAt(index);</div><div class="line">        measureChildView(childView);</div><div class="line">        if (childView.getVisibility() != View.GONE)&#123;</div><div class="line">            maxChildHeight = Math.max(childView.getMeasuredHeight(),maxChildHeight);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    int itemsElevationPadding = itemsMarginTop * 5;</div><div class="line">    int measuredHeight = maxChildHeight + getPaddingTop() + getPaddingBottom() + itemsElevationPadding;</div><div class="line">    return measuredHeight;</div><div class="line">&#125;</div><div class="line"></div><div class="line">if (getChildCount() &gt; 4) &#123;</div><div class="line">    float viewAlpha = 0.20f;</div><div class="line">    if (offsetLeftRight &gt; 0) &#123;</div><div class="line">        viewAlpha = calculateCurrentLeftRightOffsetFactor();</div><div class="line">    &#125;</div><div class="line">    if (viewAlpha &lt; 0.2f) &#123;</div><div class="line">        viewAlpha = 0.2f;</div><div class="line">    &#125;</div><div class="line">    getChildAt(0).setAlpha(viewAlpha);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在运行看一看效果</p>
+<div align="center"><br><img src="http://upload-images.jianshu.io/upload_images/1605450-49d4fe0f65f6e2ac.gif?imageMogr2/auto-orient/strip" alt="图6 堆叠式布局"><br></div>
+
+<p>Bingo，完成，到这里就已经完成所有的效果拉，等等，忘了一点东西，那个点击View的事件好像还是没有什么动画效果的，其实上面的动画效果已经写好了，调用下就可以了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">completeView.setOnClickListener(new View.OnClickListener() &#123;</div><div class="line">    @Override</div><div class="line">    public void onClick(View v) &#123;</div><div class="line">        StackMoreLayout stackLayout = (StackMoreLayout)parent;</div><div class="line">        stackLayout.removeViewWithAnim(convertView,false,0);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>到这里才算真正的把所有的都完成了，不容易呀，哈哈</p>
+<h4 id="写在后面的几句话"><a href="#写在后面的几句话" class="headerlink" title="写在后面的几句话"></a>写在后面的几句话</h4><p></p><p><br>相信通过这篇文章，大家对堆叠式布局的理解以及运用应该更加深刻了把，通过这篇文章的方式我们可以实现各种不同的效果，可以更加的炫酷，那到这里就基本把稍复杂点的堆叠式布局讲完了，后面如果有更加深入的理解和学习，我也会贴出来和大家一起分享。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/01/Android 堆叠式布局实现（一）简单堆叠式布局/" rel="next" title="Android 堆叠式布局实现（一）简单堆叠式布局">
+                <i class="fa fa-chevron-left"></i> Android 堆叠式布局实现（一）简单堆叠式布局
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/12/ViewDragerHelper使用与源码简析/" rel="prev" title="ViewDragerHelper使用与源码简析">
+                ViewDragerHelper使用与源码简析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#堆叠式布局进阶与优化"><span class="nav-number">1.</span> <span class="nav-text">堆叠式布局进阶与优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Step1-重写onMeasure方法"><span class="nav-number">1.1.</span> <span class="nav-text">Step1.重写onMeasure方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Step2-重写onLayout方法"><span class="nav-number">1.2.</span> <span class="nav-text">Step2.重写onLayout方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Step3-动效优化"><span class="nav-number">1.3.</span> <span class="nav-text">Step3.动效优化</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的几句话"><span class="nav-number">2.</span> <span class="nav-text">写在后面的几句话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
