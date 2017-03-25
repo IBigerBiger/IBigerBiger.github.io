@@ -1,0 +1,760 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="插件," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="写在前面的话对于插件化，这个在2016年相对来说比较热门的话题，确实在中国Android开发的圈子中引起了不小的波澜，插件化其实主要是针对于相对来说比较大的超级App这种性质的应用开发，因为这种超级App一般会面临几个大的问题：
+（1）65535方法数问题，当然这个谷歌也是提供了方案,但是这样的解决方式其实还是有问题，第一随着业务的增长，很有可能第二个Dex也不够用了，那么继续分包？这样其实问题会">
+<meta property="og:type" content="article">
+<meta property="og:title" content="插件化实现（一）插件管理器">
+<meta property="og:url" content="http://yoursite.com/2017/02/20/插件化实现（一）插件管理器/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="写在前面的话对于插件化，这个在2016年相对来说比较热门的话题，确实在中国Android开发的圈子中引起了不小的波澜，插件化其实主要是针对于相对来说比较大的超级App这种性质的应用开发，因为这种超级App一般会面临几个大的问题：
+（1）65535方法数问题，当然这个谷歌也是提供了方案,但是这样的解决方式其实还是有问题，第一随着业务的增长，很有可能第二个Dex也不够用了，那么继续分包？这样其实问题会">
+<meta property="og:updated_time" content="2017-03-25T08:02:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="插件化实现（一）插件管理器">
+<meta name="twitter:description" content="写在前面的话对于插件化，这个在2016年相对来说比较热门的话题，确实在中国Android开发的圈子中引起了不小的波澜，插件化其实主要是针对于相对来说比较大的超级App这种性质的应用开发，因为这种超级App一般会面临几个大的问题：
+（1）65535方法数问题，当然这个谷歌也是提供了方案,但是这样的解决方式其实还是有问题，第一随着业务的增长，很有可能第二个Dex也不够用了，那么继续分包？这样其实问题会">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/20/插件化实现（一）插件管理器/"/>
+
+
+
+
+
+  <title> 插件化实现（一）插件管理器 | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/02/20/插件化实现（一）插件管理器/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                插件化实现（一）插件管理器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-20T20:12:53+08:00">
+                2017-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/20/插件化实现（一）插件管理器/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/20/插件化实现（一）插件管理器/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h4><p>对于插件化，这个在2016年相对来说比较热门的话题，确实在中国Android开发的圈子中引起了不小的波澜，插件化其实主要是针对于相对来说比较大的超级App这种性质的应用开发，因为这种超级App一般会面临几个大的问题：</p>
+<p>（1）65535方法数问题，当然这个谷歌也是提供了<a href="https://developer.android.com/studio/build/multidex.html#about" target="_blank" rel="external">方案</a>,但是这样的解决方式其实还是有问题，第一随着业务的增长，很有可能第二个Dex也不够用了，那么继续分包？这样其实问题会越来越严重，第二Dex更多其实就是代表我们项目的方法数更多，自然编译的速度就会缓慢很多，1~2min的编译时间绝对不是开玩笑的。</p>
+<p>（2）随着业务与功能的增长，很有可能出现的情况就是一个大的项目组会分成好几个功能模块的小项目组，那么当新出一个版本则要协调各个功能模块组，确定一个共同满意的上线时间，肯定会出现各个项目组延期导致的整个项目延期的情况，那么对于现在的敏捷开发来说，这样的开发模式明显是不符合的。</p>
+<p>（3）App Size过大，对于一个APP来说Size过大其实是一个很严重的问题，这会直接影响到用户是否愿意去下载的问题，当然一个传统的超级App的Size肯定是不言而喻的。</p>
+<p>所以插件化就应运而生了，插件化自然就可以解决上面所述的问题了</p>
+<p>其实现在已经有不少插件化的库存在了，如下</p>
+<ul>
+<li><p><a href="https://github.com/Qihoo360/DroidPlugin" target="_blank" rel="external">DroidPlugin</a><br>是360手机助手在Android系统上实现了一种新的插件机制</p>
+</li>
+<li><p><a href="https://github.com/limpoxe/Android-Plugin-Framework" target="_blank" rel="external">Android-Plugin-Framework</a><br>此项目是Android插件开发框架完整源码及示例。用来通过动态加载的方式在宿主程序中运行插件APK。</p>
+</li>
+<li><p><a href="https://github.com/wequick/Small" target="_blank" rel="external">Small</a><br>世界那么大，组件那么小。Small，做最轻巧的跨平台插件化框架。里面有很详细的文档</p>
+</li>
+<li><p><a href="https://github.com/singwhatiwanna/dynamic-load-apk" target="_blank" rel="external">dynamic-load-apk</a><br>Android 使用动态加载框架DL进行插件化开发</p>
+</li>
+<li><p><a href="https://github.com/mmin18/AndroidDynamicLoader" target="_blank" rel="external">AndroidDynamicLoader</a><br>Android 动态加载框架，他不是用代理 Activity 的方式实现而是用 Fragment 以及 Schema 的方式实现</p>
+</li>
+<li><p><a href="https://github.com/CtripMobile/DynamicAPK" target="_blank" rel="external">DynamicAPK</a><br>实现Android App多apk插件化和动态加载，支持资源分包和热修复.携程App的插件化和动态加载框架.</p>
+</li>
+<li><p><a href="https://github.com/bunnyblue/ACDD/blob/master/README-Zh.md" target="_blank" rel="external">ACDD</a><br>非代理Android动态部署框架</p>
+</li>
+<li><p><a href="https://github.com/houkx/android-pluginmgr" target="_blank" rel="external">android-pluginmgr</a><br>不需要插件规范的apk动态加载框架</p>
+</li>
+</ul>
+<a id="more"></a>
+<p>其中一些插件化库其实已经在一些产品上面经过实践了</p>
+<p>虽然插件化看起来确实是对于超级App一种很友好的方式，但是其实也是有一定的问题的，其中最大的问题就是兼容性的问题，先不说谷歌众多的Android版本问题，国内各大厂商的个（heng）性（keng）化（die）的ROM修改，造成很多和源码不一致的地方，这样就需要插件化库要做很多兼容性的工作，同时也要及时处理各种版本ROM更新的问题，所以其实我觉得如果不是有一定插件化开发经验的开发者还是不要轻易使用插件化的库，这样有可能出现了各种问题反馈也得不到及时的回复。</p>
+<p><strong>对于插件化开发</strong></p>
+<p>当然首先可以确定的是插件化的实现是很复杂且繁琐的过程，我写这系列其实也是一些相对来说我们可以看到的实现，并不会去做特别深入，特别多的研究。</p>
+<p>插件化的开发需要开发者对于系统源代码，HOOK相关知识都有一定的要求，所以这系列文章会对于系统相关的源码进行讲解，同时也可以加深对于HOOK相关的知识。</p>
+<p>针对于插件化开发，我这里的系列文章主要是实现下面的功能</p>
+<ul>
+<li>插件管理器</li>
+<li>插件资源获取</li>
+<li>插件四大组件的加载</li>
+</ul>
+<p>那么这篇就是对于一个插件化库的插件管理器的开发</p>
+<h4 id="插件管理器"><a href="#插件管理器" class="headerlink" title="插件管理器"></a>插件管理器</h4><p>对于一个插件化库来说插件管理器是承接宿主App与插件App的连接器，通过插件管理器我们要实现对于插件App的添加删除更新等功能。</p>
+<p>首先对于一个需要被添加的插件Apk，那么他的存在一定是被我们预先下载到SD卡中，我们当然可以选择就用这个位置的Apk为插件App，但是会存在的问题就是如果这个位置的Apk删除了，那么就无法后面正常的使用插件App中的功能，所以一般情况是要放到一个相对安全的位置。</p>
+<p>Application<strong>内部存储路径为/data/data/youPackageName/</strong>，所有内部存储中保存的文件在用户卸载应用的时候会被删除。所以这个位置存储我们的插件Apk是最好的选择。</p>
+<p>存储位置确定了，那么接下来要做的事情就是怎么建立这个Apk与我们宿主之间的联系？</p>
+<p>我们知道系统判断一个apk是否安装是根据这个apk的packageName，如果安装了当versionCode不一致的时候则会判断是否需要更新，所以我们也可以根据这个特性来进行Apk与我们宿主之间的联系。所以就是当我们知道了packageName就可以快速的找到这个apk存在的位置。</p>
+<p>所以在我们存储这个插件Apk到内部存储路径的时候，可以用packageName与versionCode作为Apk的父文件夹，其路径如下所致</p>
+<p>/data/data/youPackageName/plugin/packageName/versionCode/.apk</p>
+<p>那么接下来存在的问题就是怎么去获取插件Apk中的packageName与versionCode了</p>
+<p>获取packageName与versionCode代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">public static PluginInfo parse(File apk) throws Exception&#123;</div><div class="line">       PluginInfo pluginInfo = new PluginInfo();</div><div class="line"></div><div class="line">       ZipFile zipFile = new ZipFile(apk,ZipFile.OPEN_READ);</div><div class="line">       ZipEntry manifestXmlEntry = zipFile.getEntry(ManifestReader.DEFAULT_XML);</div><div class="line">       String manifestXml = ManifestReader.getManifestXMLFromAPK(zipFile, manifestXmlEntry);</div><div class="line">       XmlPullParserFactory factory = XmlPullParserFactory.newInstance();</div><div class="line">       factory.setNamespaceAware(true);</div><div class="line">       XmlPullParser parser = factory.newPullParser();</div><div class="line">       parser.setInput(new StringReader(manifestXml));</div><div class="line">       int eventType = parser.getEventType();</div><div class="line"></div><div class="line">       do &#123;</div><div class="line">           switch (eventType) &#123;</div><div class="line">               case XmlPullParser.START_DOCUMENT:</div><div class="line">                   break;</div><div class="line"></div><div class="line">               case XmlPullParser.START_TAG: &#123;</div><div class="line">                   String tag = parser.getName();</div><div class="line">                   if (&quot;manifest&quot;.equals(tag)) &#123;</div><div class="line">                       String namespace = parser.getNamespace(&quot;android&quot;);</div><div class="line">                       pluginInfo.setPackageName(parser.getAttributeValue(null, &quot;package&quot;));</div><div class="line">                       pluginInfo.setVersionCode(parser.getAttributeValue(namespace, &quot;versionCode&quot;));</div><div class="line">                       pluginInfo.setVersionName(parser.getAttributeValue(namespace, &quot;versionName&quot;));</div><div class="line"></div><div class="line">                   &#125; else if (&quot;meta-data&quot;.equals(tag)) &#123;</div><div class="line"></div><div class="line">                   &#125; else if (&quot;exported-fragment&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;exported-service&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;uses-library&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;application&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;activity&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;receiver&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;service&quot;.equals(tag)) &#123;</div><div class="line">                   &#125; else if (&quot;provider&quot;.equals(tag)) &#123;</div><div class="line">                   &#125;</div><div class="line">                   break;</div><div class="line">               &#125;</div><div class="line">               case XmlPullParser.END_TAG: &#123;</div><div class="line">                   break;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           eventType = parser.next();</div><div class="line">       &#125; while (eventType != XmlPullParser.END_DOCUMENT);</div><div class="line"></div><div class="line">       return pluginInfo;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>当然除了上述的方式以外还有采用android系统方法的方式，由于这里暂时只需要packageName与versionCode，那么用系统方法的方式在后面再说。</p>
+<p>所以我们解析出Apk相关信息后就可以通过这些信息去判断是否已经安装过这个插件Apk了，那么接下来看一下判断插件是否安装的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 安装插件</div><div class="line"> *</div><div class="line"> * @String filePath</div><div class="line"> */</div><div class="line">public void installPlugin(String filePath) throws Exception &#123;</div><div class="line">       File file = new File(filePath);</div><div class="line">       if (!file.isFile() || !file.exists() || file.length() == 0)&#123;</div><div class="line">           throw new FileNotFoundException(filePath);</div><div class="line">       &#125;</div><div class="line">       PluginInfo pluginInfo = ManifestUtil.parse(file);</div><div class="line">       switch (checkInstallType(pluginInfo))&#123;</div><div class="line">           case TYPE_UNINSTALLED:</div><div class="line">               PluginInstallManager.install(file,pluginInfo);</div><div class="line">               break;</div><div class="line">           case TYPE_INSTALLED:</div><div class="line">               throw new Exception(&quot;Plugin has been already installed&quot;);</div><div class="line">           case TYPE_UPDATE:</div><div class="line">             </div><div class="line">               break;</div><div class="line">           case TYPE_OLDERVERSION:</div><div class="line">               throw new Exception(&quot;Plugin version is too old&quot;);</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">   /**</div><div class="line">    * 判断插件安装状态</div><div class="line">    *</div><div class="line">    * @param pluginInfo</div><div class="line">    * @return</div><div class="line">    */</div><div class="line">   private INSTALL_TYPE checkInstallType(PluginInfo pluginInfo)&#123;</div><div class="line">       if (FileUtil.getPatchTempDirectory(mContext).exists())&#123;</div><div class="line">           if (FileUtil.getPatchNameDirectory(mContext,pluginInfo).exists())&#123;</div><div class="line">               if (FileUtil.getPatchNameVersonDirectory(mContext,pluginInfo).exists())&#123;</div><div class="line">                   return INSTALL_TYPE.TYPE_INSTALLED;</div><div class="line">               &#125;else &#123;</div><div class="line">                   File file = FileUtil.getChildDirectory(FileUtil.getPatchNameDirectory(mContext,pluginInfo))[0];</div><div class="line">                   if (file.exists())&#123;</div><div class="line">                       Long oldVersion = Long.parseLong(file.getName());</div><div class="line">                       Long newVersion = Long.parseLong(pluginInfo.getVersionCode());</div><div class="line">                       if (newVersion &gt; oldVersion)&#123;</div><div class="line">                           return INSTALL_TYPE.TYPE_UPDATE;</div><div class="line">                       &#125;else &#123;</div><div class="line">                           return INSTALL_TYPE.TYPE_OLDERVERSION;</div><div class="line">                       &#125;</div><div class="line">                   &#125;else &#123;</div><div class="line">                       return INSTALL_TYPE.TYPE_UNINSTALLED;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125;else &#123;</div><div class="line">               return INSTALL_TYPE.TYPE_UNINSTALLED;</div><div class="line">           &#125;</div><div class="line">       &#125;else &#123;</div><div class="line">           return INSTALL_TYPE.TYPE_UNINSTALLED;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>这里其实就是先判断插件路径是否存在，不存在返回未安装，存在情况判断需要安装apk的包名路径是否存在，不存在返回未安装，如果存在通过需要安装apk的版本号与存在路径包名版本号进行对比，相同则返回已安装，不同则返回需要更新或者版本太老。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 安装插件</div><div class="line"> *</div><div class="line"> * @param apkFile</div><div class="line"> * @param pluginInfo</div><div class="line"> * @throws Exception</div><div class="line"> */</div><div class="line">public static void install(File apkFile,PluginInfo pluginInfo) throws Exception &#123;</div><div class="line">    File targetFile = new File(FileUtil.getPatchNameVersonDirectory(mContext,pluginInfo),DEFAULT_PLUGIN_NAME);</div><div class="line">    if (targetFile.exists())&#123;</div><div class="line">        throw new Exception(&quot;Plugin has been already installed&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (apkFile.renameTo(targetFile))</div><div class="line">        return;</div><div class="line"></div><div class="line">    FileUtil.copyFile(apkFile,targetFile);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>安装部分代码如下，其实就是根据包名与版本号创建指定路径的文件将需要安装的apk拷贝到指定的位置</p>
+<p>当然为了后面的需求，这里还提供了一些其他的方法，根据包名去获取文件，获取Apk相关的信息<br>如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 获取指定插件的插件信息</div><div class="line"> *</div><div class="line"> * @param packageName</div><div class="line"> * @return</div><div class="line"> */</div><div class="line">public static PluginInfo getTargetPluginInfo(String packageName) throws Exception &#123;</div><div class="line">    File targetFile = getTargetPluginFile(packageName);</div><div class="line">    PluginInfo pluginInfo = ManifestUtil.parse(targetFile);</div><div class="line">    return pluginInfo;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 获取指定插件的文件</div><div class="line"> *</div><div class="line"> * @param packageName</div><div class="line"> * @return</div><div class="line"> */</div><div class="line">public static File getTargetPluginFile(String packageName)&#123;</div><div class="line">    File[] pluginversion =FileUtil.getChildDirectory(new File(FileUtil.getPatchTempDirectory(mContext),packageName));</div><div class="line">    if (pluginversion == null || pluginversion.length &lt; 0)</div><div class="line">        return null;</div><div class="line">    File pluginFile = new File(pluginversion[0],DEFAULT_PLUGIN_NAME);</div><div class="line">    if (!pluginFile.exists())</div><div class="line">        return null;</div><div class="line">    return pluginFile;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>那么到这里基本上简单的插件管理器就实现了，当然后续会有更多的需求的话，根据相关需求更新就好了</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>对于插件化来说插件管理器只是一个基础的作用，和插件化其实并没有特别多的关系，那么下一篇文章，就要开启插件化学习的真正篇章了，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/插件/" rel="tag"># 插件</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/13/移动端直播开发（四）播放与弹幕评论/" rel="next" title="移动端直播开发（四）播放与弹幕评论">
+                <i class="fa fa-chevron-left"></i> 移动端直播开发（四）播放与弹幕评论
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/26/插件化实现（二）插件资源获取/" rel="prev" title="插件化实现（二）插件资源获取">
+                插件化实现（二）插件资源获取 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#写在前面的话"><span class="nav-number">1.</span> <span class="nav-text">写在前面的话</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#插件管理器"><span class="nav-number">2.</span> <span class="nav-text">插件管理器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">3.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

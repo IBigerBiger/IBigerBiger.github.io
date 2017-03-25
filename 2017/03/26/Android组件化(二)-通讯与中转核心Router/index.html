@@ -1,0 +1,805 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在前面一篇文章中，有介绍关于组件化相关的知识，同时也提到了其中一个很重要的点，那就是路由Router，对于组件化来说，路由Router是整个架构的核心，那么对于这篇文章我们就来实现一个简单的Router，来实现组件化的核心。
+对于Router，我们需要满足哪些功能呢？
+1.多Modle间的调用与信息传递
+2.多进程间的通讯
+接下来我们一点点实现这些功能，当然，我这里的实现是相对简单的，并不会做特别">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android组件化(二)-通讯与中转核心Router">
+<meta property="og:url" content="http://yoursite.com/2017/03/26/Android组件化(二)-通讯与中转核心Router/index.html">
+<meta property="og:site_name" content="IBigerBiger的成长之路">
+<meta property="og:description" content="在前面一篇文章中，有介绍关于组件化相关的知识，同时也提到了其中一个很重要的点，那就是路由Router，对于组件化来说，路由Router是整个架构的核心，那么对于这篇文章我们就来实现一个简单的Router，来实现组件化的核心。
+对于Router，我们需要满足哪些功能呢？
+1.多Modle间的调用与信息传递
+2.多进程间的通讯
+接下来我们一点点实现这些功能，当然，我这里的实现是相对简单的，并不会做特别">
+<meta property="og:updated_time" content="2017-03-25T08:09:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android组件化(二)-通讯与中转核心Router">
+<meta name="twitter:description" content="在前面一篇文章中，有介绍关于组件化相关的知识，同时也提到了其中一个很重要的点，那就是路由Router，对于组件化来说，路由Router是整个架构的核心，那么对于这篇文章我们就来实现一个简单的Router，来实现组件化的核心。
+对于Router，我们需要满足哪些功能呢？
+1.多Modle间的调用与信息传递
+2.多进程间的通讯
+接下来我们一点点实现这些功能，当然，我这里的实现是相对简单的，并不会做特别">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/26/Android组件化(二)-通讯与中转核心Router/"/>
+
+
+
+
+
+  <title> Android组件化(二)-通讯与中转核心Router | IBigerBiger的成长之路 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">IBigerBiger</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/26/Android组件化(二)-通讯与中转核心Router/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="IBigerBiger">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="IBigerBiger的成长之路">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="IBigerBiger的成长之路" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android组件化(二)-通讯与中转核心Router
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-26T20:12:53+08:00">
+                2017-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/26/Android组件化(二)-通讯与中转核心Router/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/26/Android组件化(二)-通讯与中转核心Router/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在前面一篇文章中，有介绍关于组件化相关的知识，同时也提到了其中一个很重要的点，那就是路由Router，对于组件化来说，路由Router是整个架构的核心，那么对于这篇文章我们就来实现一个简单的Router，来实现组件化的核心。</p>
+<p>对于Router，我们需要满足哪些功能呢？</p>
+<p>1.多Modle间的调用与信息传递</p>
+<p>2.多进程间的通讯</p>
+<p>接下来我们一点点实现这些功能，当然，我这里的实现是相对简单的，并不会做特别多的考虑与优化，仅仅作为初级的Router的展示作用。</p>
+<h4 id="多Modle间调用"><a href="#多Modle间调用" class="headerlink" title="多Modle间调用"></a>多Modle间调用</h4><p>首先要思考下关于多Modle间调用包含的情况，我们调用的可能是一个Activity，一个Service，或者是一个方法，亦或者仅仅只是个变量，所以我们可以选择去调用一个方法，而这个方法里面是包含上述的众多操作。</p>
+<p>我们首先定义一个关于这个方法抽象类，及Action类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public abstract class RouterAction &#123;</div><div class="line"></div><div class="line">    public abstract RouterResult invoke(Context context, HashMap&lt;String,String&gt; requestData);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>这个类里面只有一个方法就是invoke，这个方法里面我们定义需要做的操作，所以我们子Modle只要继承这个类并包装好方法就可以了，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">static class ModleServiceStartAction extends RouterAction&#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public RouterResult invoke(Context context, HashMap&lt;String, String&gt; requestData) &#123;</div><div class="line">        Intent i = new Intent(context, Modle1Service.class);</div><div class="line">        context.startService(i);</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">static class ModleServiceStopAction extends RouterAction&#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public RouterResult invoke(Context context, HashMap&lt;String, String&gt; requestData) &#123;</div><div class="line">        Intent i = new Intent(context, Modle1Service.class);</div><div class="line">        context.stopService(i);</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以上面就是子Modle中的两个方法调用，分别是启动一个Service与停止一个Service，接下来就是如何找到这个方法了，所以我们需要定义一个Map队列，来将这些方法与对应的标签存储下来，以便在使用的时候可以找到这些方法。</p>
+<p>我们定义一个关于存储这些Action类的抽象方法，及Provider类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public abstract class RouterProvider &#123;</div><div class="line"></div><div class="line">    private HashMap&lt;String,RouterAction&gt; mActions;</div><div class="line"></div><div class="line">    public RouterProvider()&#123;</div><div class="line">        mActions = new HashMap&lt;&gt;();</div><div class="line">        registerActions();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    protected void registerAction(String actionName,RouterAction action)&#123;</div><div class="line">        mActions.put(actionName,action);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public RouterAction findAction(String actionName)&#123;</div><div class="line">        return mActions.get(actionName);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    protected abstract void registerActions();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里我们定义了一个Map用来存储相关的Action类，以及用来存储这些Action，以及找到Action的方法，registerActions这个抽象方法里面我们需要将相关Action存储下拉，所以我们子Modle只要继承这个类并包装好方法就可以了，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class ModleProvider extends RouterProvider&#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void registerActions() &#123;</div><div class="line">        registerAction(&quot;startService&quot;,new ModleServiceStartAction());</div><div class="line">        registerAction(&quot;stopService&quot;,new ModleServiceStopAction());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>一个Provider类则代表一个Modle，接下来就是要将这个Provider类（即Modle）与对应的标签存储下来，这样就可以通过这个标签这个Provider类（即Modle），最后通过Action的标签找到Action类，从而执行里面的方法，这样就可以实现多Modle间的相互调用了。</p>
+<p>接下来就是对于Provider类（即Modle）的存储了，我们定义了一个RouterManager类，用来存储相关的Provider类</p>
+<p>如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public class RouterManager &#123;</div><div class="line"></div><div class="line">  public static HashMap&lt;String, RouterProvider&gt; mProviders;</div><div class="line">  private static RouterManager sInstance;</div><div class="line">  private Context mContext;</div><div class="line"></div><div class="line">  public RouterManager(Context context) &#123;</div><div class="line">	mContext = context;</div><div class="line">	mProviders = new HashMap&lt;&gt;();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public static synchronized RouterManager getInstance(@NonNull Application context) &#123;</div><div class="line">    if (sInstance == null) &#123;</div><div class="line">        sInstance = new RouterManager(context);</div><div class="line">    &#125;</div><div class="line">    return sInstance;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void registerProvider(String providerName, RouterProvider provider) &#123;</div><div class="line">    mProviders.put(providerName, provider);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样我们可以在Application初始化的时候，将相关的Provider类（即Modle）的存储下来，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onCreate() &#123;</div><div class="line">    super.onCreate();</div><div class="line"></div><div class="line">    RouterManager routerManager = RouterManager.getInstance(this);</div><div class="line">    routerManager.registerProvider(&quot;modle&quot;,new Modle1Provider());</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来就是我们怎么去寻找对应的Provider类的对应Action(即Modle中对应的方法)，寻找这个Action需要的信息有Provider对应的标签，Action对应的标签，所以我们定义一个Request类来存储这些信息，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">public class RouterRequest &#123;</div><div class="line"></div><div class="line">    private String provider;</div><div class="line">    private String action;</div><div class="line">    private HashMap&lt;String, String&gt; data;</div><div class="line"></div><div class="line">    public RouterRequest(Builder builder) &#123;</div><div class="line">        this.provider = builder.provider;</div><div class="line">        this.action = builder.action;</div><div class="line">        this.data = builder.data;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static class Builder&#123;</div><div class="line">        private String provider;</div><div class="line">        private String action;</div><div class="line">        private HashMap&lt;String, String&gt; data = null;</div><div class="line"></div><div class="line">        public Builder() &#123;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public Builder(String provider, String action) &#123;</div><div class="line">            this.provider = provider;</div><div class="line">            this.action = action;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public Builder data(HashMap&lt;String, String&gt; data)&#123;</div><div class="line">            this.data = data;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public HashMap&lt;String, String&gt; getData() &#123;</div><div class="line">        return data;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getAction() &#123;</div><div class="line">        return action;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getProvider() &#123;</div><div class="line">        return provider;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后RouterManager内增加关于RouterRequest的处理方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public void router(Context context,RouterRequest routerRequest)&#123;</div><div class="line">    RouterProvider routerProvider = mProviders.get(routerRequest.getProvider());</div><div class="line">    RouterAction routerAction = routerProvider.findAction(routerRequest.getAction());</div><div class="line">    routerAction.invoke(context, routerRequest.getData());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到这里首先从我们存储下的Provider类集合获取对于Modle的Provider类，再获取对应的Action类，并调用这个类的invoke方法，从而达到准确调用某个Modle内的某个方法了</p>
+<p>接下来看下调用，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">RouterManager.getInstance(MainApplication.getMainApplication()).router(getApplicationContext(),new RouterRequest.Builder(&quot;modle&quot;,&quot;startService&quot;).build());</div><div class="line"></div><div class="line">RouterManager.getInstance(MainApplication.getMainApplication()).router(getApplicationContext(),new RouterRequest.Builder(&quot;modle&quot;,&quot;stopService&quot;).build());</div></pre></td></tr></table></figure>
+<p>所以初步功能的Modle间调用是实现功能了，同时我们可以传递相关的数据过去，也可以获取插件中的数据等等。</p>
+<h4 id="多进程的通讯"><a href="#多进程的通讯" class="headerlink" title="多进程的通讯"></a>多进程的通讯</h4><p>多进程通讯相信一般大家都比较清楚，一般是通过AIDL来实现，虽然我最开始认为Router应该仅仅只作为一个中转跳转的作用，但是难免会出现数据处于多线程的情况，比如：某个Modle中的Activity并非处于主进程，这样我们获取到这个Acivity中的某个变量就并非处于正确的情况了，所以对于Router来说加入多进程的通讯机制是很有必要的。</p>
+<p>那么接下来我们就来看一下多进程的出现会对我们之前的Router会产生什么样的影响，其实就和上述的情况一样，我们所获取的数据并非绝对准确，那么怎么样才可以正确获取呢？如果我们的Action和需要获取数据的进程处于同一个进程的话，那么就应该是获取到正确的值啊，所以我们首先将Action与需要获取数据的进程放在同一个进程里。</p>
+<p>以Activity为例，当需要将一个Activity设置为非主进程，只要在Manifest设置这个Activity的process属性即可，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;.ModleActivity&quot;</div><div class="line">            android:process=&quot;:remote&quot;</div><div class="line">            /&gt;</div></pre></td></tr></table></figure>
+<p>这样这个ModleActivity就并非处于主的进程了，而是处于packageName:remote进程了（以remote简称），那么怎么将Action也放在remote进程呢？</p>
+<p>当App一个组件跑在一个新的进程中的时候，由于系统要在创建新的进程同时分配独立的虚拟机，所以这个过程其实就是启动一个应用的过程，因此，相当于系统又把这个应用重新启动了一遍，既然重新启动了，那么就会创建新的Application，我们可以利用这个特性，当新进程的Application启动时候，初始化Provider，这样Provider与Action都是处于新的进程中，而不是主进程中，这样就可以实现我们的目标了。</p>
+<p>所以我们需要做哪些事情？</p>
+<p>1.建立一个新的Map包含进程名称与可以初始化Provider的方法</p>
+<p>2.在Application创建时候，通过当前的ProcessName与上述队列的进程名称对比，从而去初始化Provider</p>
+<p>首先建立一个可以初始化Provider的类，父类如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public class RouterApplicaitonLogic &#123;</div><div class="line"></div><div class="line">    public void onCreate(Application application)&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>子Modle只要继承这个类并包装好方法就可以了，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public class ModelApplicationLogic extends RouterApplicaitonLogic&#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate(Application application) &#123;</div><div class="line">        super.onCreate(application);</div><div class="line">        RouterManager.getInstance(application).registerProvider(&quot;modle&quot;,new ModleProvider());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来构建新的Map来存储相关的信息，并通过进程名称去加载相对应的ApplicaitonLogic类，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">public abstract class RouterApplication extends Application&#123;</div><div class="line"></div><div class="line">    private static RouterApplication sInstance;</div><div class="line">    private HashMap&lt;String,Class&gt; mApplicaitonLogics = new HashMap&lt;&gt;();</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate() &#123;</div><div class="line">        super.onCreate();</div><div class="line">        sInstance = this;</div><div class="line">        mApplicaitonLogics = new HashMap&lt;&gt;();</div><div class="line">        initializeLogic();</div><div class="line"></div><div class="line">        for (int i = 0; i &lt; mApplicaitonLogics.size(); i++)&#123;</div><div class="line">            if (mApplicaitonLogics.get(ProcessUtil.getProcessName(this,ProcessUtil.getMyProcessId()))!=null)&#123;</div><div class="line">                try &#123;</div><div class="line">                    RouterApplicaitonLogic routerApplicaitonLogic = (RouterApplicaitonLogic)mApplicaitonLogics.get(ProcessUtil.getProcessName(this,ProcessUtil.getMyProcessId())).newInstance();</div><div class="line">                    routerApplicaitonLogic.onCreate(this);</div><div class="line">                &#125; catch (Exception e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static RouterApplication getMainApplication()&#123;</div><div class="line">        return sInstance;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    protected abstract void initializeLogic();</div><div class="line"></div><div class="line">    public void registerApplicaitonLogic(String s,Class routerApplicaitonLogic)&#123;</div><div class="line">        mApplicaitonLogics.put(s,routerApplicaitonLogic);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来就是继承这个RouterApplication，然后实现initializeLogic方法，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class MainApplication extends RouterApplication&#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate() &#123;</div><div class="line">        super.onCreate();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void initializeLogic() &#123;</div><div class="line">        registerApplicaitonLogic(&quot;com.xxxx.xxxx:remote&quot;, ModelApplicationLogic.class);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以到这里就实现了对应进程加载对应的Action方法了。</p>
+<p>接下来我们照常执行router方法，就会发现报错，错误的原因是找不到对应的Action，为什么呢？其实很简单，主要因为这个Action已经处于remote进程 ，而并非主进程，所以接下来我们面临的问题就是怎么去调用非主进程中的Action呢？</p>
+<p>多进程的通讯与调用前面有说过通过AIDL的方法，至于这个方法的流程什么的我这里就不做介绍了，接下来就直接上我们的方案：</p>
+<p>首先我们需要见一个AIDL文件，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">interface IRouterAIDL &#123;</div><div class="line">    void route(String routerRequest);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里仅仅只有一个方法，当ReBuild后，系统会自动为我们生成对应的JAVA类方法</p>
+<p>接下来创建一个Service类，这个类就是上面AIDL文件的具体实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class RouterAIDLService extends Service&#123;</div><div class="line"></div><div class="line">    @Nullable</div><div class="line">    @Override</div><div class="line">    public IBinder onBind(Intent intent) &#123;</div><div class="line">        return stub;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    IRouterAIDL.Stub stub = new IRouterAIDL.Stub() &#123;</div><div class="line">        @Override</div><div class="line">        public void route(String routerRequest) throws RemoteException &#123;</div><div class="line"></div><div class="line">            RouterManager.getInstance(RouterApplication.getMainApplication()).router(RouterAIDLService.this,new RouterRequest.Builder().json(routerRequest).process(null).build());</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以非主进程的Model只要继承上述的Service，并将这个Service的进程与非主进程的Model进程设置同样的进程即可，这样就可以访问到非主进程中的Action了。</p>
+<p>接下来就是处理什么时候启动这个Service了，所以首先需要将子类继承的RouterAIDLService与对于的标签存储下来，然后在前面的RouterRequest中增加process变量，从而来判断是主进程，还是非主进程，同时这个变量可以与前面的标签匹配，从而启动对应的Service。</p>
+<p>接下来就是增加RouterManager里面的匹配逻辑了，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">public class RouterManager &#123;</div><div class="line"></div><div class="line">    public static HashMap&lt;String, RouterProvider&gt; mProviders;</div><div class="line">    private HashMap&lt;String, Class&gt; mServices;</div><div class="line">    private static RouterManager sInstance;</div><div class="line">    private Context mContext;</div><div class="line">    private IRouterAIDL mIRouterAIDL;</div><div class="line">    private RouterRequest mRouterRequest;</div><div class="line"></div><div class="line">    private ServiceConnection mServiceConnection = new ServiceConnection() &#123;</div><div class="line">        @Override</div><div class="line">        public void onServiceConnected(ComponentName name, IBinder service) &#123;</div><div class="line">            mIRouterAIDL = IRouterAIDL.Stub.asInterface(service);</div><div class="line">            try &#123;</div><div class="line">                mIRouterAIDL.route(mRouterRequest.toString());</div><div class="line">            &#125; catch (Exception e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void onServiceDisconnected(ComponentName name) &#123;</div><div class="line">            mIRouterAIDL = null;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    public RouterManager(Context context) &#123;</div><div class="line">        mContext = context;</div><div class="line">        mProviders = new HashMap&lt;&gt;();</div><div class="line">        mServices = new HashMap&lt;&gt;();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void connetService(Class serviceClass)&#123;</div><div class="line">        Intent binderIntent = new Intent(mContext, serviceClass);</div><div class="line">        mContext.bindService(binderIntent,mServiceConnection,Context.BIND_AUTO_CREATE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void disconnetService()&#123;</div><div class="line">        mContext.unbindService(mServiceConnection);</div><div class="line">        mIRouterAIDL = null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static synchronized RouterManager getInstance(@NonNull Application context) &#123;</div><div class="line">        if (sInstance == null) &#123;</div><div class="line">            sInstance = new RouterManager(context);</div><div class="line">        &#125;</div><div class="line">        return sInstance;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void registerProvider(String providerName, RouterProvider provider) &#123;</div><div class="line">        mProviders.put(providerName, provider);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void registerService(String providerName, Class service) &#123;</div><div class="line">        mServices.put(providerName, service);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void router(Context context,RouterRequest routerRequest)&#123;</div><div class="line">        if (routerRequest.getProcess() == null) &#123;</div><div class="line">            RouterProvider routerProvider = mProviders.get(routerRequest.getProvider());</div><div class="line">            RouterAction routerAction = routerProvider.findAction(routerRequest.getAction());</div><div class="line">            routerAction.invoke(context, routerRequest.getData());</div><div class="line">        &#125;else &#123;</div><div class="line">            mRouterRequest = routerRequest;</div><div class="line">            if (mIRouterAIDL != null)&#123;</div><div class="line">                disconnetService();</div><div class="line">            &#125;</div><div class="line">            Class routerAIDLService = mServices.get(routerRequest.getProcess());</div><div class="line">            connetService(routerAIDLService);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以整个逻辑现在就是这个样子的了，当执行route方法，通过RouterRequest的proces变量判断是否是主进程或者是其他进程，如果是主进程还是前面的执行逻辑，如果不是主进程的话，就通过这个proces变量来找到对应进程（以remote进程为例）的RouterAIDLService子类，然后启动这个Service，启动后通过ServiceConnection，获取这个IRouterAIDL的实例，然后调用route方法，调用route方法就执行到remote进程中Service的router方法，这个router则再次调用RouterManager的route方法，那么这个时候的RouterManager的实例也已经是remote进程内的，所以这时候就可以找到正确的Action方法并执行。</p>
+<p>所以到这里才能真正的实现了多进程的通讯。</p>
+<p>至于返回值通过修改AIDL及部分逻辑即可，这里就不做特别的介绍了</p>
+<h4 id="URL-Scheme使用"><a href="#URL-Scheme使用" class="headerlink" title="URL Scheme使用"></a>URL Scheme使用</h4><p>android中的scheme是一种页面内跳转协议，是一种非常好的实现机制，通过定义自己的scheme协议，可以非常方便跳转app中的各个页面；通过scheme协议，服务器可以定制化告诉App跳转那个页面，可以通过通知栏消息定制化跳转页面，可以通过H5页面跳转页面等。</p>
+<p><strong>URL Scheme应用场景：</strong></p>
+<p>客户端应用可以向操作系统注册一个 URL scheme，该 scheme 用于从浏览器或其他应用中启动本应用。通过指定的 URL 字段，可以让应用在被调起后直接打开某些特定页面，比如商品详情页、活动详情页等等。也可以执行某些指定动作，如完成支付等。也可以在应用内通过 html 页来直接调用显示 app 内的某个页面。综上URL Scheme使用场景大致分以下几种：</p>
+<ul>
+<li>服务器下发跳转路径，客户端根据服务器下发跳转路径跳转相应的页面</li>
+<li>H5页面点击锚点，根据锚点具体跳转路径APP端跳转具体的页面</li>
+<li>APP端收到服务器端下发的PUSH通知栏消息，根据消息的点击跳转路径跳转相关页面</li>
+<li>APP根据URL跳转到另外一个APP指定页面</li>
+</ul>
+<p><strong>URL Scheme协议格式：</strong></p>
+<p>在Android平台而言，URI主要分三个部分：scheme, authority,path, queryString。其中authority又分为host和port。</p>
+<p>格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scheme://host:port/path?qureyParameter=queryString</div></pre></td></tr></table></figure>
+<p>举个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xl://goods:8888/goodsDetail?goodsId=10011002</div></pre></td></tr></table></figure>
+<p>通过上面的路径 Scheme、Host、port、path、query全部包含，基本上平时使用路径就是这样子的。</p>
+<ul>
+<li>xl代表该Scheme 协议名称</li>
+<li>goods代表Scheme作用于哪个地址域</li>
+<li>goodsDetail代表Scheme指定的页面</li>
+<li>goodsId代表传递的参数</li>
+<li>8888代表该路径的端口号</li>
+</ul>
+<p><strong>URL Scheme如何使用：</strong></p>
+<p>1.在AndroidManifest.xml中对<activity>标签增加<intent-filter>设置Scheme</intent-filter></activity></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;activity android:name=&quot;.GoodsDetailActivity&quot;&gt;</div><div class="line">        &lt;!--要想在别的App上能成功调起App，必须添加intent过滤器--&gt;</div><div class="line">        &lt;intent-filter&gt;</div><div class="line">            &lt;!--协议部分，随便设置--&gt;</div><div class="line">            &lt;data android:scheme=&quot;xl&quot; android:host=&quot;goods&quot; android:path=&quot;/goodsDetail&quot; android:port=&quot;8888&quot;/&gt;</div><div class="line">            &lt;!--下面这几行也必须得设置--&gt;</div><div class="line">            &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;</div><div class="line">            &lt;action android:name=&quot;android.intent.action.VIEW&quot;/&gt;</div><div class="line">            &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot;/&gt;</div><div class="line">        &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure>
+<p>2.获取Scheme跳转的参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">Uri uri = getIntent().getData();</div><div class="line">if (uri != null) &#123;</div><div class="line">    // 完整的url信息</div><div class="line">    String url = uri.toString();</div><div class="line">    Log.e(TAG, &quot;url: &quot; + uri);</div><div class="line">    // scheme部分</div><div class="line">    String scheme = uri.getScheme();</div><div class="line">    Log.e(TAG, &quot;scheme: &quot; + scheme);</div><div class="line">    // host部分</div><div class="line">    String host = uri.getHost();</div><div class="line">    Log.e(TAG, &quot;host: &quot; + host);</div><div class="line">    //port部分</div><div class="line">    int port = uri.getPort();</div><div class="line">    Log.e(TAG, &quot;host: &quot; + port);</div><div class="line">    // 访问路劲</div><div class="line">    String path = uri.getPath();</div><div class="line">    Log.e(TAG, &quot;path: &quot; + path);</div><div class="line">    List&lt;String&gt; pathSegments = uri.getPathSegments();</div><div class="line">    // Query部分</div><div class="line">    String query = uri.getQuery();</div><div class="line">    Log.e(TAG, &quot;query: &quot; + query);</div><div class="line">    //获取指定参数值</div><div class="line">    String goodsId = uri.getQueryParameter(&quot;goodsId&quot;);</div><div class="line">    Log.e(TAG, &quot;goodsId: &quot; + goodsId);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>3.调用方式</p>
+<p>网页上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;a href=&quot;xl://goods:8888/goodsDetail?goodsId=10011002&quot;&gt;打开商品详情&lt;/a&gt;</div></pre></td></tr></table></figure>
+<p>原生调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(&quot;xl://goods:8888/goodsDetail?goodsId=10011002&quot;));</div><div class="line">startActivity(intent);</div></pre></td></tr></table></figure>
+<p>4.如何判断一个Scheme是否有效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">PackageManager packageManager = getPackageManager();</div><div class="line">Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(&quot;xl://goods:8888/goodsDetail?goodsId=10011002&quot;));</div><div class="line">List&lt;ResolveInfo&gt; activities = packageManager.queryIntentActivities(intent, 0);</div><div class="line">boolean isValid = !activities.isEmpty();</div><div class="line">if (isValid) &#123;</div><div class="line">    startActivity(intent);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过上面说的Scheme，我们可以同样可以定义关于我们之前的Router定义的格式，如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scheme://packageName:process/providerName/actionName?qureyParameter=queryString</div></pre></td></tr></table></figure>
+<p>例子如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">scheme://packageName:remote/modle/startActivity</div><div class="line"></div><div class="line">scheme://packageName:remote/modle/startActivity?qureyParameter=queryString</div></pre></td></tr></table></figure>
+<p>而解析的方法其实上面也有说到，所以我们可以直接根据网页获取的URI或者服务器下发的URI去做响应的解析，然后通过Router去做响应的操作。</p>
+<h4 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h4><p>到这里就完成了关于组件化的核心Router的构建了，其中包含了多Modle直接的跳转，多进程间的通讯，以及关于URL Scheme在Router中的使用，通过Router这个组件，就可以完成真正的组件化，当然我这里所介绍的Router是比较简单的解决方案，并没有根据实际上复杂的业务的验证，但是万变不离其宗，我说介绍的其实就是Router实现的最基础的东西，开发者可以根据自己的实际情况进行响应的封装，peace~~~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/25/Android组件化(一)-架构与配置/" rel="next" title="Android组件化(一)-架构与配置">
+                <i class="fa fa-chevron-left"></i> Android组件化(一)-架构与配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+
+    <!-- 多说评论框 start -->
+       <div class="ds-thread" data-thread-key="<%- page.path %>" data-title="<%- page.title %>" data-url="<%- page.permalink %>"></div>  
+    <!-- 多说评论框 end -->
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+      (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+      })();
+      </script>
+    <!-- 多说公共JS代码 end -->
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="IBigerBiger" />
+          <p class="site-author-name" itemprop="name">IBigerBiger</p>
+          <p class="site-description motion-element" itemprop="description">IBigerBiger的成长之路</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#多Modle间调用"><span class="nav-number">1.</span> <span class="nav-text">多Modle间调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多进程的通讯"><span class="nav-number">2.</span> <span class="nav-text">多进程的通讯</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#URL-Scheme使用"><span class="nav-number">3.</span> <span class="nav-text">URL Scheme使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#写在后面的话"><span class="nav-number">4.</span> <span class="nav-text">写在后面的话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">IBigerBiger</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ibigerbiger"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
